@@ -1,12 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const scheduleSchema = new Schema({
-  bus_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Bus',
-    required: true,
-  },
+const workHistorySchema = new Schema({
   driver_id: {
     type: Schema.Types.ObjectId,
     ref: 'Driver',
@@ -19,20 +14,24 @@ const scheduleSchema = new Schema({
   },
   route_id: {
     type: Schema.Types.ObjectId,
-    ref: 'Route',
+    ref: 'Route', // Assuming there's a Route model
     required: true,
   },
-  schedule_date: {
+  assignment_date: {
     type: Date,
     required: true,
   },
-  status: {
+  work_duration_hours: {
+    type: Number,
+    required: true,
+  },
+  completion_status: {
     type: String,
-    enum: ['scheduled', 'completed', 'canceled'],
-    default: 'scheduled',
+    enum: ['completed', 'incomplete', 'ongoing'],
+    default: 'ongoing',
   },
 });
 
-const BusSchedule = mongoose.model('BusSchedule', scheduleSchema);
+const WorkHistory = mongoose.model('WorkHistory', workHistorySchema);
 
-module.exports = BusSchedule;
+module.exports = WorkHistory;

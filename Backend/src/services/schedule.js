@@ -1,6 +1,12 @@
-// Need to correct the imports
-const { pool } = require('../config/db');
-const { WorkHistory } = require('../models/mongoModels');
+
+const Bus = require('../models/bus.model.js');
+const Driver = require('../models/driver.model.js')
+const Conductor = require('../models/conductor.model.js')
+const Route = require('../models/route.model.js')
+const WorkHistory = require('../models/workhistory.model.js');
+const BusSchedule = require('../models/schedule.model.js');
+
+// Service to generate a bus schedule and assign driver and conductor
 
 // Service to generate a bus schedule and assign driver and conductor
 const generateSchedule = async (routeId, scheduleDate) => {
@@ -24,20 +30,16 @@ const generateSchedule = async (routeId, scheduleDate) => {
     }
 
     // Assign the driver, conductor, and bus to the route on the specified schedule date
-    const schedule = {
-      bus_id: bus.bus_id,
-      driver_id: driver.driver_id,
-      conductor_id: conductor.conductor_id,
+    const schedule = new BusSchedule({
+      bus_id: bus._id,
+      driver_id: driver._id,
+      conductor_id: conductor._id,
       route_id: routeId,
       schedule_date: scheduleDate,
-    };
+    });
 
-    // Save the schedule to PostgreSQL
-    const result = await pool.query(
-      `INSERT INTO bus_schedules (bus_id, driver_id, conductor_id, route_id, schedule_date)
-       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [schedule.bus_id, schedule.driver_id, schedule.conductor_id, schedule.route_id, schedule.schedule_date]
-    );
+    // Save the schedule to MongoDB
+    const savedSchedule = await schedule.save();
 
     // Log work history for both driver and conductor in MongoDB
     const workHistoryEntry = new WorkHistory({
@@ -45,11 +47,11 @@ const generateSchedule = async (routeId, scheduleDate) => {
       conductor_id: schedule.conductor_id,
       route_id: schedule.route_id,
       assignment_date: schedule.schedule_date,
-      work_duration_hours: calculateWorkDuration(routeId), // This function can calculate based on route distance
+      work_duration_hours: await calculateWorkDuration(routeId),
     });
     await workHistoryEntry.save();
 
-    return result.rows[0]; // Return the newly created schedule
+    return savedSchedule; // Return the newly created schedule
   } catch (error) {
     throw new Error(`Error generating schedule: ${error.message}`);
   }
@@ -58,13 +60,12 @@ const generateSchedule = async (routeId, scheduleDate) => {
 // Helper function to get an available bus
 const getAvailableBus = async (routeId, scheduleDate) => {
   try {
-    const result = await pool.query(
-      `SELECT * FROM buses WHERE bus_id NOT IN (
-         SELECT bus_id FROM bus_schedules WHERE schedule_date = $1
-       ) AND route_id = $2 LIMIT 1`,
-      [scheduleDate, routeId]
-    );
-    return result.rows[0];
+    const assignedBuses = await getAssignedBuses(scheduleDate);
+    const bus = await Bus.findOne({
+      route_id: routeId,
+      _id: { $nin: assignedBuses }
+    }).exec();
+    return bus;
   } catch (error) {
     throw new Error('Error fetching available bus');
   }
@@ -73,13 +74,11 @@ const getAvailableBus = async (routeId, scheduleDate) => {
 // Helper function to get an available driver
 const getAvailableDriver = async (scheduleDate) => {
   try {
-    const result = await pool.query(
-      `SELECT * FROM drivers WHERE driver_id NOT IN (
-         SELECT driver_id FROM bus_schedules WHERE schedule_date = $1
-       ) LIMIT 1`,
-      [scheduleDate]
-    );
-    return result.rows[0];
+    const assignedDrivers = await getAssignedDrivers(scheduleDate);
+    const driver = await Driver.findOne({
+      _id: { $nin: assignedDrivers }
+    }).exec();
+    return driver;
   } catch (error) {
     throw new Error('Error fetching available driver');
   }
@@ -88,23 +87,44 @@ const getAvailableDriver = async (scheduleDate) => {
 // Helper function to get an available conductor
 const getAvailableConductor = async (scheduleDate) => {
   try {
-    const result = await pool.query(
-      `SELECT * FROM conductors WHERE conductor_id NOT IN (
-         SELECT conductor_id FROM bus_schedules WHERE schedule_date = $1
-       ) LIMIT 1`,
-      [scheduleDate]
-    );
-    return result.rows[0];
+    const assignedConductors = await getAssignedConductors(scheduleDate);
+    const conductor = await Conductor.findOne({
+      _id: { $nin: assignedConductors }
+    }).exec();
+    return conductor;
   } catch (error) {
     throw new Error('Error fetching available conductor');
   }
 };
 
+// Helper function to get assigned buses for a specific schedule date
+const getAssignedBuses = async (scheduleDate) => {
+  const schedules = await BusSchedule.find({ schedule_date: scheduleDate }).select('bus_id').exec();
+  return schedules.map(schedule => schedule.bus_id);
+};
+
+// Helper function to get assigned drivers for a specific schedule date
+const getAssignedDrivers = async (scheduleDate) => {
+  const schedules = await BusSchedule.find({ schedule_date: scheduleDate }).select('driver_id').exec();
+  return schedules.map(schedule => schedule.driver_id);
+};
+
+// Helper function to get assigned conductors for a specific schedule date
+const getAssignedConductors = async (scheduleDate) => {
+  const schedules = await BusSchedule.find({ schedule_date: scheduleDate }).select('conductor_id').exec();
+  return schedules.map(schedule => schedule.conductor_id);
+};
+
 // Helper function to calculate work duration for the route
-const calculateWorkDuration = (routeId) => {
-  // Assuming work duration is calculated based on route distance or pre-defined data
-  // Placeholder logic:
-  return 8; // 8 hours work duration as a placeholder
+const calculateWorkDuration = async (routeId) => {
+  try {
+    const route = await Route.findById(routeId).exec();
+    // Assuming work duration is calculated based on route distance or pre-defined data
+    // Placeholder logic:
+    return route.estimated_duration_minutes / 60; // Converts minutes to hours
+  } catch (error) {
+    throw new Error('Error calculating work duration');
+  }
 };
 
 module.exports = { generateSchedule };
