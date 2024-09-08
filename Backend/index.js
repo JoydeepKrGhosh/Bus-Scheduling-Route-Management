@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 
 // Connect to MongoDB  
 connectDB().then(() => {
-    console.log('Connected to MongoDB');
+    
     // Start the server after successful database connection  
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server is Running at port: ${PORT}`));
