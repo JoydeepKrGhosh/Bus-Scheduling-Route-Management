@@ -3,19 +3,23 @@ const Schema = mongoose.Schema;
 
 const workHistorySchema = new Schema({
   driver_id: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Driver',
     required: true,
   },
   conductor_id: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Conductor',
     required: true,
   },
   route_id: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Route', // Assuming there's a Route model
     required: true,
+  },
+  start_time: { type: Date 
+  },
+  end_time: { type: Date 
   },
   assignment_date: {
     type: Date,

@@ -1,20 +1,31 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
-// Middleware to protect routes
-const authMiddleware = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+const authMiddleware = async (req, res, next) => {
+  // Get token from the request headers (authorization)
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Authorization token missing' });
   }
 
   try {
-    const decoded = jwt.verify(token, 'yourSecretKey');
-    req.user = decoded; // Attach decoded user info to request
-    next();
+    // Verify the JWT token
+    const decoded = jwt.verify(token, 'yourSecretKey'); // Use the same secret key that was used to sign the token
+
+    // Attach user to request
+    const user = await User.findById(decoded.id).select('-password'); // Exclude the password field from the query
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    req.user = user; // Attach user to the request object for access in subsequent routes
+    next(); // Proceed to the next middleware or route handler
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' });
+    console.error('Authentication error:', error);
+    return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
 
 module.exports = authMiddleware;
+
