@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  username: {
+  employee_code: {
     type: String,
     required: true,
     unique: true,
@@ -31,6 +31,16 @@ const userSchema = new mongoose.Schema({
   conductor: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Conductor',
+  }, 
+  startDayImageKey: {
+    type: String, // Stores the S3 key for the start day image
+    default: null
+  },
+  // You can also add an endDayImageKey if you want to store the end-day image separately
+  
+  endDayImageKey: {
+    type: String,
+    default: null
   },
 });
 
