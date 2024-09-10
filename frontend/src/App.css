@@ -1,42 +1,26 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+index.css or App.css
+
+body.dark-mode {
+  background-color: #1a202c; /* Dark background color */
+  color: #f7fafc; /* Light text color */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body.dark-mode .bg-gray-900 {
+  background-color: #1a202c;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+body.dark-mode .bg-gray-800 {
+  background-color: #2d3748;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+body.dark-mode .bg-gray-700 {
+  background-color: #4a5568;
 }
 
-.card {
-  padding: 2em;
+body.dark-mode .text-white {
+  color: #f7fafc;
 }
 
-.read-the-docs {
-  color: #888;
+body.dark-mode .text-gray-500 {
+  color: #e2e8f0;
 }
