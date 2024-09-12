@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './COMPONENTS/LoginPage';
 import AdminDashboard from './COMPONENTS/AdminDashboard';
-import SystemManagerDashboard from './COMPONENTS/SystemManagerDashboard';
-import CrewMemberDashboard from './COMPONENTS/CrewMemberDashboard';
+import ConductorDashboard from './COMPONENTS/ConductorDashboard'; // Updated to Conductor Dashboard
+import DriverDashboard from './COMPONENTS/DriverDashboard'; // Import Driver Dashboard
 import ProfilePage from './COMPONENTS/ProfilePage';
 
 function App() {
@@ -36,12 +36,12 @@ function App() {
           element={isAuthenticated && role === 'Admin' ? <AdminDashboard /> : <Navigate to="/" />}
         />
         <Route
-          path="/system-manager"
-          element={isAuthenticated && role === 'System Manager' ? <SystemManagerDashboard /> : <Navigate to="/" />}
+          path="/conductor"
+          element={isAuthenticated && role === 'Conductor' ? <ConductorDashboard /> : <Navigate to="/" />}
         />
         <Route
-          path="/crew-member"
-          element={isAuthenticated && role === 'Crew Member' ? <CrewMemberDashboard /> : <Navigate to="/" />}
+          path="/driver"
+          element={isAuthenticated && role === 'Driver' ? <DriverDashboard /> : <Navigate to="/" />}
         />
         <Route
           path="/profile"

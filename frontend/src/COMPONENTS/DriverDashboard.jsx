@@ -67,7 +67,7 @@ import Footer from './Footer';
 import GISNavigation from './GISNavigation';
 import MySchedule from './MySchedule'; // Import the modified MySchedule
 
-function CrewMemberDashboard() {
+function DriverDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false); // Dark mode state
   const [activeComponent, setActiveComponent] = useState('Dashboard'); // State to track the active component
@@ -209,7 +209,7 @@ function CrewMemberDashboard() {
               {!isSidebarOpen ? <FaWindowMaximize /> : <FaWindowMinimize />}
             </button>
             <Sidebar
-              role="Crew Member"
+              role="Driver"
               isOpen={isSidebarOpen}
               darkMode={darkMode}
               onOptionClick={setActiveComponent}
@@ -222,7 +222,8 @@ function CrewMemberDashboard() {
           className={`flex-grow transition-all duration-300 p-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'} ${isSidebarOpen ? 'ml-0' : 'ml-[-12px]'}`}
         >
           <div className={`p-8 rounded-lg shadow-lg mt-16 ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-            <h2 className="text-3xl font-bold mb-6">Crew Member Dashboard</h2>
+            <h2 className="text-3xl font-bold mb-6">Crew Member</h2>
+            <h3 className="text-2xl font-semibold mb-6">Driver</h3>
             {isDayStarted ? (
               <button
                 onClick={handleEndDay}
@@ -233,51 +234,45 @@ function CrewMemberDashboard() {
               </button>
             ) : (
               <button
-                onClick={handleStartDay}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+              onClick={handleStartDay}
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+            >
+              Start Day
+            </button>
+          )}
+          {showWebcam && (
+            <div className="mt-8">
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+                width="100%"
+              />
+              <button
+                onClick={captureImage}
+                className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-600 mt-4"
               >
-                Start Day
+                Capture Image
               </button>
-            )}
-
-            {/* Webcam functionality */}
-            {showWebcam && (
-              <div className="mt-8">
-                <h3 className="text-2xl font-bold mb-4">Take a Photo</h3>
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  className="mb-4"
-                />
-                <button
-                  onClick={captureImage}
-                  className="bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition-colors"
-                >
-                  Capture Photo
-                </button>
-              </div>
-            )}
-
-            {/* Display the captured image */}
-            {capturedImage && (
-              <div className="mt-8">
-                <h3 className="text-2xl font-bold mb-4">Captured Image</h3>
-                <img src={capturedImage} alt="Captured" className="rounded-lg shadow-lg" />
-              </div>
-            )}
-
-            {/* Render the active component */}
+              {capturedImage && (
+                <div className="mt-4">
+                  <p className="text-lg font-semibold">Captured Image:</p>
+                  <img src={capturedImage} alt="Captured" className="mt-2" />
+                </div>
+              )}
+            </div>
+          )}
+          <div className="mt-12">
             {renderActiveComponent()}
           </div>
         </div>
       </div>
-      <Footer />
     </div>
-  );
-}
+    <Footer />
+  </div>
+); }
 
-export default CrewMemberDashboard;
+export default DriverDashboard;  
 
 
 
