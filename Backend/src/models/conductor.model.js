@@ -16,8 +16,8 @@ const conductorSchema = new Schema({
     required: true,
     unique: true,
   },
-  dob: {
-    type: Date,
+  password: {
+    type: String,
     required: true,
   },
   employment_date: {

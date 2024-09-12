@@ -21,9 +21,12 @@ const driverSchema = new Schema({
     required: true,
     unique: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   dob: {
     type: Date,
-    required: true,
   },
   employment_date: {
     type: Date,
