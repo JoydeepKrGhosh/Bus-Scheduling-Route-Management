@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaBus, FaCalendarAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
-import Footer from './Footer'; // Import the Footer component
+import Sidebar from '../UTILITIES/Sidebar';
+import Navbar from '../UTILITIES/Navbar';
+import Footer from '../UTILITIES/Footer'; // Import the Footer component
 
 function ConductorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);

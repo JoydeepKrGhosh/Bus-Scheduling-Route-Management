@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaUsers, FaBus, FaFileAlt, FaBell, FaChartLine, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import Sidebar from '../UTILITIES/Sidebar';
+import Navbar from '../UTILITIES/Navbar';
+import Footer from '../UTILITIES/Footer';
 import ActiveBuses from './ActiveBuses';
 import AssignRoutes from './AssignRoutes';
 import ReportsAnalytics from './ReportsAnalytics'; // Import the ReportsAnalytics component
