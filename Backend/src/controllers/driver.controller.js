@@ -1,5 +1,5 @@
 // controllers/driverController.js  
-const Driver = require('../models/driver.model');
+const Driver = require('../models/driver.model.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
