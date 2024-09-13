@@ -1,65 +1,73 @@
-const { rekognition, s3 } = require('../utils/aws.utils.js');
-const User = require('../models/user.model.js'); // Assuming user model includes conductor or driver
+const { uploadImageToS3 } = require('../services/s3.service.js');
+const { compareFaces } = require('../services/rekognition.service.js');
+const Driver = require('../models/driver.model.js');
+const Conductor = require('../models/conductor.model.js');
+const path = require('path');
 
-// Controller for start-day image upload
-exports.startDay = async (req, res) => {
-  try {
-    const { employee_code } = req.body;
-    const startDayImageKey = req.file.key; // The uploaded image key from S3
+// Controller to handle reference image upload
+const uploadReferenceImage = async (req, res) => {
+  const { employeeCode, role } = req.body;
 
-    // Save the start-day image to the user's record in the database
-    await User.updateOne({ employee_code }, { startDayImageKey });
-
-    res.status(200).json({ message: 'Start day image uploaded successfully', startDayImageKey });
-  } catch (error) {
-    res.status(500).json({ message: 'Error uploading start day image', error });
+  // Check if the file exists using express-fileupload
+  if (!req.files || !req.files.image) {
+    return res.status(400).json({ message: 'No file uploaded' });
   }
-};
 
-// Controller for end-day image upload and comparison
-exports.endDay = async (req, res) => {
+  const image = req.files.image;
+
   try {
-    const { employee_code } = req.body;
-    const endDayImageKey = req.file.key; // The uploaded image key from S3
+    const fileName = `${role}/reference-images/${employeeCode}_reference.jpg`;
+    const s3Response = await uploadImageToS3(image.data, fileName);
+    const s3Url = `https://${s3Response.Bucket}.s3.amazonaws.com/${s3Response.Key}`;
 
-    // Fetch start-day image from the database
-    const user = await User.findOne({ employee_code });
-    const startDayImageKey = user.startDayImageKey;
-
-    if (!startDayImageKey) {
-      return res.status(400).json({ message: 'Start day image not found' });
+    // Update the reference image URL in the database
+    if (role === 'driver') {
+      await Driver.updateOne({ employeeCode }, { $set: { referenceImageUrl: s3Url } });
+    } else if (role === 'conductor') {
+      await Conductor.updateOne({ employeeCode }, { $set: { referenceImageUrl: s3Url } });
     }
 
-    // Fetch images from S3 for comparison
-    const params = {
-      SourceImage: {
-        S3Object: {
-          Bucket: process.env.S3_BUCKET_NAME,
-          Name: startDayImageKey,
-        }
-      },
-      TargetImage: {
-        S3Object: {
-          Bucket: process.env.S3_BUCKET_NAME,
-          Name: endDayImageKey,
-        }
-      },
-      SimilarityThreshold: 90
-    };
-
-    // Compare faces using AWS Rekognition
-    rekognition.compareFaces(params, (err, data) => {
-      if (err) {
-        return res.status(500).json({ message: 'Error comparing images', err });
-      }
-
-      if (data.FaceMatches.length > 0) {
-        res.status(200).json({ message: 'Faces match', similarity: data.FaceMatches[0].Similarity });
-      } else {
-        res.status(400).json({ message: 'Faces do not match' });
-      }
-    });
+    res.status(200).json({ message: 'Reference image uploaded successfully!', s3Url });
   } catch (error) {
-    res.status(500).json({ message: 'Error uploading end day image', error });
+    res.status(500).json({ message: 'Image upload failed', error });
   }
 };
+
+// Controller to handle daily image upload and verification
+const uploadDailyImageAndVerify = async (req, res) => {
+  const { employeeCode, role } = req.body;
+
+  // Check if the file exists using express-fileupload
+  if (!req.files || !req.files.image) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  const image = req.files.image;
+
+  try {
+    const fileName = `${role}/daily-uploads/${employeeCode}_${Date.now()}.jpg`;
+    const s3Response = await uploadImageToS3(image.data, fileName);
+    const s3Url = `https://${s3Response.Bucket}.s3.amazonaws.com/${s3Response.Key}`;
+
+    const user = role === 'driver' ? await Driver.findOne({ employeeCode }) : await Conductor.findOne({ employeeCode });
+    const referenceImageUrl = user.referenceImageUrl;
+   
+    // Compare faces using Rekognition
+    const comparisonResult = await compareFaces(referenceImageUrl, s3Url);
+
+    // Update the user's verification status based on the comparison result
+    if (comparisonResult.FaceMatches.length > 0) {
+      user.verificationStatus = 'success';
+      user.lastVerifiedImage = s3Url;
+    } else {
+      user.verificationStatus = 'failed';
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Image verified', status: user.verificationStatus });
+  } catch (error) {
+    res.status(500).json({ message: 'Image verification failed', error, });
+  }
+};
+
+module.exports = { uploadReferenceImage, uploadDailyImageAndVerify };

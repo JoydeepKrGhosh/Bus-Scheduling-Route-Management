@@ -24,6 +24,20 @@ const conductorSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  employeeCode: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  referenceImageUrl: {
+    type: String, // URL of the reference image
+  },
+  verificationStatus: {
+    type: String, // Status of the image verification ('success' or 'failed')
+  },
+  lastVerifiedImage: {
+    type: String, // URL of the last verified image
+  },
   status: {
     type: String,
     enum: ['available', 'on-duty', 'inactive'],

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './COMPONENTS/LoginPage';
-import AdminDashboard from './COMPONENTS/AdminDashboard';
-import ConductorDashboard from './COMPONENTS/ConductorDashboard'; // Updated to Conductor Dashboard
-import DriverDashboard from './COMPONENTS/DriverDashboard'; // Import Driver Dashboard
-import ProfilePage from './COMPONENTS/ProfilePage';
+import LoginPage from './COMPONENTS/LOGIN_PAGE/LoginPage';
+import AdminDashboard from './COMPONENTS/ADMIN/AdminDashboard';
+import ConductorDashboard from './COMPONENTS/CONDUCTOR/ConductorDashboard'; // Updated to Conductor Dashboard
+import DriverDashboard from './COMPONENTS/DRIVER/DriverDashboard'; // Import Driver Dashboard
+import ProfilePage from './COMPONENTS/UTILITIES/ProfilePage';
 
 function App() {
   const [role, setRole] = useState('');
@@ -53,3 +53,21 @@ function App() {
 }
 
 export default App;
+
+
+
+
+// import React from 'react';
+// import BusRouteAnimation from './COMPONENTS/BusRouteAnimation';
+// import BusRouteDiagram from './COMPONENTS/BusRouteDiagram';
+
+// function App() {
+//   return (
+//     <div className="flex justify-center items-center h-screen bg-gray-100">
+//       <BusRouteAnimation />
+//       <BusRouteDiagram/>
+//     </div>
+//   );
+// }
+
+// export default App;
