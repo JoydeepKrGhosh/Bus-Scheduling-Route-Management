@@ -108,7 +108,7 @@ function LoginPage({ onLogin }) {
       return `Password must be at least ${minPasswordLength} characters.`;
     }
 
-    return null; // No errors found
+    return ; // No errors found
   };
 
   return (

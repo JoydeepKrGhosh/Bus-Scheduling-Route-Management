@@ -11,7 +11,10 @@ const errorHandler = require('./src/middlewares/errorHandler.js');
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
-
+const http = require('http');
+const server = http.createServer(app);
+const socketio = require('socket.io');
+const io = socketio(server);
 // Connect to MongoDB  
 connectDB().then(() => {
     const PORT = process.env.PORT || 5000;
