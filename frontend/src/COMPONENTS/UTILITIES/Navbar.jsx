@@ -316,7 +316,7 @@
 
 /////////////////////////////////////////
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { FaUserCircle, FaCog } from 'react-icons/fa';
 import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';

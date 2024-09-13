@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import LoginPage from './COMPONENTS/LoginPage';
-import AdminDashboard from './COMPONENTS/AdminDashboard';
-import SystemManagerDashboard from './COMPONENTS/SystemManagerDashboard';
-import CrewMemberDashboard from './COMPONENTS/CrewMemberDashboard';
-import ProfilePage from './COMPONENTS/ProfilePage';
+import LoginPage from './COMPONENTS/LOGIN_PAGE/LoginPage';
+import AdminDashboard from './COMPONENTS/ADMIN/AdminDashboard';
+import ConductorDashboard from './COMPONENTS/CONDUCTOR/ConductorDashboard'; // Updated to Conductor Dashboard
+import DriverDashboard from './COMPONENTS/DRIVER/DriverDashboard'; // Import Driver Dashboard
+import ProfilePage from './COMPONENTS/UTILITIES/ProfilePage';
 
 function App() {
   const [role, setRole] = useState('');
@@ -36,12 +36,12 @@ function App() {
           element={isAuthenticated && role === 'Admin' ? <AdminDashboard /> : <Navigate to="/" />}
         />
         <Route
-          path="/system-manager"
-          element={isAuthenticated && role === 'System Manager' ? <SystemManagerDashboard /> : <Navigate to="/" />}
+          path="/conductor"
+          element={isAuthenticated && role === 'Conductor' ? <ConductorDashboard /> : <Navigate to="/" />}
         />
         <Route
-          path="/crew-member"
-          element={isAuthenticated && role === 'Crew Member' ? <CrewMemberDashboard /> : <Navigate to="/" />}
+          path="/driver"
+          element={isAuthenticated && role === 'Driver' ? <DriverDashboard /> : <Navigate to="/" />}
         />
         <Route
           path="/profile"
@@ -53,3 +53,21 @@ function App() {
 }
 
 export default App;
+
+
+
+
+// import React from 'react';
+// import BusRouteAnimation from './COMPONENTS/BusRouteAnimation';
+// import BusRouteDiagram from './COMPONENTS/BusRouteDiagram';
+
+// function App() {
+//   return (
+//     <div className="flex justify-center items-center h-screen bg-gray-100">
+//       <BusRouteAnimation />
+//       <BusRouteDiagram/>
+//     </div>
+//   );
+// }
+
+// export default App;

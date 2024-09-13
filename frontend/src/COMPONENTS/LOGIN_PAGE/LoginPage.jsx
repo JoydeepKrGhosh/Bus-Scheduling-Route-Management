@@ -59,47 +59,71 @@
 
 ///////////////////////////
 
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import dtcLogo from './assets/dtc-logo.png';
 
 function LoginPage({ onLogin }) {
   const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Admin');
-  const [error, setError] = useState('');
+  const [subRole, setSubRole] = useState('');
+  const [error, setError] = useState(''); // Renamed for consistency
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
 
-    // Mock validation
-    if (employeeId === 'admin' && password === 'admin123' && role === 'Admin') {
+    const minEmployeeIdLength = 6;
+    const minPasswordLength = 8;
+
+    // Validation logic with clear error messages
+    const validationError = validateCredentials(employeeId, password, minEmployeeIdLength, minPasswordLength);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    // If lengths are valid, proceed with role and sub-role matching
+    if (role === 'Admin' && employeeId === 'admin000' && password === 'admin1234') {
       onLogin('Admin');
       navigate('/admin');
-    } else if (employeeId === 'system' && password === 'system123' && role === 'System Manager') {
-      onLogin('System Manager');
-      navigate('/system-manager');
-    } else if (employeeId === 'crew' && password === 'crew123' && role === 'Crew Member') {
-      onLogin('Crew Member');
-      navigate('/crew-member');
+    } else if (role === 'Crew Member' && subRole === 'Driver' && employeeId === 'driver01' && password === 'driver123') {
+      onLogin('Driver');
+      navigate('/driver');
+    } else if (role === 'Crew Member' && subRole === 'Conductor' && employeeId === 'conduc01' && password === 'condut123') {
+      onLogin('Conductor');
+      navigate('/conductor');
     } else {
-      setError('Incorrect Employee ID, Password, or Role');
+      setError('Incorrect Employee ID, Password, or Role.');
     }
+  };
+
+  const validateCredentials = (employeeId, password, minEmployeeIdLength, minPasswordLength) => {
+    if (employeeId.length < minEmployeeIdLength) {
+      return `Employee ID must be at least ${minEmployeeIdLength} characters.`;
+    }
+
+    if (password.length < minPasswordLength) {
+      return `Password must be at least ${minPasswordLength} characters.`;
+    }
+
+    return null; // No errors found
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-green-50">
       <div className="bg-white p-8 rounded-lg shadow-lg w-3/4 max-w-md">
         <div className="text-center mb-4">
-          <img src='https://dtcpass.delhi.gov.in/images/DTC1.png' alt="DTC Logo" className="mx-auto w-24 h-24" />
+          <img src="https://dtcpass.delhi.gov.in/images/DTC1.png" alt="DTC Logo" className="mx-auto w-32 h-32" />
         </div>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Employee ID</label>
+            <label htmlFor="employeeId" className="block text-gray-700 text-sm font-bold mb-2">
+              Employee ID
+            </label>
             <input
               type="text"
+              id="employeeId"
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               placeholder="Enter Employee ID"
@@ -107,9 +131,12 @@ function LoginPage({ onLogin }) {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+            <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
+              Password
+            </label>
             <input
               type="password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
@@ -117,17 +144,36 @@ function LoginPage({ onLogin }) {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Role</label>
+            <label htmlFor="role" className="block text-gray-700 text-sm font-bold mb-2">Role</label>
             <select
+              id="role"
               value={role}
-              onChange={(e) => setRole(e.target.value)}
+              onChange={(e) => {
+                setRole(e.target.value);
+                setSubRole(''); // Reset subRole when switching between Admin and Crew Member
+              }}
               className="w-full px-3 py-2 border rounded"
             >
               <option value="Admin">Admin</option>
-              <option value="System Manager">System Manager</option>
               <option value="Crew Member">Crew Member</option>
             </select>
           </div>
+          {role === 'Crew Member' && (
+            <div className="mb-4">
+              <label htmlFor="subRole" className="block text-gray-700 text-sm font-bold mb-2">Sub Role</label>
+              <select
+                id="subRole"
+                value={subRole}
+                onChange={(e) => setSubRole(e.target.value)}
+                className="w-full px-3 py-2 border rounded"
+                placeholder='Select Sub Role'
+              >
+                <option value="">Select Sub Role</option>
+                <option value="Driver">Driver</option>
+                <option value="Conductor">Conductor</option>
+              </select>
+            </div>
+          )}
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <button
             type="submit"
@@ -148,6 +194,9 @@ function LoginPage({ onLogin }) {
 }
 
 export default LoginPage;
+
+
+
 
 
 ////////////////

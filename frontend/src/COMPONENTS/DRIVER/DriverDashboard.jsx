@@ -60,77 +60,78 @@
 // CrewMemberDashboard.jsx
 import React, { useState, useRef } from 'react';
 import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
-import Webcam from 'react-webcam'; // Import react-webcam
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
-import Footer from './Footer';
+import Webcam from 'react-webcam';
+import Sidebar from '../UTILITIES/Sidebar';
+import Navbar from '../UTILITIES/Navbar';
+import Footer from '../UTILITIES/Footer';
 import GISNavigation from './GISNavigation';
-import MySchedule from './MySchedule'; // Import the modified MySchedule
+import MySchedule from './MySchedule'; 
 
-function CrewMemberDashboard() {
+function DriverDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [darkMode, setDarkMode] = useState(false); // Dark mode state
-  const [activeComponent, setActiveComponent] = useState('Dashboard'); // State to track the active component
-  const [isDayStarted, setIsDayStarted] = useState(false); // Track if day has started
-  const [isEndDayEnabled, setIsEndDayEnabled] = useState(false); // Track if "End Day" button is enabled
-  const [timer, setTimer] = useState(0); // Timer state
-  const [intervalId, setIntervalId] = useState(null); // Store interval ID for timer
-  const [history, setHistory] = useState([]); // Store history of start and end times
-  const [showWebcam, setShowWebcam] = useState(false); // State to show/hide webcam
-  const [capturedImage, setCapturedImage] = useState(null); // State to store captured image
+  const [darkMode, setDarkMode] = useState(false);
+  const [activeComponent, setActiveComponent] = useState('Dashboard');
+  const [isDayStarted, setIsDayStarted] = useState(false);
+  const [isEndDayEnabled, setIsEndDayEnabled] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [isImageCaptured, setIsImageCaptured] = useState(false); // New state
 
-  const webcamRef = useRef(null); // Reference for webcam
+  const webcamRef = useRef(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode); // Toggle dark mode
+    setDarkMode(!darkMode);
   };
 
-  // Function to start the day and show the camera
   const handleStartDay = () => {
     setIsDayStarted(true);
     setIsEndDayEnabled(true);
-    setShowWebcam(true); // Show webcam when starting the day
+    setShowWebcam(true);
   };
 
-  // Function to end the day
   const handleEndDay = () => {
     setIsEndDayEnabled(false);
-    clearInterval(intervalId); // Stop the timer
+    clearInterval(intervalId);
     const hours = Math.floor(timer / 3600);
     const minutes = Math.floor((timer % 3600) / 60);
     const seconds = timer % 60;
     const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
 
-    // Add the recorded time to history
     setHistory((prevHistory) => [...prevHistory, `Day lasted for: ${formattedTime}`]);
-    setTimer(0); // Reset timer
-    setIsDayStarted(false); // Reset day started status
+    setTimer(0);
+    setIsDayStarted(false);
+    setIsImageCaptured(false); // Reset image capture status when the day ends
   };
 
-  // Capture image from webcam
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    setCapturedImage(imageSrc); // Store captured image
-    setShowWebcam(false); // Hide webcam after capturing image
-    startTimer(); // Start the timer after photo is taken
+    setCapturedImage(imageSrc);
+    setShowWebcam(false);
+    setIsImageCaptured(true); // Image is captured, cards can now be clicked
+    startTimer();
   };
 
-  // Function to start the timer
   const startTimer = () => {
     const id = setInterval(() => {
       setTimer((prevTime) => prevTime + 1);
-    }, 1000); // Update timer every second
+    }, 1000);
     setIntervalId(id);
   };
 
-  // Disable interaction with cards until day is started
-  const cardInteractionDisabled = !isDayStarted;
+  // Handle card clicks to update the active component
+  const handleCardClick = (component) => {
+    if (isImageCaptured) {
+      setActiveComponent(component); // Update active component only if the image is captured
+    }
+  };
 
-  // Function to render the active component based on what is selected in the Sidebar
   const renderActiveComponent = () => {
     switch (activeComponent) {
       case 'GISNavigation':
@@ -142,7 +143,7 @@ function CrewMemberDashboard() {
         ])} />;
       case 'Notifications':
         return (
-          <div className={`p-4 rounded-lg shadow-lg ${darkMode ? 'bg-gray-600' : 'bg-white'} ${cardInteractionDisabled ? 'pointer-events-none opacity-50' : ''}`}>
+          <div className={`p-4 rounded-lg shadow-lg ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
             <FaBell className="text-red-500 text-3xl mr-4" />
             <div>
               <p className="text-xl font-semibold">Notifications</p>
@@ -154,21 +155,31 @@ function CrewMemberDashboard() {
         return (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-              <div className={`p-4 rounded-lg shadow-lg flex items-center ${darkMode ? 'bg-gray-600' : 'bg-white'} ${cardInteractionDisabled ? 'pointer-events-none opacity-50' : ''}`}>
+              {/* Clickable Cards */}
+              <div
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
+                onClick={() => handleCardClick('MySchedule')}
+              >
                 <FaBus className="text-blue-500 text-3xl mr-4" />
                 <div>
                   <p className="text-xl font-semibold">My Schedule</p>
                   <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View and manage your assigned shifts.</p>
                 </div>
               </div>
-              <div className={`p-4 rounded-lg shadow-lg flex items-center ${darkMode ? 'bg-gray-600' : 'bg-white'} ${cardInteractionDisabled ? 'pointer-events-none opacity-50' : ''}`}>
+              <div
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
+                onClick={() => handleCardClick('GISNavigation')}
+              >
                 <FaMapMarkerAlt className="text-green-500 text-3xl mr-4" />
                 <div>
                   <p className="text-xl font-semibold">Route Map</p>
                   <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View your assigned routes on the map.</p>
                 </div>
               </div>
-              <div className={`p-4 rounded-lg shadow-lg flex items-center ${darkMode ? 'bg-gray-600' : 'bg-white'} ${cardInteractionDisabled ? 'pointer-events-none opacity-50' : ''}`}>
+              <div
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
+                onClick={() => handleCardClick('Notifications')}
+              >
                 <FaBell className="text-red-500 text-3xl mr-4" />
                 <div>
                   <p className="text-xl font-semibold">Notifications</p>
@@ -209,7 +220,7 @@ function CrewMemberDashboard() {
               {!isSidebarOpen ? <FaWindowMaximize /> : <FaWindowMinimize />}
             </button>
             <Sidebar
-              role="Crew Member"
+              role="Driver"
               isOpen={isSidebarOpen}
               darkMode={darkMode}
               onOptionClick={setActiveComponent}
@@ -222,11 +233,12 @@ function CrewMemberDashboard() {
           className={`flex-grow transition-all duration-300 p-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'} ${isSidebarOpen ? 'ml-0' : 'ml-[-12px]'}`}
         >
           <div className={`p-8 rounded-lg shadow-lg mt-16 ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-            <h2 className="text-3xl font-bold mb-6">Crew Member Dashboard</h2>
+          <h1 className="text-3xl font-bold mb-6">Crew Member Dashboard</h1>
+            <h2 className="text-2xl font-semibold mb-4">Driver</h2>
             {isDayStarted ? (
               <button
                 onClick={handleEndDay}
-                className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-600 transition-colors"
+                className="bg-red-500 text-white px-6 py-3 rounded-lg"
                 disabled={!isEndDayEnabled}
               >
                 End Day
@@ -234,41 +246,20 @@ function CrewMemberDashboard() {
             ) : (
               <button
                 onClick={handleStartDay}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg"
               >
                 Start Day
               </button>
             )}
-
-            {/* Webcam functionality */}
             {showWebcam && (
-              <div className="mt-8">
-                <h3 className="text-2xl font-bold mb-4">Take a Photo</h3>
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  className="mb-4"
-                />
-                <button
-                  onClick={captureImage}
-                  className="bg-green-500 text-white px-6 py-2 rounded-lg shadow-md hover:bg-green-600 transition-colors"
-                >
-                  Capture Photo
+              <div className="mt-4">
+                <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" />
+                <button onClick={captureImage} className="mt-4 bg-green-500 text-white px-6 py-3 rounded-lg">
+                  Capture Image
                 </button>
               </div>
             )}
-
-            {/* Display the captured image */}
-            {capturedImage && (
-              <div className="mt-8">
-                <h3 className="text-2xl font-bold mb-4">Captured Image</h3>
-                <img src={capturedImage} alt="Captured" className="rounded-lg shadow-lg" />
-              </div>
-            )}
-
-            {/* Render the active component */}
-            {renderActiveComponent()}
+            <div className="mt-8">{renderActiveComponent()}</div>
           </div>
         </div>
       </div>
@@ -277,7 +268,7 @@ function CrewMemberDashboard() {
   );
 }
 
-export default CrewMemberDashboard;
+export default DriverDashboard;
 
 
 
