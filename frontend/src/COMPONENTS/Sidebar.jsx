@@ -104,13 +104,13 @@ function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setAc
       { name: 'Employee Management', icon: FaFileAlt, path: '/admin/system-logs' },
       { name: 'Reports and Analytics', icon: FaBell, path: '/admin/notifications' },
     ],
-    'System Manager': [
-      { name: 'Dashboard', icon: FaTachometerAlt, path: '/system-manager' },
-      { name: 'Manage Routes', icon: FaBus, path: '/system-manager/manage-routes' },
-      { name: 'Schedule Overview', icon: FaFileAlt, path: '/system-manager/schedule-overview' },
-      { name: 'Resource Allocation', icon: FaBell, path: '/system-manager/resource-allocation' },
+    Conductor: [
+      { name: 'Dashboard', icon: FaTachometerAlt, path: '/conductor' },
+      { name: 'Manage Routes', icon: FaBus, path: '/conductor/manage-routes' },
+      { name: 'Schedule Overview', icon: FaFileAlt, path: '/conductor/schedule-overview' },
+      { name: 'Resource Allocation', icon: FaBell, path: '/conductor/resource-allocation' },
     ],
-    'Crew Member': [
+    Driver: [
       { name: 'Dashboard', icon: FaTachometerAlt, component: 'Dashboard' },
       { name: 'My Schedule', icon: FaBus, component: 'MySchedule' },
       { name: 'Notifications', icon: FaBell, component: 'Notifications' },
@@ -164,6 +164,7 @@ function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setAc
 }
 
 export default Sidebar;
+
 
 
 
