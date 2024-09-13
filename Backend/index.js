@@ -9,8 +9,8 @@ const dotenv = require('dotenv');
 const conductorRoutes = require('./src/routes/conductorRoutes.js');
 const driverRoutes = require('./src/routes/driverRouter.js');
 
-//const uploadReferenceImage = require('./src/routes/uploadreferenceimage.routes.js')
-const awsimage = require('./src/routes/awsimage.routes.js')
+const awsimage = require('./src/routes/awsimage.routes.js');
+const routeRoutes = require('./src/routes/busroutegenerate.routes.js');
 
 const connectDB = require('./src/Db.js');
 const errorHandler = require('./src/middlewares/errorHandler.js');
@@ -72,5 +72,6 @@ app.use('/api/drivers', driverRoutes);
 
 //Test
 app.use('/api/awsimage',awsimage);
+app.use('/api/routes', routeRoutes);
 
 
