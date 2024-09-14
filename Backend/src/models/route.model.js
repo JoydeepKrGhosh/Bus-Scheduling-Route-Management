@@ -1,20 +1,47 @@
-const mongoose = require('mongoose');  
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const stopSchema = new mongoose.Schema({  
-  lat: { type: Number, required: true },  
-  lon: { type: Number, required: true },  
-  estimatedTimeToNextStop: { type: Number, required: true }, // Time in seconds  
-});  
+const RouteSchema = new Schema({
+  routeId: { type: String, unique: true },
+  startPoint: {
+    name: String,
+    coordinates: [Number]
+  },
+  endPoint: {
+    name: String,
+    coordinates: [Number]
+  },
+  waypoints: [
+    {
+      coordinates: [Number]
+    }
+  ],
+  routePath: {
+    type: {
+      type: String,  // This defines the type of the GeoJSON object
+      enum: ['LineString'],  // This ensures that only 'LineString' is allowed
+      required: true
+    },
+    coordinates: {
+      type: [[Number]],  // Array of arrays of numbers for lat/lon coordinates
+      required: true
+    }
+  },
+  steps: [
+    {
+      from_index: Number,
+      to_index: Number,
+      distance: Number,
+      time: Number,
+      instruction: String
+    }
+  ],
+  distance: Number,
+  time: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
 
-const routeSchema = new mongoose.Schema({  
-  name: { type: String, required: true, unique: true }, // Unique name for the route  
-  startLocation: { type: String, required: true },  
-  endLocation: { type: String, required: true },  
-  stops: [stopSchema], // Array of stops  
-  totalDistance: { type: Number, required: true }, // Total distance in meters  
-  totalTime: { type: Number, required: true }, // Total time in seconds  
-});  
-
-const Route = mongoose.model('Route', routeSchema);  
-
-module.exports = Route;
+module.exports = mongoose.model('Route', RouteSchema);

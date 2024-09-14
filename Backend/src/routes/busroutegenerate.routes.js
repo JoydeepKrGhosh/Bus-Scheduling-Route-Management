@@ -1,9 +1,8 @@
 const express = require('express');  
-const { generateRoute } = require('../controllers/busroutegenerate.controller.js'); // Adjust the path as needed  
-
+const { fetchAndStoreRoute } = require('../controllers/busroutegenerate.controller.js'); // Adjust the path as necessary  
 const router = express.Router();  
 
-// POST route for generating a new route  
-router.post('/generate', generateRoute);  
+// Define the route for fetching and storing the route  
+router.post('/api/generateroute', fetchAndStoreRoute); // POST request to /api/routes  
 
 module.exports = router;
