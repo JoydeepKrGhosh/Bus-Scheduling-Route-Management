@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import RouteDetailsPanel from './RouteDetailsPanel';
 import StatusBar from './StatusBar';
 import ControlButtons from './ControlButtons';
 import EmergencyButton from './EmergencyButton';
+
+// Fix for default Leaflet marker icon not being found
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+});
 
 const containerStyle = {
   width: '100%',
@@ -18,11 +28,6 @@ const defaultCenter = {
 const GISNavigation = ({ darkMode }) => {
   const [currentPosition, setCurrentPosition] = useState(null);
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyAX6CARa4Xsi3xjS4-j_UgbW1vbcZN5SAc', // Replace with your actual Google Maps API key
-    libraries: ['places'],
-  });
-
   // Get the user's current location
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -36,14 +41,6 @@ const GISNavigation = ({ darkMode }) => {
     );
   }, []);
 
-  if (loadError) {
-    return <div>Error loading Google Maps</div>;
-  }
-
-  if (!isLoaded) {
-    return <div>Loading Google Maps...</div>;
-  }
-
   return (
     <div className="h-screen flex flex-col dark:bg-gray-900 pl-20">
       <StatusBar />
@@ -51,13 +48,21 @@ const GISNavigation = ({ darkMode }) => {
       <div className="flex flex-1 mt-4"> {/* Reduced margin-top to adjust space */}
         <RouteDetailsPanel />
         <div className="flex-1">
-          <GoogleMap
-            mapContainerStyle={containerStyle}
+          <MapContainer
+            style={containerStyle}
             center={currentPosition || defaultCenter}
             zoom={13}
+            scrollWheelZoom={false}
           >
-            {currentPosition && <Marker position={currentPosition} />}
-          </GoogleMap>
+            {/* Geoapify TileLayer */}
+            <TileLayer
+              url="https://maps.geoapify.com/v1/tile/dark-matter-brown/{z}/{x}/{y}.png?apiKey=38f3d26824c541c798b28f20ff36c638"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors & Geoapify'
+            />
+            {currentPosition && (
+              <Marker position={currentPosition} />
+            )}
+          </MapContainer>
         </div>
       </div>
       <ControlButtons />

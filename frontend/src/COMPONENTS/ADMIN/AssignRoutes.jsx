@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, InfoWindow, useJsApiLoader } from '@react-google-maps/api';
 import { FaArrowLeft } from 'react-icons/fa'; // Importing the back icon
+import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
 const containerStyle = {
   width: '100%',
-  height: '500px',
+  height: '600px', // Increased the height to make the map larger
 };
 
 const center = {
@@ -17,84 +19,63 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
     { id: 1, position: { lat: 28.7041, lng: 77.1025 }, route: 'Route A' },
     { id: 2, position: { lat: 28.5355, lng: 77.3910 }, route: 'Route B' },
   ]);
-  const [selectedBus, setSelectedBus] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(null); // User's current location
+  const [source, setSource] = useState('');
+  const [destination, setDestination] = useState('');
+  const [sourceCoords, setSourceCoords] = useState(null);
+  const [destinationCoords, setDestinationCoords] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [route, setRoute] = useState([]);
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: 'AIzaSyAX6CARa4Xsi3xjS4-j_UgbW1vbcZN5SAc', // Replace with your actual API key
-    libraries: ['marker'], // Include 'marker' library for AdvancedMarkerElement
-  });
+  const geoapifyKey = '38f3d26824c541c798b28f20ff36c638'; // Replace with your Geoapify API key
 
-  useEffect(() => {
-    if (isLoaded) {
-      // Get user's current location using Geolocation API
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-        },
-        (error) => {
-          console.error('Error getting location', error);
-        }
+  // Fetch location suggestions from Geoapify
+  const fetchSuggestions = async (input, setFunction) => {
+    if (input.length > 2) {
+      const response = await axios.get(
+        `https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&apiKey=${geoapifyKey}`
       );
-
-      // Add markers for buses
-      buses.forEach((bus) => {
-        const markerElement = document.createElement('div');
-        markerElement.style.backgroundImage = 'url("https://example.com/bus-icon.png")'; // Use your actual bus icon
-        markerElement.style.width = '35px';
-        markerElement.style.height = '35px';
-        markerElement.style.backgroundSize = 'contain';
-
-        const marker = new window.google.maps.marker.AdvancedMarkerElement({
-          position: bus.position,
-          map: window.googleMap, // Reference to your GoogleMap instance
-          content: markerElement, // Custom content
-          draggable: true,
-        });
-
-        // Handle dragging of markers
-        marker.addListener('dragend', (event) => {
-          const newBuses = buses.map((b) => {
-            if (b.id === bus.id) {
-              return {
-                ...b,
-                position: { lat: event.latLng.lat(), lng: event.latLng.lng() },
-              };
-            }
-            return b;
-          });
-          setBuses(newBuses);
-        });
-
-        // Store the marker for future use (e.g., to remove later if needed)
-        bus.marker = marker;
-      });
+      setFunction(response.data.features);
+    } else {
+      setFunction([]);
     }
-  }, [isLoaded, buses]);
-
-  // Handle save functionality
-  const handleSave = () => {
-    console.log('Buses assigned to new routes:', buses);
-    alert('Bus routes saved successfully!');
   };
 
-  if (loadError) {
-    return <div>Error loading Google Maps</div>;
-  }
+  // Handle source input change and fetch suggestions
+  const handleSourceChange = (e) => {
+    setSource(e.target.value);
+    fetchSuggestions(e.target.value, setSuggestions);
+  };
 
-  if (!isLoaded) {
-    return <div>Loading Google Maps...</div>;
-  }
+  // Handle destination input change and fetch suggestions
+  const handleDestinationChange = (e) => {
+    setDestination(e.target.value);
+    fetchSuggestions(e.target.value, setSuggestions);
+  };
+
+  // Set the coordinates when a suggestion is clicked
+  const handleSuggestionClick = (suggestion, setCoords) => {
+    setCoords([suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0]]);
+    setSuggestions([]); // Clear suggestions after selection
+  };
+
+  // Fetch route using Geoapify Routing API
+  const generateRoute = async () => {
+    if (sourceCoords && destinationCoords) {
+      const response = await axios.get(
+        `https://api.geoapify.com/v1/routing?waypoints=${sourceCoords[0]},${sourceCoords[1]}|${destinationCoords[0]},${destinationCoords[1]}&mode=drive&apiKey=${geoapifyKey}`
+      );
+      setRoute(response.data.features[0].geometry.coordinates.map((coord) => [coord[1], coord[0]]));
+    } else {
+      alert('Please select both source and destination');
+    }
+  };
 
   return (
-    <div className="w-full h-[600px] flex flex-col items-center justify-center p-6 mt-16">
+    <div className="w-full flex flex-col items-center justify-center p-6 mt-12">
       {/* Back Button */}
-      <div className="w-full flex items-center mb-4">
+      <div className="w-full flex items-center mb-6">
         <button
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800"
+          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
           onClick={() => handleCardClick('overview')} // Return to main card section
         >
           <FaArrowLeft /> {/* Back icon */}
@@ -102,51 +83,97 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
         </button>
       </div>
 
-      <div className="w-full h-[500px] mb-4">
-        <GoogleMap
-          id="google-map"
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={10}
-          onLoad={(map) => {
-            // Store the map instance for future reference
-            window.googleMap = map;
-          }}
-        >
-          {/* Display buses as markers */}
-          {buses.map((bus) => (
-            <InfoWindow
-              key={bus.id}
-              position={bus.position}
-              onCloseClick={() => setSelectedBus(null)}
-            >
-              <div>
-                <h2>Bus {bus.id}</h2>
-                <p>Current Route: {bus.route}</p>
-              </div>
-            </InfoWindow>
-          ))}
-
-          {/* Show current location as a marker */}
-          {currentLocation && (
-            <InfoWindow
-              position={currentLocation}
-              onCloseClick={() => setCurrentLocation(null)}
-            >
-              <div>
-                <h2>You are here</h2>
-              </div>
-            </InfoWindow>
+      {/* Source and Destination Search Bars in a column */}
+      <div className="w-full flex flex-col gap-6 mb-6">
+        {/* Source input */}
+        <div className="w-full">
+          <label className="block mb-2 font-semibold text-lg">Source</label>
+          <input
+            type="text"
+            value={source}
+            onChange={handleSourceChange}
+            placeholder="Enter source location"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+          />
+          {suggestions.length > 0 && (
+            <ul className="bg-white border border-gray-300 rounded-md max-h-40 overflow-auto mt-2">
+              {suggestions.map((suggestion) => (
+                <li
+                  key={suggestion.properties.place_id}
+                  className="p-2 hover:bg-gray-200 cursor-pointer"
+                  onClick={() => handleSuggestionClick(suggestion, setSourceCoords)}
+                >
+                  {suggestion.properties.formatted}
+                </li>
+              ))}
+            </ul>
           )}
-        </GoogleMap>
+        </div>
+
+        {/* Destination input */}
+        <div className="w-full">
+          <label className="block mb-2 font-semibold text-lg">Destination</label>
+          <input
+            type="text"
+            value={destination}
+            onChange={handleDestinationChange}
+            placeholder="Enter destination location"
+            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
+          />
+          {suggestions.length > 0 && (
+            <ul className="bg-white border border-gray-300 rounded-md max-h-40 overflow-auto mt-2">
+              {suggestions.map((suggestion) => (
+                <li
+                  key={suggestion.properties.place_id}
+                  className="p-2 hover:bg-gray-200 cursor-pointer"
+                  onClick={() => handleSuggestionClick(suggestion, setDestinationCoords)}
+                >
+                  {suggestion.properties.formatted}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Generate Route and Save Route buttons */}
+        <div className="w-full flex justify-end gap-4">
+          <button
+            className="px-6 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition-colors"
+            onClick={generateRoute}
+          >
+            Generate Routes
+          </button>
+
+          <button
+            className={`px-6 py-2 rounded-md font-semibold shadow-md ${darkMode ? 'bg-gray-700 text-white' : 'bg-blue-600 text-white'
+              } hover:bg-blue-700 transition-colors`}
+            onClick={() => alert('Routes saved!')}
+          >
+            Save Routes
+          </button>
+        </div>
       </div>
 
-      <button
-        className={`px-6 py-2 rounded-md font-semibold ${darkMode ? 'bg-gray-700 text-white' : 'bg-blue-600 text-white'} hover:bg-blue-800`}
-        onClick={handleSave}
-      >
-        Save Routes
-      </button>
+      <div className="w-full h-[600px] mb-4">
+        <MapContainer center={center} zoom={12} style={containerStyle}>
+          <TileLayer
+            url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
+            attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> contributors'
+          />
+
+          {/* Show buses on the map */}
+          {buses.map((bus) => (
+            <Marker key={bus.id} position={bus.position}></Marker>
+          ))}
+
+          {/* Show the generated route */}
+          {route.length > 0 && <Polyline positions={route} color="blue" />}
+
+          {/* Markers for source and destination */}
+          {sourceCoords && <Marker position={sourceCoords}></Marker>}
+          {destinationCoords && <Marker position={destinationCoords}></Marker>}
+        </MapContainer>
+      </div>
     </div>
   );
 };

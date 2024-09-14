@@ -45,10 +45,10 @@ function BusRouteMap({ bus, onClose }) {
             scrollWheelZoom={false}
             className="h-full rounded-lg"
           >
-            {/* Map Layer */}
+            {/* Geoapify Map Layer */}
             <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=38f3d26824c541c798b28f20ff36c638`}
+              attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> contributors'
             />
 
             {/* Route Polyline */}
