@@ -21,8 +21,8 @@ function AdminDashboard() {
     setDarkMode(!darkMode);
   };
 
-  const handleCardClick = (section) => {
-    setActiveSection(section);
+  const handleSidebarClick = (component) => {
+    setActiveSection(component);
   };
 
   return (
@@ -38,7 +38,13 @@ function AdminDashboard() {
             >
               {isSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
             </button>
-            <Sidebar role="Admin" isOpen={isSidebarOpen} darkMode={darkMode} />
+            <Sidebar
+              role="Admin"
+              isOpen={isSidebarOpen}
+              darkMode={darkMode}
+              onOptionClick={handleSidebarClick} // Pass the click handler to Sidebar
+              setActiveComponent={handleSidebarClick} // Set active component
+            />
           </div>
         </div>
 
@@ -49,7 +55,7 @@ function AdminDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
-                  onClick={() => handleCardClick('employeeManagement')}
+                  onClick={() => handleSidebarClick('employeeManagement')}
                 >
                   <FaUsers className={`text-3xl mr-4 ${darkMode ? 'text-blue-300' : 'text-blue-500'}`} />
                   <div>
@@ -60,7 +66,7 @@ function AdminDashboard() {
 
                 <div
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
-                  onClick={() => handleCardClick('manageBuses')}
+                  onClick={() => handleSidebarClick('manageBuses')}
                 >
                   <FaBus className={`text-3xl mr-4 ${darkMode ? 'text-green-300' : 'text-green-500'}`} />
                   <div>
@@ -71,7 +77,7 @@ function AdminDashboard() {
 
                 <div
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
-                  onClick={() => handleCardClick('assignRoutes')}
+                  onClick={() => handleSidebarClick('assignRoutes')}
                 >
                   <FaBus className={`text-3xl mr-4 ${darkMode ? 'text-yellow-300' : 'text-yellow-500'}`} />
                   <div>
@@ -82,7 +88,7 @@ function AdminDashboard() {
 
                 <div
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
-                  onClick={() => handleCardClick('reportsAnalytics')}
+                  onClick={() => handleSidebarClick('reportsAnalytics')}
                 >
                   <FaChartLine className={`text-3xl mr-4 ${darkMode ? 'text-purple-300' : 'text-purple-500'}`} />
                   <div>
@@ -125,10 +131,10 @@ function AdminDashboard() {
             </div>
           )}
 
-          {activeSection === 'employeeManagement' && <EmployeeManagement darkMode={darkMode} handleCardClick={handleCardClick} />}
-          {activeSection === 'manageBuses' && <ActiveBuses darkMode={darkMode} handleCardClick={handleCardClick} />}
-          {activeSection === 'assignRoutes' && <AssignRoutes darkMode={darkMode} handleCardClick={handleCardClick} />}
-          {activeSection === 'reportsAnalytics' && <ReportsAnalytics darkMode={darkMode} handleCardClick={handleCardClick} />}
+          {activeSection === 'employeeManagement' && <EmployeeManagement darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          {activeSection === 'manageBuses' && <ActiveBuses darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          {activeSection === 'assignRoutes' && <AssignRoutes darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          {activeSection === 'reportsAnalytics' && <ReportsAnalytics darkMode={darkMode} handleCardClick={handleSidebarClick} />}
         </div>
       </div>
 
@@ -138,6 +144,7 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
+
 
 
 

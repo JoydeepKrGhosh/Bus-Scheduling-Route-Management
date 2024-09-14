@@ -92,29 +92,31 @@
 ////////////////////////////////////////
 
 import React from 'react';
-import { FaTachometerAlt, FaUsers, FaBus, FaFileAlt, FaBell, FaBars, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaBus, FaFileAlt, FaBell, FaBars, FaMapMarkerAlt, FaCog } from 'react-icons/fa';
 
-function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setActiveComponent }) {
+function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
   // Define the links for different roles
   const links = {
     Admin: [
-      { name: 'Dashboard', icon: FaTachometerAlt, path: '/admin' },
-      { name: 'Manage Buses', icon: FaUsers, path: '/admin/manage-users' },
-      { name: 'Assign Routes', icon: FaBus, path: '/admin/manage-routes' },
-      { name: 'Employee Management', icon: FaFileAlt, path: '/admin/system-logs' },
-      { name: 'Reports and Analytics', icon: FaBell, path: '/admin/notifications' },
+      { name: 'Dashboard', icon: FaTachometerAlt, component: 'overview' },
+      { name: 'Active Buses', icon: FaUsers, component: 'manageBuses' },
+      { name: 'Assign Routes', icon: FaBus, component: 'assignRoutes' },
+      { name: 'Employee Management', icon: FaFileAlt, component: 'employeeManagement' },
+      { name: 'Reports and Analytics', icon: FaBell, component: 'reportsAnalytics' },
+      { name: 'System Logs', icon: FaCog, component: 'systemLogs' },
     ],
     Conductor: [
-      { name: 'Dashboard', icon: FaTachometerAlt, path: '/conductor' },
-      { name: 'Manage Routes', icon: FaBus, path: '/conductor/manage-routes' },
-      { name: 'Schedule Overview', icon: FaFileAlt, path: '/conductor/schedule-overview' },
-      { name: 'Resource Allocation', icon: FaBell, path: '/conductor/resource-allocation' },
+      { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
+      { name: 'Check Bus Status', icon: FaBus, component: 'checkBusStatus' },
+      { name: 'Schedule Overview', icon: FaFileAlt, component: 'scheduleOverview' },
+      { name: 'Resource Allocation', icon: FaBell, component: 'resourceAllocation' },
+      { name: 'Notifications', icon: FaBell, component: 'notifications' }, // Added Notifications option
     ],
     Driver: [
-      { name: 'Dashboard', icon: FaTachometerAlt, component: 'Dashboard' },
-      { name: 'My Schedule', icon: FaBus, component: 'MySchedule' },
-      { name: 'Notifications', icon: FaBell, component: 'Notifications' },
-      { name: 'GIS Navigation', icon: FaMapMarkerAlt, component: 'GISNavigation' }, // Option for GIS Navigation
+      { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
+      { name: 'My Schedule', icon: FaBus, component: 'mySchedule' },
+      { name: 'Notifications', icon: FaBell, component: 'notifications' },
+      { name: 'GIS Navigation', icon: FaMapMarkerAlt, component: 'gisNavigation' },
     ],
   };
 
@@ -122,15 +124,13 @@ function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setAc
     <div
       className={`h-screen transition-all duration-300 flex flex-col ${
         isOpen ? 'w-64' : 'w-20'
-      } ${!darkMode ? 'bg-gray-900 text-white' : 'bg-[#28293E] text-[#4D91FF]'} `}
+      } ${darkMode ? 'bg-[#28293E] text-[#4D91FF]' : 'bg-gray-900 text-white'}`}
     >
-      <div className={`p-4 flex justify-between items-center border-b ${!darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+      <div className={`p-4 flex justify-between items-center border-b ${darkMode ? 'border-gray-200' : 'border-gray-700'}`}>
         {isOpen ? (
-          <div className="font-bold text-xl">
-            DTC System
-          </div>
+          <div className="font-bold text-xl">DTC System</div>
         ) : (
-          <button onClick={() => onOptionClick(null)} className={darkMode ? 'text-blue-400' : 'text-white'}>
+          <button onClick={() => setActiveComponent(null)} className={darkMode ? 'text-blue-400' : 'text-white'}>
             <FaBars />
           </button>
         )}
@@ -139,9 +139,9 @@ function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setAc
         {links[role].map((link) => (
           <div
             key={link.name}
-            onClick={() => setActiveComponent(link.component)} // Set active component instead of redirect
+            onClick={() => setActiveComponent(link.component)} // Set active component on click
             className={`flex items-center p-2 mb-2 rounded cursor-pointer ${
-              !darkMode ? 'hover:bg-gray-800' : 'hover:bg-blue-100'
+              darkMode ? 'hover:bg-blue-100' : 'hover:bg-gray-800'
             }`}
           >
             <link.icon className="mr-4 text-xl" />
@@ -149,11 +149,11 @@ function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setAc
           </div>
         ))}
       </div>
-      <div className={`p-4 border-t ${!darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+      <div className={`p-4 border-t ${darkMode ? 'border-gray-200' : 'border-gray-700'}`}>
         <button
-          onClick={() => onOptionClick('/')}
+          onClick={() => setActiveComponent('/')}
           className={`flex items-center justify-center p-2 rounded ${
-            !darkMode ? 'bg-red-600 hover:bg-red-700' : 'bg-red-500 hover:bg-red-600'
+            darkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'
           }`}
         >
           {isOpen && 'Logout'}
@@ -164,6 +164,9 @@ function Sidebar({ role, isOpen, darkMode, onOptionClick, activeComponent, setAc
 }
 
 export default Sidebar;
+
+
+
 
 
 
