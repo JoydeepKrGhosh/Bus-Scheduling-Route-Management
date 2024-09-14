@@ -6,7 +6,9 @@ import axios from 'axios';
 
 const containerStyle = {
   width: '100%',
-  height: '600px', // Increased the height to make the map larger
+  height: '700px', // Increased the height to make the map larger
+  borderRadius: '12px', // Added some rounding to make the map more professional
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Added shadow for a professional look
 };
 
 const center = {
@@ -28,7 +30,6 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
 
   const geoapifyKey = '38f3d26824c541c798b28f20ff36c638'; // Replace with your Geoapify API key
 
-  // Fetch location suggestions from Geoapify
   const fetchSuggestions = async (input, setFunction) => {
     if (input.length > 2) {
       const response = await axios.get(
@@ -40,25 +41,21 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
     }
   };
 
-  // Handle source input change and fetch suggestions
   const handleSourceChange = (e) => {
     setSource(e.target.value);
     fetchSuggestions(e.target.value, setSuggestions);
   };
 
-  // Handle destination input change and fetch suggestions
   const handleDestinationChange = (e) => {
     setDestination(e.target.value);
     fetchSuggestions(e.target.value, setSuggestions);
   };
 
-  // Set the coordinates when a suggestion is clicked
   const handleSuggestionClick = (suggestion, setCoords) => {
     setCoords([suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0]]);
-    setSuggestions([]); // Clear suggestions after selection
+    setSuggestions([]);
   };
 
-  // Fetch route using Geoapify Routing API
   const generateRoute = async () => {
     if (sourceCoords && destinationCoords) {
       const response = await axios.get(
@@ -72,6 +69,11 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center p-6 mt-12">
+      {/* Heading */}
+      <h1 className="text-3xl font-bold mb-8 text-center">
+        Assign Routes to Buses
+      </h1>
+
       {/* Back Button */}
       <div className="w-full flex items-center mb-6">
         <button
@@ -154,7 +156,7 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
         </div>
       </div>
 
-      <div className="w-full h-[600px] mb-4">
+      <div className="w-full h-[700px] mb-4"> {/* Updated map height */}
         <MapContainer center={center} zoom={12} style={containerStyle}>
           <TileLayer
             url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
