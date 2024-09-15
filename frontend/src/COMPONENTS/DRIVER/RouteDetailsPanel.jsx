@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function RouteDetailsPanel() {
   return (
-    <div className="bg-[#28293E] w-1/4 p-4 text-white">
+    <div className="bg-[#28293E] w-4/4 p-4 text-white h-full">
       <h2 className="text-lg font-bold mb-4">Route: DTC-101</h2>
       <ul className="space-y-2">
         <li className="flex justify-between">

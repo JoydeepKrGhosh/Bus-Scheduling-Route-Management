@@ -63,7 +63,6 @@ import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } fro
 import Webcam from 'react-webcam';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
-import Footer from '../UTILITIES/Footer';
 import GISNavigation from './GISNavigation';
 import MySchedule from './MySchedule'; 
 
@@ -78,7 +77,7 @@ function DriverDashboard() {
   const [history, setHistory] = useState([]);
   const [showWebcam, setShowWebcam] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [isImageCaptured, setIsImageCaptured] = useState(false); // New state
+  const [isImageCaptured, setIsImageCaptured] = useState(false);
 
   const webcamRef = useRef(null);
 
@@ -107,14 +106,14 @@ function DriverDashboard() {
     setHistory((prevHistory) => [...prevHistory, `Day lasted for: ${formattedTime}`]);
     setTimer(0);
     setIsDayStarted(false);
-    setIsImageCaptured(false); // Reset image capture status when the day ends
+    setIsImageCaptured(false); 
   };
 
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setCapturedImage(imageSrc);
     setShowWebcam(false);
-    setIsImageCaptured(true); // Image is captured, cards can now be clicked
+    setIsImageCaptured(true); 
     startTimer();
   };
 
@@ -125,10 +124,9 @@ function DriverDashboard() {
     setIntervalId(id);
   };
 
-  // Handle card clicks to update the active component
   const handleCardClick = (component) => {
     if (isImageCaptured) {
-      setActiveComponent(component); // Update active component only if the image is captured
+      setActiveComponent(component); 
     }
   };
 
@@ -154,8 +152,7 @@ function DriverDashboard() {
       default:
         return (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-              {/* Clickable Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12">
               <div
                 className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
                 onClick={() => handleCardClick('MySchedule')}
@@ -210,14 +207,16 @@ function DriverDashboard() {
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      <div className="flex flex-grow">
-        <div className={`flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 mt-16`}>
+      
+      {/* Add a margin between Navbar and main content */}
+      <div className="flex flex-grow mt-16">
+        <div className={`flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300`}>
           <div className="relative">
             <button
               onClick={toggleSidebar}
               className={`absolute -right-3 top-4 p-1 ${darkMode ? 'bg-red-700' : 'bg-orange-500'} rounded-full text-white z-10`}
             >
-              {!isSidebarOpen ? <FaWindowMaximize /> : <FaWindowMinimize />}
+              {isSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
             </button>
             <Sidebar
               role="Driver"
@@ -232,9 +231,11 @@ function DriverDashboard() {
         <div
           className={`flex-grow transition-all duration-300 p-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'} ${isSidebarOpen ? 'ml-0' : 'ml-[-12px]'}`}
         >
-          <div className={`p-8 rounded-lg shadow-lg mt-16 ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-          <h1 className="text-3xl font-bold mb-6">Crew Member Dashboard</h1>
-            <h2 className="text-2xl font-semibold mb-4">Driver</h2>
+          {/* Main Box for Driver Dashboard */}
+          <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+            <h1 className="text-3xl font-bold mb-6">Driver Dashboard</h1>
+            
+            {/* Start Day / End Day Button */}
             {isDayStarted ? (
               <button
                 onClick={handleEndDay}
@@ -251,28 +252,35 @@ function DriverDashboard() {
                 Start Day
               </button>
             )}
+
+            {/* Webcam Section */}
             {showWebcam && (
-              <div className="mt-4">
-                <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" />
-                <button onClick={captureImage} className="mt-4 bg-green-500 text-white px-6 py-3 rounded-lg">
+              <div className="mt-8">
+                <Webcam
+                  audio={false}
+                  ref={webcamRef}
+                  screenshotFormat="image/jpeg"
+                  className="rounded-lg shadow-lg"
+                />
+                <button
+                  onClick={captureImage}
+                  className="mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg"
+                >
                   Capture Image
                 </button>
               </div>
             )}
+
+            {/* Render Active Component */}
             <div className="mt-8">{renderActiveComponent()}</div>
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 }
 
 export default DriverDashboard;
-
-
-
-
 
 
 

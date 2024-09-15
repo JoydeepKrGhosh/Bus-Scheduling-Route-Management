@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaBus, FaCalendarAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
-import Footer from '../UTILITIES/Footer'; // Import the Footer component
+// Remove the import statement for Footer
 import ConductorSchedule from './ConductorSchedule'; // Import the ConductorSchedule component
 import Notification from './Notification'; // Import the Notification component
 
@@ -47,7 +47,7 @@ function ConductorDashboard() {
               <h1 className="text-3xl font-bold mb-6">Conductor Dashboard</h1>
               <h2 className="text-2xl font-semibold mb-4">Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
+                <div
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
                   onClick={() => setActiveComponent('checkBusStatus')}
                 >
@@ -97,7 +97,7 @@ function ConductorDashboard() {
           ) : null}
         </div>
       </div>
-      <Footer /> {/* Include the Footer component */}
+      {/* Remove the Footer component */}
     </div>
   );
 }

@@ -1,20 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa'; // Importing the back icon
 import { MapContainer, TileLayer, Marker, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-
-const containerStyle = {
-  width: '100%',
-  height: '700px', // Increased the height to make the map larger
-  borderRadius: '12px', // Added some rounding to make the map more professional
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Added shadow for a professional look
-};
-
-const center = {
-  lat: 28.6139,
-  lng: 77.2090,
-};
 
 const AssignRoutes = ({ darkMode, handleCardClick }) => {
   const [buses, setBuses] = useState([
@@ -68,9 +56,9 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center p-6 mt-12">
+    <div className="w-full p-4 sm:p-6 md:p-8 lg:p-10 mt-12 flex flex-col items-center">
       {/* Heading */}
-      <h1 className="text-3xl font-bold mb-8 text-center">
+      <h1 className="text-2xl md:text-3xl font-bold mb-8 text-center">
         Assign Routes to Buses
       </h1>
 
@@ -85,10 +73,10 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
         </button>
       </div>
 
-      {/* Source and Destination Search Bars in a column */}
-      <div className="w-full flex flex-col gap-6 mb-6">
+      {/* Source and Destination Search Bars in a column for mobile and side-by-side for larger screens */}
+      <div className="w-full flex flex-col lg:flex-row gap-6 mb-6">
         {/* Source input */}
-        <div className="w-full">
+        <div className="w-full lg:w-1/2">
           <label className="block mb-2 font-semibold text-lg">Source</label>
           <input
             type="text"
@@ -113,7 +101,7 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
         </div>
 
         {/* Destination input */}
-        <div className="w-full">
+        <div className="w-full lg:w-1/2">
           <label className="block mb-2 font-semibold text-lg">Destination</label>
           <input
             type="text"
@@ -136,28 +124,29 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
             </ul>
           )}
         </div>
-
-        {/* Generate Route and Save Route buttons */}
-        <div className="w-full flex justify-end gap-4">
-          <button
-            className="px-6 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition-colors"
-            onClick={generateRoute}
-          >
-            Generate Routes
-          </button>
-
-          <button
-            className={`px-6 py-2 rounded-md font-semibold shadow-md ${darkMode ? 'bg-gray-700 text-white' : 'bg-blue-600 text-white'
-              } hover:bg-blue-700 transition-colors`}
-            onClick={() => alert('Routes saved!')}
-          >
-            Save Routes
-          </button>
-        </div>
       </div>
 
-      <div className="w-full h-[700px] mb-4"> {/* Updated map height */}
-        <MapContainer center={center} zoom={12} style={containerStyle}>
+      {/* Generate Route and Save Route buttons */}
+      <div className="w-full flex justify-end gap-4 mb-6">
+        <button
+          className="px-6 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition-colors"
+          onClick={generateRoute}
+        >
+          Generate Routes
+        </button>
+
+        <button
+          className={`px-6 py-2 rounded-md font-semibold shadow-md ${darkMode ? 'bg-gray-700 text-white' : 'bg-blue-600 text-white'
+            } hover:bg-blue-700 transition-colors`}
+          onClick={() => alert('Routes saved!')}
+        >
+          Save Routes
+        </button>
+      </div>
+
+      {/* Map Container */}
+      <div className="w-full h-[400px] lg:h-[700px] mb-4">
+        <MapContainer center={[28.6139, 77.2090]} zoom={12} className="h-full w-full rounded-lg shadow-lg">
           <TileLayer
             url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
             attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> contributors'
