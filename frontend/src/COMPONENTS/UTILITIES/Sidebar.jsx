@@ -94,7 +94,7 @@
 import React from 'react';
 import { FaTachometerAlt, FaUsers, FaBus, FaFileAlt, FaBell, FaBars, FaMapMarkerAlt, FaCog } from 'react-icons/fa';
 
-function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
+function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) {
   // Define the links for different roles
   const links = {
     Admin: [
@@ -120,13 +120,26 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
     ],
   };
 
+  const handleClick = (component) => {
+    if (setActiveComponent) {
+      setActiveComponent(component); // Set the active component
+    }
+    if (onOptionClick) {
+      onOptionClick(component); // Optional callback for additional handling
+    }
+  };
+
   return (
     <div
-      className={`h-screen transition-all duration-300 flex flex-col ${
-        isOpen ? 'w-64' : 'w-20'
-      } ${darkMode ? 'bg-[#28293E] text-[#4D91FF]' : 'bg-gray-900 text-white'}`}
+      className={`transition-all duration-300 flex flex-col 
+      ${isOpen ? 'w-64' : 'w-20'} 
+      ${darkMode ? 'bg-[#28293E] text-[#4D91FF]' : 'bg-gray-900 text-white'} 
+      h-screen sm:gap-4 md:gap-0 lg:gap-0 flex-grow sm:flex-grow`} // Adjust margin-top for small screens and ensure full height
     >
-      <div className={`p-4 flex justify-between items-center border-b ${darkMode ? 'border-gray-200' : 'border-gray-700'}`}>
+      <div
+        className={`p-4 flex justify-between items-center border-b 
+        ${darkMode ? 'border-gray-200' : 'border-gray-700'}`}
+      >
         {isOpen ? (
           <div className="font-bold text-xl">DTC System</div>
         ) : (
@@ -135,26 +148,26 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
           </button>
         )}
       </div>
+
       <div className="flex-grow p-4">
         {links[role].map((link) => (
           <div
             key={link.name}
-            onClick={() => setActiveComponent(link.component)} // Set active component on click
-            className={`flex items-center p-2 mb-2 rounded cursor-pointer ${
-              darkMode ? 'hover:bg-blue-100' : 'hover:bg-gray-800'
-            }`}
+            onClick={() => handleClick(link.component)} // Set active component on click
+            className={`flex items-center p-2 mb-2 rounded cursor-pointer 
+            ${darkMode ? 'hover:bg-blue-100' : 'hover:bg-gray-800'}`}
           >
             <link.icon className="mr-4 text-xl" />
             {isOpen && <span>{link.name}</span>}
           </div>
         ))}
       </div>
+
       <div className={`p-4 border-t ${darkMode ? 'border-gray-200' : 'border-gray-700'}`}>
         <button
-          onClick={() => setActiveComponent('/')}
-          className={`flex items-center justify-center p-2 rounded ${
-            darkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'
-          }`}
+          onClick={() => handleClick('/')} // Set active component to '/' on logout
+          className={`flex items-center justify-center p-2 rounded 
+          ${darkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'}`}
         >
           {isOpen && 'Logout'}
         </button>
@@ -164,6 +177,9 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
 }
 
 export default Sidebar;
+
+
+
 
 
 

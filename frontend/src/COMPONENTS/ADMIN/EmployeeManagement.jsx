@@ -199,7 +199,7 @@ const EmployeeManagement = ({ darkMode, handleCardClick }) => {
             </div>
             {watchRole === 'driver' && (
               <>
-                
+
                 <div className="flex flex-col space-y-2">
                   <label htmlFor="license">License:</label>
                   <input
@@ -213,26 +213,26 @@ const EmployeeManagement = ({ darkMode, handleCardClick }) => {
             )}
             {watchRole && (
               <>
-              <div className="flex flex-col space-y-2">
-              <label htmlFor="phone">Phone:</label>
-              <input
-                id="phone"
-                type="text"
-                {...register('phone', { required: true })}
-                className={`p-2 border rounded ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'}`}
-              />
-            </div>
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="status">Status:</label>
-                <select
-                  id="status"
-                  {...register('status', { required: true })}
-                  className={`p-2 border rounded ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'}`}
-                >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                </select>
-              </div>
+                <div className="flex flex-col space-y-2">
+                  <label htmlFor="phone">Phone:</label>
+                  <input
+                    id="phone"
+                    type="text"
+                    {...register('phone', { required: true })}
+                    className={`p-2 border rounded ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'}`}
+                  />
+                </div>
+                <div className="flex flex-col space-y-2">
+                  <label htmlFor="status">Status:</label>
+                  <select
+                    id="status"
+                    {...register('status', { required: true })}
+                    className={`p-2 border rounded ${darkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-300'}`}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                  </select>
+                </div>
               </>
             )}
             <div className="flex justify-end space-x-4">

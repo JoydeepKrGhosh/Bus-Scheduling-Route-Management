@@ -13,13 +13,12 @@ const BusRouteAnimation = () => {
   }, []);
 
   return (
-    <div className="flex justify-between m-12"> {/* Margin adjusted to match your 50px */}
+    <div className="flex flex-wrap justify-center gap-4 p-4 md:p-6 lg:p-8">
       {stops.map((stop, index) => (
         <div
           key={stop}
-          className={`w-5 h-5 rounded-full transition-colors duration-1000 ${
-            activeStop === index ? 'bg-red-500' : 'bg-gray-500'
-          }`}
+          className={`w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full transition-colors duration-1000 ${activeStop === index ? 'bg-red-500' : 'bg-gray-500'
+            }`}
         ></div>
       ))}
     </div>

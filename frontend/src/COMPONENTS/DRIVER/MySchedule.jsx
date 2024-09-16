@@ -106,14 +106,14 @@ function MySchedule({ darkMode, addToHistory }) {
   };
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 p-4 sm:p-6 lg:p-8">
       <h2 className="text-2xl font-bold mb-4">My Schedule</h2>
 
       {/* Display schedules as rows */}
-      <div>
+      <div className="space-y-4">
         {shifts.map((shift) => (
-          <div key={shift.id} className="mb-4 p-4 flex justify-between items-center rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800">
-            <div>
+          <div key={shift.id} className="p-4 flex flex-col sm:flex-row justify-between items-start rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800">
+            <div className="flex-1">
               <p><strong>Date:</strong> {shift.date}</p>
               <p><strong>Route:</strong> {shift.route}</p>
               <p><strong>Time:</strong> {shift.time}</p>
@@ -127,13 +127,11 @@ function MySchedule({ darkMode, addToHistory }) {
               )}
             </div>
 
-            <div className="flex flex-col items-end">
+            <div className="mt-4 sm:mt-0 flex flex-col items-center sm:items-end space-y-2">
               <button
                 onClick={() => handleStartTrip(shift)}
                 disabled={activeShiftId !== null && activeShiftId !== shift.id}
-                className={`px-4 py-2 mb-2 rounded-full ${
-                  activeShiftId === null || activeShiftId === shift.id ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 cursor-not-allowed'
-                } text-white`}
+                className={`px-4 py-2 rounded-full ${activeShiftId === null || activeShiftId === shift.id ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 cursor-not-allowed'} text-white`}
               >
                 Start Trip
               </button>
@@ -141,9 +139,7 @@ function MySchedule({ darkMode, addToHistory }) {
               <button
                 onClick={handleEndTrip}
                 disabled={activeShiftId !== shift.id}
-                className={`px-4 py-2 rounded-full ${
-                  activeShiftId === shift.id ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-500 cursor-not-allowed'
-                } text-white`}
+                className={`px-4 py-2 rounded-full ${activeShiftId === shift.id ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-500 cursor-not-allowed'} text-white`}
               >
                 End Trip
               </button>
@@ -154,7 +150,7 @@ function MySchedule({ darkMode, addToHistory }) {
 
       {showConfirmation && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
-          <div className={`bg-white ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} p-6 rounded-lg shadow-lg w-80`}>
+          <div className={`bg-white ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-black'} p-6 rounded-lg shadow-lg w-11/12 sm:w-80`}>
             <h3 className="text-xl font-bold mb-4">Confirm Trip End</h3>
             <p>Do you want to save this trip to your history?</p>
             <div className="flex justify-end space-x-4 mt-6">

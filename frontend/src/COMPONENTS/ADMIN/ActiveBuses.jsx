@@ -203,73 +203,86 @@ function ActiveBuses({ darkMode, handleCardClick }) {
   };
 
   return (
-    <div className={`p-8 rounded-lg shadow-xl ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} mt-16`}>
-      <button onClick={() => handleCardClick('overview')} className="mb-4 text-blue-500 hover:underline">
+    <div className={`p-4 md:p-8 rounded-lg shadow-xl ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} mt-16`}>
+      <button
+        onClick={() => handleCardClick('overview')}
+        className="mb-4 text-blue-500 hover:underline"
+      >
         Back to Dashboard
       </button>
-      <h2 className="text-3xl font-bold mb-6">Manage Buses</h2>
+      <h2 className="text-2xl md:text-3xl font-bold mb-6">Manage Buses</h2>
 
-      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gray-300 text-gray-700">
-          <tr>
-            <th className="py-6 px-6 text-left">Bus ID</th>
-            <th className="py-6 px-6 text-left">Type</th>
-            <th className="py-6 px-6 text-left">Current Route</th>
-            <th className="py-6 px-6 text-center">Progress</th>
-          </tr>
-        </thead>
-        <tbody>
-          {buses.map((bus, index) => (
-            <tr key={bus.id} className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-50'} hover:bg-gray-200 transition-colors`}>
-              <td className="py-8 px-6">{bus.id}</td>
-              <td className="py-8 px-6">{bus.type}</td>
-              <td className="py-8 px-6">{bus.currentRoute}</td>
-              <td className="py-8 px-6 text-center">
-                <div className="relative w-full max-w-md mx-auto cursor-pointer" onClick={() => handleProgressClick(bus)}>
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-300 rounded-full">
-                    {/* Progress Track */}
-                    <div
-                      className={`absolute top-0 left-0 h-2 rounded-full ${getProgressBarColor(bus)}`}
-                      style={{ width: `${bus.progress}%` }}
-                    ></div>
-                    {/* Bus Icon */}
-                    <FaBus
-                      className="absolute text-blue-500 -top-7"
-                      style={getBusPositionStyle(bus.progress)}
-                    />
-                    {/* Status Circles (Embedded in Bar) */}
-                    <div className="absolute left-0 w-full h-full flex justify-between items-center">
-                      <div className="w-4 h-4 rounded-full bg-gray-500"></div>
-                      <div className={`w-4 h-4 rounded-full ${bus.progress >= 50 ? 'bg-gray-500' : 'bg-gray-400'}`}></div>
-                      <div className={`w-4 h-4 rounded-full ${bus.progress === 100 ? 'bg-gray-500' : 'bg-gray-400'}`}></div>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead className="bg-gray-300 text-gray-700">
+            <tr>
+              <th className="py-3 md:py-6 px-4 md:px-6 text-left">Bus ID</th>
+              <th className="py-3 md:py-6 px-4 md:px-6 text-left">Type</th>
+              <th className="py-3 md:py-6 px-4 md:px-6 text-left">Current Route</th>
+              <th className="py-3 md:py-6 px-4 md:px-6 text-center">Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            {buses.map((bus, index) => (
+              <tr
+                key={bus.id}
+                className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-50'} hover:bg-gray-200 transition-colors`}
+              >
+                <td className="py-4 md:py-8 px-4 md:px-6">{bus.id}</td>
+                <td className="py-4 md:py-8 px-4 md:px-6">{bus.type}</td>
+                <td className="py-4 md:py-8 px-4 md:px-6">{bus.currentRoute}</td>
+                <td className="py-4 md:py-8 px-4 md:px-6 text-center">
+                  <div
+                    className="relative w-full max-w-xs mx-auto cursor-pointer"
+                    onClick={() => handleProgressClick(bus)}
+                  >
+                    {/* Progress Bar */}
+                    <div className="relative h-2 bg-gray-300 rounded-full">
+                      {/* Progress Track */}
+                      <div
+                        className={`absolute top-0 left-0 h-2 rounded-full ${getProgressBarColor(bus)}`}
+                        style={{ width: `${bus.progress}%` }}
+                      ></div>
+                      {/* Bus Icon */}
+                      <FaBus
+                        className="absolute text-blue-500 -top-5 md:-top-7"
+                        style={getBusPositionStyle(bus.progress)}
+                      />
+                      {/* Status Circles (Embedded in Bar) */}
+                      <div className="absolute left-0 w-full h-full flex justify-between items-center">
+                        <div className="w-3 md:w-4 h-3 md:h-4 rounded-full bg-gray-500"></div>
+                        <div
+                          className={`w-3 md:w-4 h-3 md:h-4 rounded-full ${bus.progress >= 50 ? 'bg-gray-500' : 'bg-gray-400'}`}
+                        ></div>
+                        <div
+                          className={`w-3 md:w-4 h-3 md:h-4 rounded-full ${bus.progress === 100 ? 'bg-gray-500' : 'bg-gray-400'}`}
+                        ></div>
+                      </div>
+                    </div>
+                    {/* Status Labels */}
+                    <div className="flex justify-between mt-2 md:mt-6 text-xs">
+                      <span>Starting Point</span>
+                      <span>En Route</span>
+                      <span>Destination</span>
                     </div>
                   </div>
-                  {/* Status Labels */}
-                  <div className="flex justify-between mt-6 text-xs">
-                    <span>Starting Point</span>
-                    <span>En Route</span>
-                    <span>Destination</span>
-                  </div>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Conditionally render BusRouteMap */}
       {selectedBus && (
-        <BusRouteMap
-          bus={selectedBus}
-          onClose={() => setSelectedBus(null)} // Close the map view
-        />
+        <BusRouteMap bus={selectedBus} onClose={() => setSelectedBus(null)} />
       )}
     </div>
   );
 }
 
 export default ActiveBuses;
+
 
 
 

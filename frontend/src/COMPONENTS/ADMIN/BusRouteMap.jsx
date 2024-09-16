@@ -25,25 +25,27 @@ function BusRouteMap({ bus, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="relative w-full max-w-3xl bg-white rounded-lg shadow-lg p-8">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4 md:p-6 lg:p-8">
+      <div className="relative w-full max-w-lg md:max-w-xl lg:max-w-3xl bg-white rounded-lg shadow-lg">
         {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
         >
-          <FaTimes />
+          <FaTimes size={20} />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6">Bus Route Map - {bus.id}</h2>
+        <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 px-4 pt-4">
+          Bus Route Map - {bus.id}
+        </h2>
 
         {/* Leaflet Map with Route */}
-        <div className="w-full h-96">
+        <div className="w-full h-64 md:h-80 lg:h-96 rounded-lg overflow-hidden">
           <MapContainer
             center={routeCoordinates[0]} // Start the map view from the starting point
             zoom={13}
             scrollWheelZoom={false}
-            className="h-full rounded-lg"
+            className="h-full w-full"
           >
             {/* Geoapify Map Layer */}
             <TileLayer

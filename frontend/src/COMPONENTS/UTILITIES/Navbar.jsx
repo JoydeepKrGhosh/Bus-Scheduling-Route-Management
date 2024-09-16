@@ -2,7 +2,7 @@
 // import { FaBars,FaChevronDown } from 'react-icons/fa';
 
 // const Navbar = () => {
- 
+
 //   return (
 //     <nav className="bg-gradient-to-r from-indigo-900 to-blue-900 shadow-lg p-4">
 //       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,7 +46,7 @@
 //           </div>
 //         </div>
 //       </div>
-  
+
 //         <div className="md:hidden mt-4 space-y-4">
 //           <a href="#" className="block text-white text-lg">ABOUT US</a>
 //           <div>
@@ -317,11 +317,11 @@
 /////////////////////////////////////////
 
 import React, { useState } from 'react';
-import { FaUserCircle, FaCog } from 'react-icons/fa';
+import { FaUserCircle, FaCog, FaBars } from 'react-icons/fa';
 import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';
 
-function Navbar({ darkMode, toggleDarkMode }) {
+function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -342,30 +342,50 @@ function Navbar({ darkMode, toggleDarkMode }) {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 w-full p-4 flex justify-between items-center z-50 ${darkMode ? 'bg-[#28293E]' : 'bg-orange-500'}`}>
+    <nav
+      className={`fixed top-0 left-0 w-full p-4 flex justify-between items-center z-50 transition-all duration-300 ${darkMode ? 'bg-[#28293E]' : 'bg-orange-500'
+        } ${isSidebarOpen ? 'md:pl-64' : 'md:pl-16'} `}
+    >
       <div className="flex items-center">
-        <img src="https://dtcpass.delhi.gov.in/images/DTC1.png" alt="DTC Logo" className="h-8 mr-3" />
-        <h1 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-white'}`}>DTC Employee Dashboard</h1>
+        {/* Sidebar toggle for small screens */}
+        <FaBars
+          className={`text-2xl mr-4 cursor-pointer md:hidden ${darkMode ? 'text-gray-300' : 'text-white'}`}
+          onClick={toggleSidebar}
+        />
+        <img
+          src="https://dtcpass.delhi.gov.in/images/DTC1.png"
+          alt="DTC Logo"
+          className="h-8 mr-3"
+        />
+        <h1 className={`text-xl font-bold hidden sm:block ${darkMode ? 'text-gray-100' : 'text-white'}`}>
+          DTC Employee Dashboard
+        </h1>
       </div>
-      <div className="flex items-center">
-        <button 
-          className={`px-4 py-2 rounded-full mr-3 ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-white text-orange-500'}`}
+      <div className="flex items-center space-x-4">
+        <button
+          className={`px-4 py-2 rounded-full mr-3 hidden sm:block ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-white text-orange-500'
+            }`}
           onClick={() => alert('Logged out successfully!')}
         >
           Logout
         </button>
-        <FaUserCircle 
-          className={`${darkMode ? 'text-gray-300' : 'text-white'} text-3xl cursor-pointer mr-4`} 
-          onClick={handleProfileClick} 
+        <FaUserCircle
+          className={`text-3xl cursor-pointer ${darkMode ? 'text-gray-300' : 'text-white'}`}
+          onClick={handleProfileClick}
         />
-        <FaCog 
-          className={`${darkMode ? 'text-gray-300' : 'text-white'} text-3xl cursor-pointer`} 
-          onClick={handleSettingsClick} 
+        <FaCog
+          className={`text-3xl cursor-pointer ${darkMode ? 'text-gray-300' : 'text-white'}`}
+          onClick={handleSettingsClick}
         />
       </div>
 
-      {showProfile && <ProfilePage onClose={handleCloseProfile} toggleDarkMode={toggleDarkMode} darkMode={darkMode}/>}
-      {showSettings && <SettingsPage onClose={handleCloseSettings} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />}
+      {/* Modal rendering for Profile and Settings */}
+      {showProfile && (
+        <ProfilePage onClose={handleCloseProfile} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+      )}
+      {showSettings && (
+        <SettingsPage onClose={handleCloseSettings} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+      )}
     </nav>
   );
 }
