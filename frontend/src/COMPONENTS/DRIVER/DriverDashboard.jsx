@@ -59,7 +59,7 @@
 
 // CrewMemberDashboard.jsx
 import React, { useState, useRef } from 'react';
-import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
+import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize, FaTimes } from 'react-icons/fa';
 import Webcam from 'react-webcam';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
@@ -78,6 +78,7 @@ function DriverDashboard() {
   const [showWebcam, setShowWebcam] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
   const [isImageCaptured, setIsImageCaptured] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
 
   const webcamRef = useRef(null);
 
@@ -107,6 +108,23 @@ function DriverDashboard() {
     setTimer(0);
     setIsDayStarted(false);
     setIsImageCaptured(false); 
+  };
+
+  const handleSidebarClick = (component) => {
+    setActiveComponent(component);
+    if (window.innerWidth < 1024) {
+      // Close sidebar on mobile after clicking an option
+      setIsMobileSidebarOpen(false);
+    }
+  };
+
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  const hideSidebar = () => {
+    setIsMobileSidebarOpen(false);
+    setIsSidebarOpen(false);
   };
 
   const captureImage = () => {
@@ -206,15 +224,15 @@ function DriverDashboard() {
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      
-      {/* Add a margin between Navbar and main content */}
-      <div className="flex flex-grow mt-16">
-        <div className={`flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300`}>
-          <div className="relative">
+      <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+
+      <div className="flex flex-grow relative">
+        {/* Sidebar for large screens */}
+        <div className={`hidden lg:flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 mt-16 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="relative h-full">
             <button
               onClick={toggleSidebar}
-              className={`absolute -right-3 top-4 p-1 ${darkMode ? 'bg-red-700' : 'bg-orange-500'} rounded-full text-white z-10`}
+              className={`absolute -right-3 top-4 p-1 ${darkMode ? 'bg-red-600' : 'bg-orange-500'} rounded-full text-white z-10`}
             >
               {isSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
             </button>
@@ -222,15 +240,38 @@ function DriverDashboard() {
               role="Driver"
               isOpen={isSidebarOpen}
               darkMode={darkMode}
-              onOptionClick={setActiveComponent}
-              activeComponent={activeComponent}
-              setActiveComponent={setActiveComponent}
+              onOptionClick={handleSidebarClick}
+              setActiveComponent={handleSidebarClick}
             />
           </div>
         </div>
-        <div
-          className={`flex-grow transition-all duration-300 p-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'} ${isSidebarOpen ? 'ml-0' : 'ml-[-12px]'}`}
+
+        {/* Mobile Sidebar */}
+        <div className={`lg:hidden absolute inset-0 z-20 bg-opacity-70 bg-black ${isMobileSidebarOpen ? 'block' : 'hidden'}`}>
+          <div className={`w-64 h-full ${darkMode ? 'bg-gray-800' : 'bg-white'} p-4`}>
+            <button
+              onClick={hideSidebar}
+              className="absolute top-4 right-4 text-xl text-white"
+            >
+              <FaTimes />
+            </button>
+            <Sidebar
+              role="Driver"
+              isOpen={true}
+              darkMode={darkMode}
+              onOptionClick={handleSidebarClick}
+            />
+          </div>
+        </div>
+
+        {/* Sidebar Toggle Button for Small Screens (Moved to top left under navbar) */}
+        <button
+          className={`lg:hidden fixed top-20 left-4 p-2 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
+          onClick={toggleMobileSidebar}
         >
+          {isMobileSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
+        </button>
+        
           {/* Main Box for Driver Dashboard */}
           <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
             <h1 className="text-3xl font-bold mb-6">Driver Dashboard</h1>
@@ -274,9 +315,10 @@ function DriverDashboard() {
             {/* Render Active Component */}
             <div className="mt-8">{renderActiveComponent()}</div>
           </div>
-        </div>
       </div>
+
     </div>
+     
   );
 }
 

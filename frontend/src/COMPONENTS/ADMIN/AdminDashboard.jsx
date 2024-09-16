@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaUsers, FaBus, FaFileAlt, FaBell, FaChartLine, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
+import { FaUsers, FaBus, FaFileAlt, FaBell, FaChartLine, FaWindowMaximize, FaWindowMinimize, FaTimes } from 'react-icons/fa';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
 import ActiveBuses from './ActiveBuses';
@@ -11,6 +11,7 @@ function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -22,16 +23,29 @@ function AdminDashboard() {
 
   const handleSidebarClick = (component) => {
     setActiveSection(component);
+    if (window.innerWidth < 1024) {
+      // Close sidebar on mobile after clicking an option
+      setIsMobileSidebarOpen(false);
+    }
+  };
+
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  const hideSidebar = () => {
+    setIsMobileSidebarOpen(false);
+    setIsSidebarOpen(false);
   };
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
 
-      <div className="flex flex-grow">
-        {/* Sidebar */}
-        <div className={`flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 mt-16 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-          <div className="relative">
+      <div className="flex flex-grow relative">
+        {/* Sidebar for large screens */}
+        <div className={`hidden lg:flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 mt-16 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="relative h-full">
             <button
               onClick={toggleSidebar}
               className={`absolute -right-3 top-4 p-1 ${darkMode ? 'bg-red-600' : 'bg-orange-500'} rounded-full text-white z-10`}
@@ -48,10 +62,36 @@ function AdminDashboard() {
           </div>
         </div>
 
+        {/* Mobile Sidebar */}
+        <div className={`lg:hidden absolute inset-0 z-20 bg-opacity-70 bg-black ${isMobileSidebarOpen ? 'block' : 'hidden'}`}>
+          <div className={`w-64 h-full ${darkMode ? 'bg-gray-800' : 'bg-white'} p-4`}>
+            <button
+              onClick={hideSidebar}
+              className="absolute top-4 right-4 text-xl text-white"
+            >
+              <FaTimes />
+            </button>
+            <Sidebar
+              role="Admin"
+              isOpen={true}
+              darkMode={darkMode}
+              onOptionClick={handleSidebarClick}
+            />
+          </div>
+        </div>
+
+        {/* Sidebar Toggle Button for Small Screens (Moved to top left under navbar) */}
+        <button
+          className={`lg:hidden fixed top-20 left-4 p-2 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
+          onClick={toggleMobileSidebar}
+        >
+          {isMobileSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
+        </button>
+
         {/* Main Content */}
-        <div className={`flex-grow transition-all duration-300 p-4 lg:p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+        <div className={`flex-grow transition-all duration-300 p-4 lg:p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} mt-16`}>
           {activeSection === 'overview' && (
-            <div className={`p-4 lg:p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'} mt-16`}>
+            <div className={`p-4 lg:p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
               <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Admin Dashboard</h1>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 <div
@@ -115,6 +155,7 @@ function AdminDashboard() {
               </div>
             </div>
           )}
+
 
           {/* Render other sections */}
           {activeSection === 'employeeManagement' && <EmployeeManagement darkMode={darkMode} handleCardClick={handleSidebarClick} />}

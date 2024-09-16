@@ -94,7 +94,7 @@
 import React from 'react';
 import { FaTachometerAlt, FaUsers, FaBus, FaFileAlt, FaBell, FaBars, FaMapMarkerAlt, FaCog } from 'react-icons/fa';
 
-function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
+function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) {
   // Define the links for different roles
   const links = {
     Admin: [
@@ -120,6 +120,15 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
     ],
   };
 
+  const handleClick = (component) => {
+    if (setActiveComponent) {
+      setActiveComponent(component); // Set the active component
+    }
+    if (onOptionClick) {
+      onOptionClick(component); // Optional callback for additional handling
+    }
+  };
+
   return (
     <div
       className={`transition-all duration-300 flex flex-col 
@@ -135,7 +144,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
           <div className="font-bold text-xl">DTC System</div>
         ) : (
           <button onClick={() => setActiveComponent(null)} className={darkMode ? 'text-blue-400' : 'text-white'}>
-
+            <FaBars />
           </button>
         )}
       </div>
@@ -144,7 +153,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
         {links[role].map((link) => (
           <div
             key={link.name}
-            onClick={() => setActiveComponent(link.component)} // Set active component on click
+            onClick={() => handleClick(link.component)} // Set active component on click
             className={`flex items-center p-2 mb-2 rounded cursor-pointer 
             ${darkMode ? 'hover:bg-blue-100' : 'hover:bg-gray-800'}`}
           >
@@ -156,7 +165,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
 
       <div className={`p-4 border-t ${darkMode ? 'border-gray-200' : 'border-gray-700'}`}>
         <button
-          onClick={() => setActiveComponent('/')}
+          onClick={() => handleClick('/')} // Set active component to '/' on logout
           className={`flex items-center justify-center p-2 rounded 
           ${darkMode ? 'bg-red-500 hover:bg-red-600' : 'bg-red-600 hover:bg-red-700'}`}
         >
@@ -168,6 +177,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent }) {
 }
 
 export default Sidebar;
+
 
 
 
