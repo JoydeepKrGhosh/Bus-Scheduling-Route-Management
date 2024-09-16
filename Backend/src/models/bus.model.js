@@ -1,38 +1,25 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 
-const busSchema = new Schema({
-  bus_number: {
+const BusSchema = new mongoose.Schema({
+  busNumber: {
     type: String,
     required: true,
-    unique: true,
+    unique: true
   },
   capacity: {
     type: Number,
-    required: true,
+    required: true
   },
   status: {
     type: String,
-    enum: ['available', 'maintenance', 'in-service', 'inactive'],
-    default: 'available',
+    enum: ['available', 'in-use', 'maintenance'],
+    default: 'available'
   },
-  route_id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Route',
-  },
-  last_maintenance_date: {
-    type: Date,
-  },
-  assigned_driver: {
-    type: Schema.Types.ObjectId,
-    ref: 'Driver',
-  },
-  assigned_conductor: {
-    type: Schema.Types.ObjectId,
-    ref: 'Conductor',
-  },
+  assignedRoute: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Route'
+  }
 });
 
-const Bus = mongoose.model('Bus', busSchema);
-
+const Bus = mongoose.model('Bus', BusSchema);
 module.exports = Bus;

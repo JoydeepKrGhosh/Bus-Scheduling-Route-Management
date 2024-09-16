@@ -62,27 +62,33 @@ const fetchAndStoreRoute = async (req, res) => {
       instruction: step.instruction.text  
     }));  
 
-    // Create a new route document for MongoDB  
+  
+
     const newRoute = new Route({  
       routeId: `route_${Date.now()}`, // unique identifier  
       startPoint: {  
-        name: startPointName, // Using the original location name  
-        coordinates: [startPoint.lon, startPoint.lat]  
+        type: 'Point', // Add the type field  
+        name: startPointName, // Using the original location name (if you want to keep this)  
+        coordinates: [startPoint.lon, startPoint.lat] // Ensure this is [lon, lat]  
       },  
       endPoint: {  
-        name: endPointName, // Using the original location name  
-        coordinates: [endPoint.lon, endPoint.lat]  
+        type: 'Point', // Add the type field  
+        name: endPointName, // Using the original location name (if you want to keep this)  
+        coordinates: [endPoint.lon, endPoint.lat] // Ensure this is [lon, lat]  
       },  
-      waypoints, // Waypoints for the route  
+      waypoints: waypoints.map(waypoint => ({  
+        type: 'Point', // Add the type field for each waypoint  
+        coordinates: [waypoint.lon, waypoint.lat] // Ensure this is [lon, lat]  
+      })), // Waypoints for the route  
       routePath: {  
         type: 'LineString', // GeoJSON LineString for the route  
-        coordinates  
+        coordinates // Ensure this is an array of [lon, lat] pairs  
       },  
       steps, // Detailed steps for navigation  
       distance: routeData.properties.legs[0].distance, // Total distance  
       time: routeData.properties.legs[0].time, // Total time  
       createdAt: new Date() // Timestamp  
-    });  
+    });
 
     // Save the route to MongoDB  
     await newRoute.save();  

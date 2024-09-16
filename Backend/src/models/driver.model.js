@@ -46,11 +46,15 @@ const driverSchema = new Schema({
   lastVerifiedImage: {
     type: String, // URL of the last verified image
   },
-  status: {
+  availability: {
     type: String,
-    enum: ['available', 'on-duty', 'inactive'],
-    default: 'available',
+    enum: ['available', 'assigned', 'on-leave'],
+    default: 'available'
   },
+  assignedRoute: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Route'
+  }
 });
 
 const Driver = mongoose.model('Driver', driverSchema);
