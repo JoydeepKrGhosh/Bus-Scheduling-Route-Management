@@ -317,7 +317,7 @@
 /////////////////////////////////////////
 
 import React, { useState } from 'react';
-import { FaUserCircle, FaCog, FaBars } from 'react-icons/fa';
+import { FaUserCircle, FaCog } from 'react-icons/fa';
 import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';
 
@@ -347,11 +347,7 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
         } ${isSidebarOpen ? 'md:pl-64' : 'md:pl-16'} `}
     >
       <div className="flex items-center">
-        {/* Sidebar toggle for small screens */}
-        <FaBars
-          className={`text-2xl mr-4 cursor-pointer md:hidden ${darkMode ? 'text-gray-300' : 'text-white'}`}
-          onClick={toggleSidebar}
-        />
+        {/* Sidebar toggle for small screens removed */}
         <img
           src="https://dtcpass.delhi.gov.in/images/DTC1.png"
           alt="DTC Logo"
@@ -359,6 +355,9 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
         />
         <h1 className={`text-xl font-bold hidden sm:block ${darkMode ? 'text-gray-100' : 'text-white'}`}>
           DTC Employee Dashboard
+        </h1>
+        <h1 className={`text-xl font-bold block sm:hidden ${darkMode ? 'text-gray-100' : 'text-white'}`}>
+         WELCOME !
         </h1>
       </div>
       <div className="flex items-center space-x-4">
@@ -391,6 +390,7 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
 }
 
 export default Navbar;
+
 
 
 
