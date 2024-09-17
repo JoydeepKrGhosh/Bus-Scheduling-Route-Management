@@ -4,7 +4,6 @@ import axios from 'axios';
 function Modal({ isEditing, bus, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     busNumber: '',
-    assignedRoute: '',
     capacity: '',
     status: 'Available',
   });
@@ -14,7 +13,6 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
     if (isEditing && bus) {
       setFormData({
         busNumber: bus.busNumber,
-        assignedRoute: bus.assignedRoute,
         capacity: bus.capacity,
         status: bus.status,
       });
@@ -33,7 +31,7 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
     e.preventDefault();
 
     // Validate form
-    if (!formData.busNumber || !formData.assignedRoute || !formData.capacity) {
+    if (!formData.busNumber  || !formData.capacity) {
       alert('Please fill in all the fields');
       return;
     }
@@ -44,7 +42,8 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
         await axios.put(`http://localhost:5000/bus/${bus.id}`, formData);
       } else {
         // Add new bus (Post Request)
-        await axios.post('http://localhost:5000/addBus', formData);
+        await axios.post('http://localhost:5000/api/busroute//add', formData);
+        console.log(formData)
       }
       onSubmit(formData);
     } catch (error) {
@@ -70,18 +69,6 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
               placeholder="Enter Bus Number"
               required
               disabled={isEditing} // Bus number is not editable when editing
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Assigned Route</label>
-            <input
-              type="text"
-              name="assignedRoute"
-              value={formData.assignedRoute}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700"
-              placeholder="Enter Route"
-              required
             />
           </div>
           <div className="mb-4">
