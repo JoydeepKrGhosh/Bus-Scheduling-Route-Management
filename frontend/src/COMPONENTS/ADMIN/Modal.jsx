@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 function Modal({ isEditing, bus, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
-    id: '',
-    type: '',
-    currentRoute: '',
+    busNumber: '',
+    assignedRoute: '',
     capacity: '',
     status: 'Available',
   });
@@ -13,9 +13,8 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
   useEffect(() => {
     if (isEditing && bus) {
       setFormData({
-        id: bus.id,
-        type: bus.type,
-        currentRoute: bus.currentRoute,
+        busNumber: bus.busNumber,
+        assignedRoute: bus.assignedRoute,
         capacity: bus.capacity,
         status: bus.status,
       });
@@ -30,17 +29,27 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Perform validation if needed (e.g., ensuring all fields are filled)
-    if (!formData.id || !formData.type || !formData.currentRoute || !formData.capacity) {
+    // Validate form
+    if (!formData.busNumber || !formData.assignedRoute || !formData.capacity) {
       alert('Please fill in all the fields');
       return;
     }
 
-    // Pass the form data to the parent component for processing
-    onSubmit(formData);
+    try {
+      if (isEditing) {
+        // Edit existing bus (Put Request)
+        await axios.put(`http://localhost:5000/bus/${bus.id}`, formData);
+      } else {
+        // Add new bus (Post Request)
+        await axios.post('http://localhost:5000/addBus', formData);
+      }
+      onSubmit(formData);
+    } catch (error) {
+      console.error('Error adding/editing bus:', error);
+    }
   };
 
   return (
@@ -54,35 +63,21 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
             <label className="block text-sm font-medium mb-1">Bus Number</label>
             <input
               type="text"
-              name="id"
-              value={formData.id}
+              name="busNumber"
+              value={formData.busNumber}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded dark:bg-gray-700"
-              placeholder="Enter Bus ID"
+              placeholder="Enter Bus Number"
               required
-              disabled={isEditing} // Bus ID is not editable when editing
+              disabled={isEditing} // Bus number is not editable when editing
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Bus Type</label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700"
-              required
-            >
-              <option value="">Select Bus Type</option>
-              <option value="AC">AC</option>
-              <option value="Non-AC">Non-AC</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">Current Route</label>
+            <label className="block text-sm font-medium mb-1">Assigned Route</label>
             <input
               type="text"
-              name="currentRoute"
-              value={formData.currentRoute}
+              name="assignedRoute"
+              value={formData.assignedRoute}
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded dark:bg-gray-700"
               placeholder="Enter Route"
