@@ -63,8 +63,8 @@ import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } fro
 import Webcam from 'react-webcam';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
-import GISNavigation from './GISNavigation';
-import MySchedule from './MySchedule'; 
+import GISNavigation from '../CREW MEMBER/GISNavigation';
+import MySchedule from '../CREW MEMBER/MySchedule'; 
 
 function DriverDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
