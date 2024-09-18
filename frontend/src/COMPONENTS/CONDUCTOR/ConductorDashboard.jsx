@@ -113,8 +113,9 @@ function ConductorDashboard() {
     setIntervalId(id);
   };
 
-  const addToHistory = (formattedTripData) => {
-    setHistory((prevHistory) => [...prevHistory, ...formattedTripData]); // Add multiple trips to the history
+  const addToHistory = (historyEntry) => {
+    setHistory((prevHistory) => [...prevHistory, ...historyEntry]); // Add multiple trips to the history
+    console.log("Hello");
   };
 
   const handleCardClick = (component) => {

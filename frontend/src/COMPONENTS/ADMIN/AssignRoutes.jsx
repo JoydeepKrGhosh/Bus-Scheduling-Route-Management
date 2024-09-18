@@ -5,7 +5,8 @@ import 'leaflet/dist/leaflet.css';
 const AssignRoutes = () => {
   const [routes, setRoutes] = useState([]); // All routes
   const [selectedRoute, setSelectedRoute] = useState(null); // Selected route details
-  const [routeId, setRouteId] = useState(''); // Selected route ID
+  const [source, setSource] = useState(''); // Source destination input
+  const [destination, setDestination] = useState(''); // Final destination input
 
   // Fetch all routes for selection
   useEffect(() => {
@@ -22,26 +23,24 @@ const AssignRoutes = () => {
     fetchRoutes();
   }, []);
 
-  // Fetch specific route when a route is selected
-  useEffect(() => {
-    if (routeId) {
-      const fetchRouteDetails = async () => {
-        try {
-          const response = await fetch(`http://localhost:5000/api/showadminroutes/route/${routeId}`);
-          const data = await response.json();
-          setSelectedRoute(data);
-        } catch (error) {
-          console.error('Error fetching route details:', error);
-        }
-      };
+  // Handle source and destination input changes
+  const handleSourceChange = (event) => {
+    setSource(event.target.value);
+  };
 
-      fetchRouteDetails();
+  const handleDestinationChange = (event) => {
+    setDestination(event.target.value);
+  };
+
+  // Handle save route action
+  const handleSaveRoute = () => {
+    if (source && destination) {
+      console.log('Route saved:', { source, destination });
+      setSource('');
+      setDestination('');
+    } else {
+      alert('Please enter both source and destination');
     }
-  }, [routeId]);
-
-  // Handle route selection change
-  const handleRouteChange = (event) => {
-    setRouteId(event.target.value);
   };
 
   // Check if the coordinates are valid
@@ -53,17 +52,7 @@ const AssignRoutes = () => {
   const renderMap = () => {
     if (!selectedRoute) {
       return (
-        <div
-          style={{
-            height: '500px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#f0f0f0',
-            border: '1px solid #ddd',
-            color: '#777'
-          }}
-        >
+        <div className="h-[500px] flex justify-center items-center bg-gray-200 border border-gray-300 text-gray-500">
           Select a route to see it on the map.
         </div>
       );
@@ -71,21 +60,17 @@ const AssignRoutes = () => {
 
     const { startPoint, endPoint, routePath, instructions } = selectedRoute;
 
-    // Validate that the start and end points have valid coordinates
     if (!isValidCoordinates(startPoint.coordinates) || !isValidCoordinates(endPoint.coordinates)) {
       return <div>Invalid route data. Please check the coordinates for the route.</div>;
     }
 
-    // Define map center based on the start point
     const mapCenter = [startPoint.coordinates[1], startPoint.coordinates[0]];
-
-    // Convert routePath coordinates from GeoJSON format to Leaflet Polyline format
     const polylineCoordinates = routePath.coordinates
-      .filter((coord) => isValidCoordinates(coord)) // Ensure all coordinates are valid
+      .filter((coord) => isValidCoordinates(coord))
       .map(([lng, lat]) => [lat, lng]);
 
     return (
-      <MapContainer center={mapCenter} zoom={13} style={{ height: '500px', width: '100%' }}>
+      <MapContainer center={mapCenter} zoom={13} className="h-[500px] w-full">
         <TileLayer
           url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=38f3d26824c541c798b28f20ff36c638`}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -118,9 +103,9 @@ const AssignRoutes = () => {
     }
 
     return (
-      <div style={{ marginTop: '20px' }}>
-        <h3>Turn-by-Turn Instructions</h3>
-        <ul style={{ listStyleType: 'decimal' }}>
+      <div className="mt-5">
+        <h3 className="font-bold">Turn-by-Turn Instructions</h3>
+        <ul className="list-decimal">
           {selectedRoute.instructions.map((instruction, index) => (
             <li key={index}>
               {instruction.instruction} (Distance: {instruction.distance}m, Time: {instruction.time.toFixed(2)}s)
@@ -132,35 +117,48 @@ const AssignRoutes = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', margin: '20px auto', maxWidth: '800px' }}>
-      <h2>Assign a Route</h2>
+    <div className="flex flex-col items-center gap-5 mx-auto my-5 max-w-[800px]">
+      <h1 className="text-2xl font-bold pb-4">Assign a Route</h1>
 
-      {/* Dropdown for route selection */}
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '10px', width: '100%' }}>
-        <label htmlFor="routeSelect" style={{ fontWeight: 'bold' }}>Select a Route:</label>
-        <select
-          id="routeSelect"
-          value={routeId}
-          onChange={handleRouteChange}
-          style={{
-            padding: '10px',
-            fontSize: '16px',
-            width: '100%',
-            border: '1px solid #ccc',
-            borderRadius: '4px'
-          }}
+      {/* Row for source, destination, and save button */}
+      <div className="flex flex-row items-center gap-3 w-full">
+        {/* Source Destination Search Bar */}
+        <div className="flex-1">
+          <label htmlFor="source" className="font-bold block mb-2">Source Destination:</label>
+          <input
+            id="source"
+            type="text"
+            value={source}
+            onChange={handleSourceChange}
+            placeholder="Enter Source"
+            className="p-2 text-lg w-full border border-gray-300 rounded"
+          />
+        </div>
+
+        {/* Final Destination Search Bar */}
+        <div className="flex-1">
+          <label htmlFor="destination" className="font-bold block mb-2">Final Destination:</label>
+          <input
+            id="destination"
+            type="text"
+            value={destination}
+            onChange={handleDestinationChange}
+            placeholder="Enter Destination"
+            className="p-2 text-lg w-full border border-gray-300 rounded"
+          />
+        </div>
+
+        {/* Save Routes Button */}
+        <button
+          onClick={handleSaveRoute}
+          className="mt-8 p-2 text-lg bg-green-600 text-white rounded hover:bg-green-700"
         >
-          <option value="">-- Select a Route --</option>
-          {routes.map((route) => (
-            <option key={route.routeId} value={route.routeId}>
-              Start: {route.startPoint.name || 'Unnamed'}, End: {route.endPoint.name || 'Unnamed'}
-            </option>
-          ))}
-        </select>
+          Save Route
+        </button>
       </div>
 
       {/* Map display */}
-      <div style={{ width: '100%' }}>
+      <div className="w-full">
         {renderMap()}
       </div>
 

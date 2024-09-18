@@ -12,11 +12,11 @@ function ConductorSchedule({ darkMode, handleCardClick,  addToHistory }) {
 
   const [selectedSchedule, setSelectedSchedule] = useState(null); // To track the selected schedule
   const [tripHistory, setTripHistory] = useState([]); // To store history of trips
-   const [history, setHistory] = useState([]);
+  //  const [history, setHistory] = useState([]);
 
-   const handleAddTrip = (formattedTripDataArray) => {
+   const handleAddTrip = (historyEntry) => {
     // Call the parent's callback function to add the multiple trip data to the history
-    addToHistory(formattedTripDataArray);
+    addToHistory(historyEntry);
   };
   
   const getProgressBarColor = (status) => {

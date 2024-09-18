@@ -245,7 +245,7 @@ function DriverDashboard() {
 
         {/* Display a message or additional content after location is fetched */}
            {isLocationFetched && (
-    <p className="mt-4 text-green-500">Location successfully fetched!</p>
+    <p className="mt-4 text-green-500"></p>
     ) }
          
                {showPopup && (
