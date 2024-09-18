@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaClock } from 'react-icons/fa';
 import MySchedule from '../CREW MEMBER/MySchedule'; // Import MySchedule component
 
-function ConductorSchedule({ darkMode, handleCardClick }) {
+function ConductorSchedule({ darkMode, handleCardClick,  addToHistory }) {
   const [schedules, setSchedules] = useState([
     { id: 'Shift-001', duty: 'Morning Shift', progress: 25, status: 'En Route', startTime: '6:00 AM', endTime: '12:00 PM' },
     { id: 'Shift-002', duty: 'Break', progress: 50, status: 'On Break', startTime: '12:00 PM', endTime: '1:00 PM' },
@@ -11,7 +11,14 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
   ]);
 
   const [selectedSchedule, setSelectedSchedule] = useState(null); // To track the selected schedule
+  const [tripHistory, setTripHistory] = useState([]); // To store history of trips
+   const [history, setHistory] = useState([]);
 
+   const handleAddTrip = (formattedTripDataArray) => {
+    // Call the parent's callback function to add the multiple trip data to the history
+    addToHistory(formattedTripDataArray);
+  };
+  
   const getProgressBarColor = (status) => {
     switch (status) {
       case 'En Route':
@@ -34,9 +41,15 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
     setSelectedSchedule(schedule); // Set the clicked schedule
   };
 
+  // Callback function to add trip to history
+  const handleEndTrip = (trip) => {
+    setTripHistory((prevHistory) => [...prevHistory, trip]); // Append trip to history
+    setSelectedSchedule(null); // Go back to the schedule list after ending the trip
+  };
+
   // If a schedule is selected, render the MySchedule component
   if (selectedSchedule) {
-    return <MySchedule schedule={selectedSchedule} darkMode={darkMode} handleCardClick={handleCardClick} />;
+    return <MySchedule darkMode={darkMode} addToHistory={handleAddTrip} />;
   }
 
   return (
@@ -49,6 +62,7 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
         className="mb-4 text-blue-500 hover:underline"
       >
         Back to Dashboard
+    
       </button>
       <h2 className="text-2xl md:text-3xl font-bold mb-6">Conductor Schedule</h2>
 
@@ -103,6 +117,20 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
           </tbody>
         </table>
       </div>
+
+      {/* Trip History Section */}
+      {tripHistory.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold mb-4">Trip History</h3>
+          <ul className="list-disc list-inside">
+            {tripHistory.map((trip, index) => (
+              <li key={index} className="mb-2">
+                <strong>{trip.duty}:</strong> Started at {trip.startTime}, Ended at {trip.endTime} (Duration: {trip.duration} minutes)
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
