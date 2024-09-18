@@ -11,6 +11,7 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
   ]);
 
   const [selectedSchedule, setSelectedSchedule] = useState(null); // To track the selected schedule
+  const [tripHistory, setTripHistory] = useState([]); // To store history of trips
 
   const getProgressBarColor = (status) => {
     switch (status) {
@@ -34,9 +35,34 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
     setSelectedSchedule(schedule); // Set the clicked schedule
   };
 
+  // Callback function to add trip to history
+  const handleEndTrip = (trip) => {
+    const endTime = new Date(); // Mocked end time
+    const startTime = new Date(); // Mocked start time (for example)
+
+    const tripDuration = Math.round((endTime - startTime) / 60000); // Calculate duration in minutes
+
+    const tripData = {
+      ...trip,
+      duration: tripDuration,
+      endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setTripHistory((prevHistory) => [...prevHistory, tripData]); // Append trip to history
+    setSelectedSchedule(null); // Go back to the schedule list after ending the trip
+  };
+
   // If a schedule is selected, render the MySchedule component
   if (selectedSchedule) {
-    return <MySchedule schedule={selectedSchedule} darkMode={darkMode} handleCardClick={handleCardClick} />;
+    return (
+      <MySchedule
+        schedule={selectedSchedule}
+        darkMode={darkMode}
+        handleCardClick={handleCardClick}
+        onEndTrip={handleEndTrip} // Pass the callback to handle trip ending
+      />
+    );
   }
 
   return (
@@ -103,6 +129,20 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
           </tbody>
         </table>
       </div>
+
+      {/* Trip History Section */}
+      {tripHistory.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xl font-bold mb-4">Trip History</h3>
+          <ul className="list-disc list-inside">
+            {tripHistory.map((trip, index) => (
+              <li key={index} className="mb-2">
+                <strong>{trip.duty}:</strong> Started at {trip.startTime}, Ended at {trip.endTime} (Duration: {trip.duration} minutes)
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

@@ -16,6 +16,7 @@ function ConductorDashboard() {
   // State variables for camera and location functionality
   const [isEndDayEnabled, setIsEndDayEnabled] = useState(false);
   const [timer, setTimer] = useState(0);
+  const [history, setHistory] = useState([]);
   const [intervalId, setIntervalId] = useState(null);
   const [isDayStarted, setIsDayStarted] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
@@ -152,40 +153,21 @@ function ConductorDashboard() {
               <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Conductor Dashboard</h1>
 
               {/* Start Day Button */}
-              {isDayStarted ? (
-              <button
-                onClick={handleEndDay}
-                className="bg-red-500 text-white px-6 py-3 rounded-lg"
-                disabled={!isEndDayEnabled}
-              >
-                End Day
-              </button>
-            ) : (
-              <>
-              <button
-                onClick={handleStartDay}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg"
-              >
-                Start Day
-              </button>
-               <div className="flex items-center mt-8">
-                 {/* LocationFetcher Component */}
-        <LocationFetcher onComplete={handleLocationFetchComplete} />
-
-        {/* Display a message or additional content after location is fetched */}
-           {isLocationFetched && (
-    <p className="mt-4 text-green-500"></p>
-           ) }
-         
-               {showPopup && (
-                 <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
-                   Location successfully fetched!
-                 </div>
-               )}
-             </div>
-             </>
-            )}
-
+              {!isDayStarted ? (
+                <button
+                  onClick={handleStartDay}
+                  className="bg-blue-500 text-white px-6 py-3 rounded-lg mb-6"
+                >
+                  Start Day
+                </button>
+              ) : (
+                <button
+                  className="bg-green-500 text-white px-6 py-3 rounded-lg mb-6"
+                  disabled
+                >
+                  Day Started
+                </button>
+              )}
 
               {/* Webcam Component */}
               {showWebcam && (
@@ -252,6 +234,13 @@ function ConductorDashboard() {
                   </div>
                 </div>
               </div>
+              {timer > 0 && (
+              <div className="mt-8">
+                <p className="text-xl font-bold mb-4">
+                  Time Elapsed: {Math.floor(timer / 3600)}h {Math.floor((timer % 3600) / 60)}m {timer % 60}s
+                </p>
+              </div>
+            )}
 
               <div className="mt-8">
                 <h2 className="text-2xl font-bold mb-4">Recent Updates</h2>
