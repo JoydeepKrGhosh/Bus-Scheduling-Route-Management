@@ -66,8 +66,8 @@ const scheduleDailyTrips = async (req, res) => {
         // Create a new trip assignment
         trips.push({
           routeId: route._id,
-          driverId: driver._id,
-          conductorId: conductor._id,
+          driver_id: driver._id, // Use snake_case
+          conductor_id: conductor._id, // Use snake_case
           busId: bus._id,
           startTime,
           expectedEndTime,

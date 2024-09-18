@@ -4,12 +4,13 @@ const cookieParser = require('cookie-parser');
 const cors = require("cors");
 const dotenv = require('dotenv');
 const app = express();
-const routeAssignmentRoutes = require('./src/routes/assigntrip.routes.js');
+
 const path = require('path');
 const fs = require('fs');
 
-
-
+const tripAssignmentRoutes = require('./src/routes/assigntrip.routes.js');
+const filtertrips = require('./src/routes/getTrips.routes.js')
+const busdata = require('./src/routes/getAllBuses.routes.js')
 const busRoutes = require('./src/routes/addbus.routes.js') 
 const conductorRoutes = require('./src/routes/conductorRoutes.js');
 const driverRoutes = require('./src/routes/driverRouter.js');
@@ -79,8 +80,10 @@ app.use('/api/awsimage',awsimage);
 app.use('/api/busroute',routegenerate);
 
 app.use('/api/buses', busRoutes);
+app.use('/api/busdata',busdata);
 
-app.use('/api/trip', routeAssignmentRoutes);
+app.use('/api/trip', tripAssignmentRoutes);
+app.use('/api/filtertrip',filtertrips);
 
 
 

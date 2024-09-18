@@ -6,12 +6,12 @@ const TripAssignmentSchema = new mongoose.Schema({
     ref: 'Route',
     required: true
   },
-  driverId: {
+  driver_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Driver',
     required: true
   },
-  conductorId: {
+  conductor_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Conductor',
     required: true
