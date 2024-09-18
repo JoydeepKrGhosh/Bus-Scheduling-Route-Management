@@ -26,11 +26,8 @@ const scheduleSchema = new Schema({
     type: Date,
     required: true,
   },
-  status: {
-    type: String,
-    enum: ['scheduled', 'completed', 'canceled'],
-    default: 'scheduled',
-  },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true }
 });
 
 const BusSchedule = mongoose.model('BusSchedule', scheduleSchema);

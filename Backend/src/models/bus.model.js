@@ -7,10 +7,6 @@ const busSchema = new Schema({
     required: true,
     unique: true,
   },
-  capacity: {
-    type: Number,
-    required: true,
-  },
   status: {
     type: String,
     enum: ['available', 'maintenance', 'in-service', 'inactive'],
@@ -19,9 +15,6 @@ const busSchema = new Schema({
   route_id: {
     type: Schema.Types.ObjectId,
     ref: 'Route',
-  },
-  last_maintenance_date: {
-    type: Date,
   },
   assigned_driver: {
     type: Schema.Types.ObjectId,

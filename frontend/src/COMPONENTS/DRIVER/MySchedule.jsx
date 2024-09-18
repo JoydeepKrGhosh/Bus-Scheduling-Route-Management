@@ -112,7 +112,7 @@ function MySchedule({ darkMode, addToHistory }) {
       {/* Display schedules as rows */}
       <div className="space-y-4">
         {shifts.map((shift) => (
-          <div key={shift.id} className="p-4 flex flex-col sm:flex-row justify-between items-start rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800">
+          <div key={shift.id} className="p-4 flex flex-col sm:flex-row justify-between items-start rounded-lg shadow-lg bg-gray-100 dark:bg-gray-100">
             <div className="flex-1">
               <p><strong>Date:</strong> {shift.date}</p>
               <p><strong>Route:</strong> {shift.route}</p>

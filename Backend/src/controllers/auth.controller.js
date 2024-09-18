@@ -23,7 +23,7 @@ const loginUser = async (req, res) => {
       user.password = await bcrypt.hash(newPassword, 10); // Replace 'newPassword' with a generated strong password
       await user.save();
     }
-
+ 
     // Return response based on user role
     if (user.role === 'driver') {
       res.json({ msg: 'Login successful', user, driver: user.driver });
