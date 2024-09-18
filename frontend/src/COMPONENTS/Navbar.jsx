@@ -345,7 +345,7 @@ function Navbar({ darkMode, toggleDarkMode }) {
     <nav className={`fixed top-0 left-0 w-full p-4 flex justify-between items-center z-50 ${darkMode ? 'bg-[#28293E]' : 'bg-orange-500'}`}>
       <div className="flex items-center">
         <img src="https://dtcpass.delhi.gov.in/images/DTC1.png" alt="DTC Logo" className="h-8 mr-3" />
-        <h1 className={`text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-white'}`}>DTC Employee Dashboard</h1>
+        <h1 className={`lg:text-xl font-bold ${darkMode ? 'text-gray-100' : 'text-white'}`}>DTC Employee Dashboard</h1>
       </div>
       <div className="flex items-center">
         <button 

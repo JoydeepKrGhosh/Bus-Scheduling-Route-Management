@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 function Modal({ isEditing, bus, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     busNumber: '',
     capacity: '',
-    status: 'Available',
+    status: 'available',
   });
 
   // Populate the form with the bus data when editing
@@ -31,23 +32,44 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
     e.preventDefault();
 
     // Validate form
-    if (!formData.busNumber  || !formData.capacity) {
+    if (!formData.busNumber || !formData.capacity) {
       alert('Please fill in all the fields');
       return;
     }
 
     try {
       if (isEditing) {
-        // Edit existing bus (Put Request)
-        await axios.put(`http://localhost:5000/bus/${bus.id}`, formData);
+        // Edit existing bus (PUT Request)
+        const response = await axios.put(`http://localhost:5000/bus/${bus.id}`, formData);
+        console.log('Bus updated successfully:', response.data);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Bus updated successfully!',
+          showConfirmButton: false,
+          timer: 1500, // Auto-close after 1.5 seconds
+        });
       } else {
-        // Add new bus (Post Request)
-        await axios.post('http://localhost:5000/api/busroute//add', formData);
-        console.log(formData)
+        // Add new bus (POST Request)
+        const response = await axios.post('http://localhost:5000/api/buses/add', formData);
+        console.log('New bus added successfully:', response.data);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Bus added successfully!',
+          showConfirmButton: false,
+          timer: 1500, // Auto-close after 1.5 seconds
+        });
       }
-      onSubmit(formData);
+
+      onSubmit(formData); // Pass form data to parent
     } catch (error) {
       console.error('Error adding/editing bus:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'There was an issue with the bus submission. Please try again.',
+      });
     }
   };
 
@@ -92,10 +114,10 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
               className="w-full px-3 py-2 border rounded dark:bg-gray-700"
               required
             >
-              <option value="Available">Available</option>
-              <option value="Not Available">Not Available</option>
-              <option value="En Route">En Route</option>
-              <option value="At Bus Stand">At Bus Stand</option>
+              <option value="available">Available</option>
+              <option value="not available">Not Available</option>
+              <option value="en route">En Route</option>
+              <option value="at bus stand">At Bus Stand</option>
             </select>
           </div>
           <div className="flex justify-end space-x-2">

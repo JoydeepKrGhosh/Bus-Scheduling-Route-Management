@@ -51,7 +51,7 @@ const fetchAndStoreRoute = async (req, res) => {
     // Extract waypoints (start and end points)  
     const waypoints = routeData.properties.waypoints.map(waypoint => ({  
       coordinates: [waypoint.lon, waypoint.lat]  
-    }));  
+    }));
 
     // Extract the steps (legs) with instructions, distances, and times  
     const steps = routeData.properties.legs[0].steps.map(step => ({  
@@ -60,7 +60,7 @@ const fetchAndStoreRoute = async (req, res) => {
       distance: step.distance,  
       time: step.time,  
       instruction: step.instruction.text  
-    }));  
+    }));
 
   
 
