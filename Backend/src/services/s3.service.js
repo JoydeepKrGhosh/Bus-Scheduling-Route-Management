@@ -24,3 +24,8 @@ const uploadImageToS3 = async (imageBuffer, key, bucketName = process.env.S3_BUC
 };
 
 module.exports = { uploadImageToS3 };
+
+
+
+
+

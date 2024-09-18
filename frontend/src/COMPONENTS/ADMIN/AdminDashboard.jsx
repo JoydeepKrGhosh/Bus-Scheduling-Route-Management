@@ -82,14 +82,14 @@ function AdminDashboard() {
 
         {/* Sidebar Toggle Button for Small Screens (Moved to top left under navbar) */}
         <button
-          className={`lg:hidden fixed top-20 left-4 p-2 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
+          className={`lg:hidden fixed top-[65px] left-1 p-2 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
           onClick={toggleMobileSidebar}
         >
           {isMobileSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
         </button>
 
         {/* Main Content */}
-        <div className={`flex-grow transition-all duration-300 p-4 lg:p-6 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} mt-16`}>
+        <div className={`flex-grow transition-all duration-300 p-4 lg:p-6  ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} mt-16 `}>
           {activeSection === 'overview' && (
             <div className={`p-4 lg:p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
               <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Admin Dashboard</h1>

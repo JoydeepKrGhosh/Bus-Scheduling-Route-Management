@@ -87,7 +87,7 @@ function ConductorDashboard() {
 
         {/* Sidebar Toggle Button for Small Screens (Moved to top left under navbar) */}
         <button
-          className={`lg:hidden fixed top-20 left-4 p-2 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
+          className={`lg:hidden fixed top-20 top-[65px] left-1 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
           onClick={toggleMobileSidebar}
         >
           {isMobileSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
