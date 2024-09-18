@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaClock } from 'react-icons/fa';
+import MySchedule from '../CREW MEMBER/MySchedule'; // Import MySchedule component
 
 function ConductorSchedule({ darkMode, handleCardClick }) {
   const [schedules, setSchedules] = useState([
@@ -8,6 +9,8 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
     { id: 'Shift-003', duty: 'Afternoon Shift', progress: 75, status: 'En Route', startTime: '1:00 PM', endTime: '6:00 PM' },
     { id: 'Shift-004', duty: 'End of Day', progress: 100, status: 'Completed', startTime: '6:00 PM', endTime: 'End of Shift' },
   ]);
+
+  const [selectedSchedule, setSelectedSchedule] = useState(null); // To track the selected schedule
 
   const getProgressBarColor = (status) => {
     switch (status) {
@@ -25,6 +28,16 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
   const getPositionStyle = (progress) => {
     return { left: `calc(${progress}% - 12px)` };
   };
+
+  // Handle row click and set the selected schedule
+  const handleRowClick = (schedule) => {
+    setSelectedSchedule(schedule); // Set the clicked schedule
+  };
+
+  // If a schedule is selected, render the MySchedule component
+  if (selectedSchedule) {
+    return <MySchedule schedule={selectedSchedule} darkMode={darkMode} handleCardClick={handleCardClick} />;
+  }
 
   return (
     <div
@@ -54,7 +67,8 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
             {schedules.map((schedule, index) => (
               <tr
                 key={schedule.id}
-                className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-50'} hover:bg-gray-200 transition-colors`}
+                className={`${index % 2 === 0 ? 'bg-white-100' : 'bg-gray-50'} hover:bg-gray-200 transition-colors cursor-pointer`}
+                onClick={() => handleRowClick(schedule)} // Set the selected schedule on row click
               >
                 <td className="py-4 px-2 md:px-4 text-sm md:text-base">{schedule.id}</td>
                 <td className="py-4 px-2 md:px-4 text-sm md:text-base">{schedule.duty}</td>
