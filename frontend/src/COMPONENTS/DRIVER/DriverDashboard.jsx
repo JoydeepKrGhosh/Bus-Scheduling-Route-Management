@@ -6,6 +6,7 @@ import Navbar from '../UTILITIES/Navbar';
 import GISNavigation from '../CREW MEMBER/GISNavigation';
 import MySchedule from '../CREW MEMBER/MySchedule'; 
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
+import TopPopup from '../CREW MEMBER/TOpPopup';
 
 function DriverDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -21,8 +22,17 @@ function DriverDashboard() {
   const [isImageCaptured, setIsImageCaptured] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
   const [locationError, setLocationError] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showImageVerifiedPopup, setShowImageVerifiedPopup] = useState(false);
   const [isLocationFetched, setIsLocationFetched] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+
+  const showPopup = () => {
+    setIsPopupVisible(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false);
+  };
 
   const webcamRef = useRef(null);
 
@@ -103,6 +113,7 @@ function DriverDashboard() {
     setShowWebcam(false);
     setIsImageCaptured(true); 
     startTimer();
+    showPopup();
   };
 
   const startTimer = () => {
@@ -220,7 +231,9 @@ function DriverDashboard() {
         >
           {/* Main Box for Driver Dashboard */}
           <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-            <h1 className="text-3xl font-bold mb-6">Driver Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+
+          <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
             
             {/* Start Day / End Day Button */}
             {isDayStarted ? (
@@ -274,6 +287,13 @@ function DriverDashboard() {
                 </button>
               </div>
             )}
+
+             {/* Popup for "Image Verified" */}
+      {showImageVerifiedPopup && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
+          <p>Image verified</p>
+        </div>
+      )}
 
             {/* Render Active Component */}
             <div className="mt-8">{renderActiveComponent()}</div>

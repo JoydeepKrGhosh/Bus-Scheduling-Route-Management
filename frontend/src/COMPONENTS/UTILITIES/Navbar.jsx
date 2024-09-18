@@ -361,13 +361,7 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
         </h1>
       </div>
       <div className="flex items-center space-x-4">
-        <button
-          className={`px-4 py-2 rounded-full mr-3 hidden sm:block ${darkMode ? 'bg-gray-700 text-gray-300' : 'bg-white text-orange-500'
-            }`}
-          onClick={() => alert('Logged out successfully!')}
-        >
-          Logout
-        </button>
+       
         <FaUserCircle
           className={`text-3xl cursor-pointer ${darkMode ? 'text-gray-300' : 'text-white'}`}
           onClick={handleProfileClick}

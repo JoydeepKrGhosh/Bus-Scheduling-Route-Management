@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import TicketModal from '../CONDUCTOR/TicketModal';
 
 function MySchedule({ darkMode, addToHistory }) {
   // Simulated data for shifts
@@ -43,6 +44,16 @@ function MySchedule({ darkMode, addToHistory }) {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [currentShift, setCurrentShift] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ticketData, setTicketData] = useState([]);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     let interval = null;
@@ -66,8 +77,13 @@ function MySchedule({ darkMode, addToHistory }) {
     setIsTimerRunning(false);
     setShowConfirmation(true);
   };
+  const handleTicketSubmit = (data) => {
+    // Add the new ticket data to the array
+    setTicketData([...ticketData, data]);
+  };
 
   const confirmEndTrip = () => {
+    openModal();
     const hours = Math.floor(timer / 3600);
     const minutes = Math.floor((timer % 3600) / 60);
     const seconds = timer % 60;
@@ -146,6 +162,8 @@ function MySchedule({ darkMode, addToHistory }) {
               >
                 End Trip
               </button>
+              <TicketModal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleTicketSubmit} />
+
             </div>
           </div>
         ))}
@@ -163,6 +181,7 @@ function MySchedule({ darkMode, addToHistory }) {
               >
                 OK
               </button>
+            
               <button
                 className="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-600"
                 onClick={cancelEndTrip}
