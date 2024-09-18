@@ -7,7 +7,7 @@ const app = express();
 
 const path = require('path');
 const fs = require('fs');
-
+const showroutes = require('./src/routes/displayroutes.routes.js')
 const tripAssignmentRoutes = require('./src/routes/assigntrip.routes.js');
 const filtertrips = require('./src/routes/getTrips.routes.js')
 const busdata = require('./src/routes/getAllBuses.routes.js')
@@ -84,6 +84,8 @@ app.use('/api/busdata',busdata);
 
 app.use('/api/trip', tripAssignmentRoutes);
 app.use('/api/filtertrip',filtertrips);
+
+app.use('/api/showadminroutes',showroutes);
 
 
 
