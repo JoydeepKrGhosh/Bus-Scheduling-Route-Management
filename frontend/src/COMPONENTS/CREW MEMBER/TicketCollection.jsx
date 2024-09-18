@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function TicketCollection({ onComplete }) {
+function TicketCollection() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [busNumber, setBusNumber] = useState('');
   const [ticketsCollected, setTicketsCollected] = useState('');
@@ -15,12 +15,11 @@ function TicketCollection({ onComplete }) {
 
   const handleSave = () => {
     console.log(`Bus Number: ${busNumber}, Tickets Collected: ${ticketsCollected}`);
-    onComplete({ busNumber, ticketsCollected });  // Pass collected data back to parent
     setIsDialogOpen(false); // Close dialog after saving
   };
 
   return (
-    <div>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
       <button
         onClick={handleOpenDialog}
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

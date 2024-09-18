@@ -260,6 +260,14 @@ function ActiveBuses({ darkMode, handleCardClick }) {
         Back to Dashboard
       </button>
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Manage Buses</h2>
+      <div className="mt-6 flex justify-end">
+        <button
+          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+          onClick={handleAddBus}
+        >
+          Add Bus
+        </button>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -326,14 +334,6 @@ function ActiveBuses({ darkMode, handleCardClick }) {
         </table>
       </div>
 
-      <div className="mt-6 flex justify-end">
-        <button
-          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-          onClick={handleAddBus}
-        >
-          Add Bus
-        </button>
-      </div>
 
       {selectedBus && (
         <BusRouteMap bus={selectedBus} onClose={() => setSelectedBus(null)} />

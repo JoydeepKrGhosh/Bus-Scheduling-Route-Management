@@ -14,6 +14,9 @@ function ConductorDashboard() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
 
   // State variables for camera and location functionality
+  const [isEndDayEnabled, setIsEndDayEnabled] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
   const [isDayStarted, setIsDayStarted] = useState(false);
   const [showWebcam, setShowWebcam] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
@@ -57,7 +60,22 @@ function ConductorDashboard() {
   // Function to handle starting the day
   const handleStartDay = () => {
     setIsDayStarted(true);
-    setShowWebcam(true); // Show webcam for image capture
+    setIsEndDayEnabled(true);
+    setShowWebcam(true);
+  };
+
+  const handleEndDay = () => {
+    setIsEndDayEnabled(false);
+    clearInterval(intervalId);
+    const hours = Math.floor(timer / 3600);
+    const minutes = Math.floor((timer % 3600) / 60);
+    const seconds = timer % 60;
+    const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+
+    setHistory((prevHistory) => [...prevHistory, `Day lasted for: ${formattedTime}`]);
+    setTimer(0);
+    setIsDayStarted(false);
+    setIsImageCaptured(false); 
   };
 
   // Function to handle capturing the image
@@ -134,21 +152,40 @@ function ConductorDashboard() {
               <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Conductor Dashboard</h1>
 
               {/* Start Day Button */}
-              {!isDayStarted ? (
-                <button
-                  onClick={handleStartDay}
-                  className="bg-blue-500 text-white px-6 py-3 rounded-lg mb-6"
-                >
-                  Start Day
-                </button>
-              ) : (
-                <button
-                  className="bg-green-500 text-white px-6 py-3 rounded-lg mb-6"
-                  disabled
-                >
-                  Day Started
-                </button>
-              )}
+              {isDayStarted ? (
+              <button
+                onClick={handleEndDay}
+                className="bg-red-500 text-white px-6 py-3 rounded-lg"
+                disabled={!isEndDayEnabled}
+              >
+                End Day
+              </button>
+            ) : (
+              <>
+              <button
+                onClick={handleStartDay}
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg"
+              >
+                Start Day
+              </button>
+               <div className="flex items-center mt-8">
+                 {/* LocationFetcher Component */}
+        <LocationFetcher onComplete={handleLocationFetchComplete} />
+
+        {/* Display a message or additional content after location is fetched */}
+           {isLocationFetched && (
+    <p className="mt-4 text-green-500"></p>
+           ) }
+         
+               {showPopup && (
+                 <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
+                   Location successfully fetched!
+                 </div>
+               )}
+             </div>
+             </>
+            )}
+
 
               {/* Webcam Component */}
               {showWebcam && (
