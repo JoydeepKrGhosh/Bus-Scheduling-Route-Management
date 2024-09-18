@@ -156,6 +156,13 @@ function AdminDashboard() {
             </div>
           )}
 
+           {/* "Generate Schedule" Button */}
+           <button
+            className={`fixed right-4 bottom-4 p-3 rounded-full text-white ${darkMode ? 'bg-blue-600' : 'bg-blue-500'} shadow-lg`}
+          >
+            Generate Schedule
+          </button>
+
 
           {/* Render other sections */}
           {activeSection === 'employeeManagement' && <EmployeeManagement darkMode={darkMode} handleCardClick={handleSidebarClick} />}

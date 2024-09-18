@@ -65,6 +65,7 @@ import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
 import GISNavigation from '../CREW MEMBER/GISNavigation';
 import MySchedule from '../CREW MEMBER/MySchedule'; 
+import LocationFetcher from '../CREW MEMBER/LocationFetcher';
 
 function DriverDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -79,8 +80,37 @@ function DriverDashboard() {
   const [capturedImage, setCapturedImage] = useState(null);
   const [isImageCaptured, setIsImageCaptured] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
+  const [locationError, setLocationError] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isLocationFetched, setIsLocationFetched] = useState(false);
 
   const webcamRef = useRef(null);
+
+  const handleLocationFetchComplete = () => {
+    setIsLocationFetched(true);
+    console.log('Location fetching completed.');
+  };
+
+  const handleGetLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Latitude: ", position.coords.latitude);
+          console.log("Longitude: ", position.coords.longitude);
+          setShowPopup(true);
+          setTimeout(() => {
+            setShowPopup(false);
+           // onComplete(); // Notify parent that location is fetched
+          }, 3000); // Hide popup after 3 seconds
+        },
+        (error) => {
+          console.error("Error fetching location: ", error);
+        }
+      );
+    } else {
+      console.error("Geolocation is not supported by this browser.");
+    }
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -262,12 +292,29 @@ function DriverDashboard() {
                 End Day
               </button>
             ) : (
+              <>
               <button
                 onClick={handleStartDay}
                 className="bg-blue-500 text-white px-6 py-3 rounded-lg"
               >
                 Start Day
               </button>
+               <div className="flex items-center mt-8">
+                 {/* LocationFetcher Component */}
+        <LocationFetcher onComplete={handleLocationFetchComplete} />
+
+        {/* Display a message or additional content after location is fetched */}
+           {isLocationFetched && (
+    <p className="mt-4 text-green-500"></p>
+           ) }
+         
+               {showPopup && (
+                 <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
+                   Location successfully fetched!
+                 </div>
+               )}
+             </div>
+             </>
             )}
 
             {/* Webcam Section */}

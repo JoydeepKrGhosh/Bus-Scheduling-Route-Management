@@ -1,15 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { FaBus, FaCalendarAlt, FaBell, FaWindowMaximize, FaWindowMinimize, FaTimes } from 'react-icons/fa';
+import Webcam from 'react-webcam'; // Import Webcam
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
 import ConductorSchedule from './ConductorSchedule'; // Import the ConductorSchedule component
 import Notification from './Notification'; // Import the Notification component
+import LocationFetcher from '../CREW MEMBER/LocationFetcher'; // Import LocationFetcher
 
 function ConductorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [activeComponent, setActiveComponent] = useState('dashboard');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
+
+  // State variables for camera and location functionality
+  const [isEndDayEnabled, setIsEndDayEnabled] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
+  const [isDayStarted, setIsDayStarted] = useState(false);
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [isImageCaptured, setIsImageCaptured] = useState(false);
+  const [showLocationFetcher, setShowLocationFetcher] = useState(false);
+
+  const webcamRef = useRef(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -42,6 +56,44 @@ function ConductorDashboard() {
     { message: 'Bus route assigned to you.', time: '11:30 AM' },
     { message: 'Reminder: Check the bus status.', time: '1:00 PM' },
   ];
+
+  // Function to handle starting the day
+  const handleStartDay = () => {
+    setIsDayStarted(true);
+    setIsEndDayEnabled(true);
+    setShowWebcam(true);
+  };
+
+  const handleEndDay = () => {
+    setIsEndDayEnabled(false);
+    clearInterval(intervalId);
+    const hours = Math.floor(timer / 3600);
+    const minutes = Math.floor((timer % 3600) / 60);
+    const seconds = timer % 60;
+    const formattedTime = `${hours}h ${minutes}m ${seconds}s`;
+
+    setHistory((prevHistory) => [...prevHistory, `Day lasted for: ${formattedTime}`]);
+    setTimer(0);
+    setIsDayStarted(false);
+    setIsImageCaptured(false); 
+  };
+
+  // Function to handle capturing the image
+  const captureImage = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setCapturedImage(imageSrc);
+    setShowWebcam(false);
+    setIsImageCaptured(true);
+    setShowLocationFetcher(true); // Show location fetcher after capturing image
+  };
+
+  // Function to handle completion of location fetching
+  const handleLocationComplete = () => {
+    setShowLocationFetcher(false);
+  };
+
+  // Determine if the conductor is ready to access other functionalities
+  const isReady = isDayStarted && isImageCaptured && !showLocationFetcher;
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
@@ -85,7 +137,7 @@ function ConductorDashboard() {
           </div>
         </div>
 
-        {/* Sidebar Toggle Button for Small Screens (Moved to top left under navbar) */}
+        {/* Sidebar Toggle Button for Small Screens */}
         <button
           className={`lg:hidden fixed top-20 top-[65px] left-1 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
           onClick={toggleMobileSidebar}
@@ -98,9 +150,79 @@ function ConductorDashboard() {
           {activeComponent === 'dashboard' && (
             <div className={`p-4 lg:p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
               <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Conductor Dashboard</h1>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+              {/* Start Day Button */}
+              {isDayStarted ? (
+              <button
+                onClick={handleEndDay}
+                className="bg-red-500 text-white px-6 py-3 rounded-lg"
+                disabled={!isEndDayEnabled}
+              >
+                End Day
+              </button>
+            ) : (
+              <>
+              <button
+                onClick={handleStartDay}
+                className="bg-blue-500 text-white px-6 py-3 rounded-lg"
+              >
+                Start Day
+              </button>
+               <div className="flex items-center mt-8">
+                 {/* LocationFetcher Component */}
+        <LocationFetcher onComplete={handleLocationFetchComplete} />
+
+        {/* Display a message or additional content after location is fetched */}
+           {isLocationFetched && (
+    <p className="mt-4 text-green-500"></p>
+           ) }
+         
+               {showPopup && (
+                 <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
+                   Location successfully fetched!
+                 </div>
+               )}
+             </div>
+             </>
+            )}
+
+
+              {/* Webcam Component */}
+              {showWebcam && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-bold">Capture Your Image</h3>
+                  <Webcam
+                    audio={false}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    className="w-full h-64 mt-4"
+                  />
+                  <button
+                    onClick={captureImage}
+                    className="bg-green-500 text-white px-4 py-2 rounded mt-4"
+                  >
+                    Capture Image
+                  </button>
+                </div>
+              )}
+
+              {/* Captured Image Display */}
+              {isImageCaptured && (
+                <div className="mt-6">
+                  <h3 className="text-lg font-bold">Captured Image</h3>
+                  <img src={capturedImage} alt="Captured" className="mt-4 w-48 h-48 object-cover rounded-lg" />
+                </div>
+              )}
+
+              {/* LocationFetcher Component */}
+              {showLocationFetcher && (
+                <LocationFetcher onComplete={handleLocationComplete} />
+              )}
+
+              {/* Dashboard Cards (disabled until day is started and location is fetched) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                 <div
-                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
+                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isReady ? 'pointer-events-none opacity-50' : ''}`}
                   onClick={() => handleSidebarClick('checkBusStatus')}
                 >
                   <FaBus className="text-green-500 text-3xl mr-4" />
@@ -110,7 +232,7 @@ function ConductorDashboard() {
                   </div>
                 </div>
                 <div
-                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
+                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isReady ? 'pointer-events-none opacity-50' : ''}`}
                   onClick={() => handleSidebarClick('scheduleOverview')}
                 >
                   <FaCalendarAlt className="text-blue-500 text-3xl mr-4" />
@@ -120,7 +242,7 @@ function ConductorDashboard() {
                   </div>
                 </div>
                 <div
-                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
+                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isReady ? 'pointer-events-none opacity-50' : ''}`}
                   onClick={() => handleSidebarClick('notifications')}
                 >
                   <FaBell className="text-yellow-500 text-3xl mr-4" />
@@ -130,6 +252,7 @@ function ConductorDashboard() {
                   </div>
                 </div>
               </div>
+
               <div className="mt-8">
                 <h2 className="text-2xl font-bold mb-4">Recent Updates</h2>
                 <ul>
