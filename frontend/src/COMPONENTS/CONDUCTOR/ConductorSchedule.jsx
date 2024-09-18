@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaClock } from 'react-icons/fa';
 import MySchedule from '../CREW MEMBER/MySchedule'; // Import MySchedule component
 
-function ConductorSchedule({ darkMode, handleCardClick }) {
+function ConductorSchedule({ darkMode, handleCardClick,  addToHistory }) {
   const [schedules, setSchedules] = useState([
     { id: 'Shift-001', duty: 'Morning Shift', progress: 25, status: 'En Route', startTime: '6:00 AM', endTime: '12:00 PM' },
     { id: 'Shift-002', duty: 'Break', progress: 50, status: 'On Break', startTime: '12:00 PM', endTime: '1:00 PM' },
@@ -12,7 +12,13 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
 
   const [selectedSchedule, setSelectedSchedule] = useState(null); // To track the selected schedule
   const [tripHistory, setTripHistory] = useState([]); // To store history of trips
+   const [history, setHistory] = useState([]);
 
+   const handleAddTrip = (formattedTripDataArray) => {
+    // Call the parent's callback function to add the multiple trip data to the history
+    addToHistory(formattedTripDataArray);
+  };
+  
   const getProgressBarColor = (status) => {
     switch (status) {
       case 'En Route':
@@ -37,32 +43,13 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
 
   // Callback function to add trip to history
   const handleEndTrip = (trip) => {
-    const endTime = new Date(); // Mocked end time
-    const startTime = new Date(); // Mocked start time (for example)
-
-    const tripDuration = Math.round((endTime - startTime) / 60000); // Calculate duration in minutes
-
-    const tripData = {
-      ...trip,
-      duration: tripDuration,
-      endTime: endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      startTime: startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setTripHistory((prevHistory) => [...prevHistory, tripData]); // Append trip to history
+    setTripHistory((prevHistory) => [...prevHistory, trip]); // Append trip to history
     setSelectedSchedule(null); // Go back to the schedule list after ending the trip
   };
 
   // If a schedule is selected, render the MySchedule component
   if (selectedSchedule) {
-    return (
-      <MySchedule
-        schedule={selectedSchedule}
-        darkMode={darkMode}
-        handleCardClick={handleCardClick}
-        onEndTrip={handleEndTrip} // Pass the callback to handle trip ending
-      />
-    );
+    return <MySchedule darkMode={darkMode} addToHistory={handleAddTrip} />;
   }
 
   return (
@@ -75,6 +62,7 @@ function ConductorSchedule({ darkMode, handleCardClick }) {
         className="mb-4 text-blue-500 hover:underline"
       >
         Back to Dashboard
+    
       </button>
       <h2 className="text-2xl md:text-3xl font-bold mb-6">Conductor Schedule</h2>
 

@@ -66,7 +66,6 @@ function LoginPage({ onLogin }) {
   const [employeeId, setEmployeeId] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('Admin');
-  const [subRole, setSubRole] = useState('');
   const [error, setError] = useState(''); // Renamed for consistency
   const navigate = useNavigate();
 
@@ -83,14 +82,14 @@ function LoginPage({ onLogin }) {
       return;
     }
 
-    // If lengths are valid, proceed with role and sub-role matching
+    // If lengths are valid, proceed with role matching
     if (role === 'Admin' && employeeId === 'admin000' && password === 'admin1234') {
       onLogin('Admin');
       navigate('/admin');
-    } else if (role === 'Crew Member' && subRole === 'Driver' && employeeId === 'driver01' && password === 'driver123') {
+    } else if (role === 'Driver' && employeeId === 'driver01' && password === 'driver123') {
       onLogin('Driver');
       navigate('/driver');
-    } else if (role === 'Crew Member' && subRole === 'Conductor' && employeeId === 'conduc01' && password === 'condut123') {
+    } else if (role === 'Conductor' && employeeId === 'conduc01' && password === 'condut123') {
       onLogin('Conductor');
       navigate('/conductor');
     } else {
@@ -107,7 +106,7 @@ function LoginPage({ onLogin }) {
       return `Password must be at least ${minPasswordLength} characters.`;
     }
 
-    return ; // No errors found
+    return; // No errors found
   };
 
   return (
@@ -148,32 +147,14 @@ function LoginPage({ onLogin }) {
             <select
               id="role"
               value={role}
-              onChange={(e) => {
-                setRole(e.target.value);
-                setSubRole(''); // Reset subRole when switching between Admin and Crew Member
-              }}
+              onChange={(e) => setRole(e.target.value)}
               className="w-full px-3 py-2 border rounded"
             >
               <option value="Admin">Admin</option>
-              <option value="Crew Member">Crew Member</option>
+              <option value="Driver">Driver</option>
+              <option value="Conductor">Conductor</option>
             </select>
           </div>
-          {role === 'Crew Member' && (
-            <div className="mb-4">
-              <label htmlFor="subRole" className="block text-gray-700 text-sm font-bold mb-2">Sub Role</label>
-              <select
-                id="subRole"
-                value={subRole}
-                onChange={(e) => setSubRole(e.target.value)}
-                className="w-full px-3 py-2 border rounded"
-                placeholder='Select Sub Role'
-              >
-                <option value="">Select Sub Role</option>
-                <option value="Driver">Driver</option>
-                <option value="Conductor">Conductor</option>
-              </select>
-            </div>
-          )}
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <button
             type="submit"
@@ -194,6 +175,7 @@ function LoginPage({ onLogin }) {
 }
 
 export default LoginPage;
+
 
 
 

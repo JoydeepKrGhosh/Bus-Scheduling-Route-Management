@@ -93,7 +93,10 @@ function MySchedule({ darkMode, addToHistory }) {
         endStatus: earlyOrLate,
         difference: timeDiffFormatted,
       };
-      addToHistory(historyEntry);
+      const handleAddTripClick = () => {
+        // Call the callback function passed as prop to send data to the parent
+        addToHistory(formattedTripData);
+      };
     }
 
     setActiveShiftId(null);

@@ -1,63 +1,3 @@
-// import React from 'react';
-// import { FaBus, FaMapMarkerAlt, FaBell } from 'react-icons/fa';
-// import Sidebar from './Sidebar';
-
-// function CrewMemberDashboard() {
-//   return (
-//     <div className="flex">
-//       <Sidebar role="Crew Member" />
-//       <div className="flex-grow p-6 bg-gray-100">
-//       <div className="bg-white p-8 rounded-lg shadow-lg">
-//         <h1 className="text-3xl font-bold mb-6">Crew Member Dashboard</h1>
-//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-//           <div className="bg-white p-4 rounded-lg shadow-lg flex items-center">
-//             <FaBus className="text-blue-500 text-3xl mr-4" />
-//             <div>
-//               <p className="text-xl font-semibold">My Schedule</p>
-//               <p className="text-gray-500">View and manage your assigned shifts.</p>
-//             </div>
-//           </div>
-//           <div className="bg-white p-4 rounded-lg shadow-lg flex items-center">
-//             <FaMapMarkerAlt className="text-green-500 text-3xl mr-4" />
-//             <div>
-//               <p className="text-xl font-semibold">Route Map</p>
-//               <p className="text-gray-500">View your assigned routes on the map.</p>
-//             </div>
-//           </div>
-//           <div className="bg-white p-4 rounded-lg shadow-lg flex items-center">
-//             <FaBell className="text-red-500 text-3xl mr-4" />
-//             <div>
-//               <p className="text-xl font-semibold">Notifications</p>
-//               <p className="text-gray-500">View system notifications.</p>
-//             </div>
-//           </div>
-//           <div className="mt-8">
-//              <h2 className="text-2xl font-bold mb-4">Recent Activities</h2>
-//              <ul>
-//                <li className="mb-2">
-//                  <span className="font-semibold">Schedule updated</span> at 10:00 AM.
-//                </li>
-//                <li className="mb-2">
-//                  <span className="font-semibold">Route assigned</span> at 09:30 AM.
-//                </li>
-//               <li>
-//                 <span className="font-semibold">Checked in</span> at 08:00 AM.
-//                </li>
-//              </ul>
-//           </div>
-//         </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default CrewMemberDashboard;
-
-
-///////////////////////////////////////////////////////////////
-
-// CrewMemberDashboard.jsx
 import React, { useState, useRef } from 'react';
 import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
 import Webcam from 'react-webcam';
@@ -305,8 +245,8 @@ function DriverDashboard() {
 
         {/* Display a message or additional content after location is fetched */}
            {isLocationFetched && (
-    <p className="mt-4 text-green-500"></p>
-           ) }
+    <p className="mt-4 text-green-500">Location successfully fetched!</p>
+    ) }
          
                {showPopup && (
                  <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
@@ -368,76 +308,3 @@ export default DriverDashboard;
 
 
 
-/////////////////////
-
-
-// import React from 'react';
-
-// function CrewMemberDashboard() {
-//   return (
-    
-//     <div className="min-h-screen bg-gray-100 flex">
-//       <nav className="bg-red-700 w-64 p-6">
-//         <div className="text-white text-2xl font-bold">DTC Crew Member</div>
-//         <ul className="mt-8">
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">Dashboard</a>
-//           </li>
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">View Schedule</a>
-//           </li>
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">Assigned Routes</a>
-//           </li>
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">Report Issues</a>
-//           </li>
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">Notifications</a>
-//           </li>
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">Profile</a>
-//           </li>
-//           <li className="text-white py-2 hover:bg-red-600 rounded-lg px-4">
-//             <a href="#">Logout</a>
-//           </li>
-//         </ul>
-//       </nav>
-//       <main className="flex-1 p-6">
-//         <div className="bg-white p-8 rounded-lg shadow-lg">
-//           <h1 className="text-3xl font-bold mb-6">Crew Member Dashboard</h1>
-//           <div className="grid grid-cols-3 gap-6">
-//             <div className="bg-gray-200 p-6 rounded-lg">
-//               <h2 className="text-xl font-semibold">Current Schedule</h2>
-//               <p className="mt-4">Next duty at 2:00 PM.</p>
-//             </div>
-//             <div className="bg-gray-200 p-6 rounded-lg">
-//               <h2 className="text-xl font-semibold">Assigned Route</h2>
-//               <p className="mt-4">Route: 25B</p>
-//             </div>
-//             <div className="bg-gray-200 p-6 rounded-lg">
-//               <h2 className="text-xl font-semibold">Issues Reported</h2>
-//               <p className="mt-4">No issues reported.</p>
-//             </div>
-//           </div>
-//           <div className="mt-8">
-//             <h2 className="text-2xl font-bold mb-4">Recent Activities</h2>
-//             <ul>
-//               <li className="mb-2">
-//                 <span className="font-semibold">Schedule updated</span> at 10:00 AM.
-//               </li>
-//               <li className="mb-2">
-//                 <span className="font-semibold">Route assigned</span> at 09:30 AM.
-//               </li>
-//               <li>
-//                 <span className="font-semibold">Checked in</span> at 08:00 AM.
-//               </li>
-//             </ul>
-//           </div>
-//         </div>
-//       </main>
-//     </div>
-//   );
-// }
-
-// export default CrewMemberDashboard;
