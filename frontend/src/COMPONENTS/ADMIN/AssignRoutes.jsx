@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
-import { FaArrowLeft } from 'react-icons/fa';
 import 'leaflet/dist/leaflet.css';
+import axios from 'axios';
 
-const AssignRoutes = ({ handleCardClick }) => {
-  const [routes, setRoutes] = useState([]); // All routes
-  const [selectedRoute, setSelectedRoute] = useState(null); // Selected route details
-  const [source, setSource] = useState(''); // Source destination input
-  const [destination, setDestination] = useState(''); // Final destination input
+const geoapifyKey = '38f3d26824c541c798b28f20ff36c638';
 
-  // Fetch all routes for selection
+const AssignRoutes = () => {
+  const [routes, setRoutes] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [routeId, setRouteId] = useState('');
+  const [startLocation, setStartLocation] = useState('');
+  const [endLocation, setEndLocation] = useState('');
+  const [startSuggestions, setStartSuggestions] = useState([]);
+  const [endSuggestions, setEndSuggestions] = useState([]);
+
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
@@ -20,95 +24,111 @@ const AssignRoutes = ({ handleCardClick }) => {
         console.error('Error fetching routes:', error);
       }
     };
-
     fetchRoutes();
   }, []);
 
-  // Handle source and destination input changes
-  const handleSourceChange = (event) => {
-    setSource(event.target.value);
-  };
-
-  const handleDestinationChange = (event) => {
-    setDestination(event.target.value);
-  };
-
-  // Handle save route action
-  const handleSaveRoute = () => {
-    if (source && destination) {
-      console.log('Route saved:', { source, destination });
-      setSource('');
-      setDestination('');
-    } else {
-      alert('Please enter both source and destination');
+  useEffect(() => {
+    if (routeId) {
+      const fetchRouteDetails = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/showadminroutes/route/${routeId}`);
+          const data = await response.json();
+          setSelectedRoute(data);
+        } catch (error) {
+          console.error('Error fetching route details:', error);
+        }
+      };
+      fetchRouteDetails();
     }
+  }, [routeId]);
+
+  const handleRouteChange = (event) => {
+    setRouteId(event.target.value);
   };
 
-  // Check if the coordinates are valid
   const isValidCoordinates = (coordinates) => {
     return Array.isArray(coordinates) && coordinates.length === 2 && !isNaN(coordinates[0]) && !isNaN(coordinates[1]);
   };
 
-  // Render the map
+  const fetchSuggestions = async (input, setFunction) => {
+    if (input.length > 2) {
+      try {
+        const response = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&apiKey=${geoapifyKey}`);
+        setFunction(response.data.features);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    }
+  };
+
+  const saveRoute = async () => {
+    const routeData = {
+      startLocation,
+      endLocation,
+    };
+    try {
+      await axios.post('http://localhost:5000/api/busroute/api/generateroute', routeData);
+      alert('Route saved successfully!');
+    } catch (error) {
+      console.error('Error saving route:', error);
+    }
+  };
+
+  const refreshRoutes = async () => {
+    const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
+    const data = await response.json();
+    setRoutes(data);
+  };
+
   const renderMap = () => {
     if (!selectedRoute) {
       return (
-        <div className="h-[500px] flex justify-center items-center bg-gray-200 border border-gray-300 text-gray-500">
-          Select a route to see it on the map.
+        <div className="h-80 flex items-center justify-center bg-gray-200 border border-gray-300 text-gray-600 rounded-lg">
+          <span>Select a route to see it on the map.</span>
         </div>
       );
     }
 
-    const { startPoint, endPoint, routePath, instructions } = selectedRoute;
+    const { startPoint, endPoint, routePath } = selectedRoute;
 
     if (!isValidCoordinates(startPoint.coordinates) || !isValidCoordinates(endPoint.coordinates)) {
-      return <div>Invalid route data. Please check the coordinates for the route.</div>;
+      return <div className="text-red-500">Invalid route data. Please check the coordinates for the route.</div>;
     }
 
     const mapCenter = [startPoint.coordinates[1], startPoint.coordinates[0]];
+
     const polylineCoordinates = routePath.coordinates
       .filter((coord) => isValidCoordinates(coord))
       .map(([lng, lat]) => [lat, lng]);
 
     return (
-      <MapContainer center={mapCenter} zoom={13} className="h-[500px] w-full">
+      <MapContainer center={mapCenter} zoom={14} style={{ height: '500px', width: '100%' }} className="rounded-lg shadow-lg">
         <TileLayer
-          url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=38f3d26824c541c798b28f20ff36c638`}
+          url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-
-        {/* Start Marker */}
-        {isValidCoordinates(startPoint.coordinates) && (
-          <Marker position={[startPoint.coordinates[1], startPoint.coordinates[0]]}>
-            <Popup>Start: {startPoint.name || 'No Name'}</Popup>
-          </Marker>
-        )}
-
-        {/* End Marker */}
-        {isValidCoordinates(endPoint.coordinates) && (
-          <Marker position={[endPoint.coordinates[1], endPoint.coordinates[0]]}>
-            <Popup>End: {endPoint.name || 'No Name'}</Popup>
-          </Marker>
-        )}
-
-        {/* Polyline for the route path */}
+        <Marker position={[startPoint.coordinates[1], startPoint.coordinates[0]]}>
+          <Popup>Start: {startPoint.name || 'No Name'}</Popup>
+        </Marker>
+        <Marker position={[endPoint.coordinates[1], endPoint.coordinates[0]]}>
+          <Popup>End: {endPoint.name || 'No Name'}</Popup>
+        </Marker>
         {polylineCoordinates.length > 0 && <Polyline positions={polylineCoordinates} color="blue" />}
       </MapContainer>
     );
   };
 
-  // Render turn-by-turn instructions
   const renderInstructions = () => {
     if (!selectedRoute || !selectedRoute.instructions) {
       return null;
     }
 
     return (
-      <div className="mt-5">
-        <h3 className="font-bold">Turn-by-Turn Instructions</h3>
-        <ul className="list-decimal">
+      <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold text-gray-800">Turn-by-Turn Instructions</h3>
+        <ul className="list-disc pl-5 mt-2 text-gray-700">
           {selectedRoute.instructions.map((instruction, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               {instruction.instruction} (Distance: {instruction.distance}m, Time: {instruction.time.toFixed(2)}s)
             </li>
           ))}
@@ -118,61 +138,99 @@ const AssignRoutes = ({ handleCardClick }) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-5 mx-auto max-w-[900px]">
+    <div className="flex flex-col items-center gap-6 mx-auto my-10 max-w-5xl p-6 bg-white shadow-xl rounded-lg">
+      <h2 className="text-2xl font-bold text-gray-900">Assign a Route</h2>
 
-      {/* Back to Dashboard Button */}
-      <button
-        onClick={() => handleCardClick('overview')}
-        className="self-start flex items-center gap-2  p-2 roundedbg-gray-700 bg-gray-700 text-white hover:bg-gray-100 hover:text-black"
-      >
-        <FaArrowLeft /> Back to Dashboard
-      </button>
+      <div className="w-full">
+        <label htmlFor="startLocation" className="block text-sm font-medium text-gray-700">Start Location:</label>
+        <input
+          id="startLocation"
+          value={startLocation}
+          onChange={(e) => {
+            setStartLocation(e.target.value);
+            fetchSuggestions(e.target.value, setStartSuggestions);
+          }}
+          placeholder="Enter start location"
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+        <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
+          {startSuggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              onClick={() => {
+                setStartLocation(suggestion.properties.formatted);
+                setStartSuggestions([]);
+              }}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              {suggestion.properties.formatted}
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      <h1 className="text-2xl font-bold pb-4">Assign a Route</h1>
+      <div className="w-full">
+        <label htmlFor="endLocation" className="block text-sm font-medium text-gray-700">End Location:</label>
+        <input
+          id="endLocation"
+          value={endLocation}
+          onChange={(e) => {
+            setEndLocation(e.target.value);
+            fetchSuggestions(e.target.value, setEndSuggestions);
+          }}
+          placeholder="Enter end location"
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        />
+        <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
+          {endSuggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              onClick={() => {
+                setEndLocation(suggestion.properties.formatted);
+                setEndSuggestions([]);
+              }}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              {suggestion.properties.formatted}
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      {/* Row for source, destination, and save button */}
-      <div className="flex flex-row items-center gap-3 w-full">
-        {/* Source Destination Search Bar */}
-        <div className="flex-1">
-          <label htmlFor="source" className="font-bold block mb-2">Source Destination:</label>
-          <input
-            id="source"
-            type="text"
-            value={source}
-            onChange={handleSourceChange}
-            placeholder="Enter Source"
-            className="p-2 text-lg w-full border border-gray-300 rounded"
-          />
-        </div>
+      <div className="w-full">
+        <label htmlFor="routeSelect" className="block text-sm font-medium text-gray-700">Select a Route:</label>
+        <select
+          id="routeSelect"
+          value={routeId}
+          onChange={handleRouteChange}
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">-- Select a Route --</option>
+          {routes.map((route) => (
+            <option key={route.routeId} value={route.routeId}>
+              Start: {route.startPoint.name || 'Unnamed'}, End: {route.endPoint.name || 'Unnamed'}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        {/* Final Destination Search Bar */}
-        <div className="flex-1">
-          <label htmlFor="destination" className="font-bold block mb-2">Final Destination:</label>
-          <input
-            id="destination"
-            type="text"
-            value={destination}
-            onChange={handleDestinationChange}
-            placeholder="Enter Destination"
-            className="p-2 text-lg w-full border border-gray-300 rounded"
-          />
-        </div>
-
-        {/* Save Routes Button */}
+      <div className="flex gap-4 w-full mt-4">
         <button
-          onClick={handleSaveRoute}
-          className="mt-8 p-2 text-lg bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={saveRoute}
+          className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition duration-200"
         >
           Save Route
         </button>
+        <button
+          onClick={refreshRoutes}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition duration-200"
+        >
+          Refresh Routes
+        </button>
       </div>
 
-      {/* Map display */}
-      <div className="w-full">
-        {renderMap()}
-      </div>
+      <div className="w-full">{renderMap()}</div>
 
-      {/* Turn-by-turn instructions */}
       {renderInstructions()}
     </div>
   );
