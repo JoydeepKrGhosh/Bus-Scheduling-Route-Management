@@ -1,34 +1,62 @@
 import React, { useState, useEffect } from 'react';
-import { FaArrowLeft } from 'react-icons/fa';
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 
-const containerStyle = {
-  width: '100%',
-  height: '700px',
-  borderRadius: '12px',
-  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-};
+const geoapifyKey = '38f3d26824c541c798b28f20ff36c638';
 
-const center = {
-  lat: 28.6139, // Example center point
-  lng: 77.2090, // Example center point
-};
+const AssignRoutes = () => {
+  const [routes, setRoutes] = useState([]); // All routes
+  const [selectedRoute, setSelectedRoute] = useState(null); // Selected route details
+  const [routeId, setRouteId] = useState(''); // Selected route ID
+  const [startLocation, setStartLocation] = useState(''); // Start location input
+  const [endLocation, setEndLocation] = useState(''); // End location input
+  const [startSuggestions, setStartSuggestions] = useState([]); // Suggestions for start location
+  const [endSuggestions, setEndSuggestions] = useState([]); // Suggestions for end location
 
-const AssignRoutes = ({ darkMode, handleCardClick }) => {
-  const [source, setSource] = useState('');
-  const [destination, setDestination] = useState('');
-  const [sourceCoords, setSourceCoords] = useState(null);
-  const [destinationCoords, setDestinationCoords] = useState(null);
-  const [sourceSuggestions, setSourceSuggestions] = useState([]);
-  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
-  const [route, setRoute] = useState([]);
-  const [selectedRoute, setSelectedRoute] = useState(null);
+  // Fetch all routes for dropdown
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
+        const data = await response.json();
+        setRoutes(data); // Set the fetched routes
+      } catch (error) {
+        console.error('Error fetching routes:', error);
+      }
+    };
 
-  const geoapifyKey = '38f3d26824c541c798b28f20ff36c638';
+    fetchRoutes();
+  }, []);
 
-  // Auto-generation of suggestions when the input changes
+  // Fetch specific route details when routeId changes
+  useEffect(() => {
+    if (routeId) {
+      const fetchRouteDetails = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/showadminroutes/route/${routeId}`);
+          const data = await response.json();
+          setSelectedRoute(data);
+        } catch (error) {
+          console.error('Error fetching route details:', error);
+        }
+      };
+
+      fetchRouteDetails();
+    }
+  }, [routeId]);
+
+  // Handle route selection change
+  const handleRouteChange = (event) => {
+    setRouteId(event.target.value);
+  };
+
+  // Validate coordinates
+  const isValidCoordinates = (coordinates) => {
+    return Array.isArray(coordinates) && coordinates.length === 2 && !isNaN(coordinates[0]) && !isNaN(coordinates[1]);
+  };
+
+  // Fetch suggestions from Geoapify API
   const fetchSuggestions = async (input, setFunction) => {
     if (input.length > 2) {
       try {
@@ -40,122 +68,214 @@ const AssignRoutes = ({ darkMode, handleCardClick }) => {
     }
   };
 
-  const handleSourceChange = (e) => {
-    setSource(e.target.value);
-    fetchSuggestions(e.target.value, setSourceSuggestions);
-  };
-
-  const handleDestinationChange = (e) => {
-    setDestination(e.target.value);
-    fetchSuggestions(e.target.value, setDestinationSuggestions);
-  };
-
-  const handleSuggestionClick = (suggestion, setCoords, setInput) => {
-    setCoords([suggestion.geometry.coordinates[1], suggestion.geometry.coordinates[0]]);
-    setInput(suggestion.properties.formatted);
-    setSourceSuggestions([]);
-    setDestinationSuggestions([]);
-  };
-
-  // Fetch route data from API
-  useEffect(() => {
-    const fetchRouteData = async () => {
-      if (sourceCoords && destinationCoords) {
-        try {
-          const response = await axios.get(
-            `https://api.geoapify.com/v1/routing?waypoints=${sourceCoords[0]},${sourceCoords[1]}|${destinationCoords[0]},${destinationCoords[1]}&mode=drive&apiKey=${geoapifyKey}`
-          );
-          const routePath = response.data.features[0].geometry.coordinates.map(([lng, lat]) => [lat, lng]);
-          setRoute(routePath);
-        } catch (error) {
-          console.error('Error fetching route:', error);
-        }
-      }
+  // Handle saving the new route to the backend
+  const saveRoute = async () => {
+    const routeData = {
+      startLocation,
+      endLocation,
     };
-    fetchRouteData();
-  }, [sourceCoords, destinationCoords]);
+
+    try {
+      await axios.post('http://localhost:5000/api/busroute/api/generateroute', routeData); // API call to save the route
+      alert('Route saved successfully!');
+    } catch (error) {
+      console.error('Error saving route:', error);
+    }
+  };
+
+  // Handle refresh of the route dropdown
+  const refreshRoutes = async () => {
+    const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
+    const data = await response.json();
+    setRoutes(data);
+  };
+
+  // Render the map
+  const renderMap = () => {
+    if (!selectedRoute) {
+      return (
+        <div
+          style={{
+            height: '500px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f0f0f0',
+            border: '1px solid #ddd',
+            color: '#777'
+          }}
+        >
+          Select a route to see it on the map.
+        </div>
+      );
+    }
+
+    const { startPoint, endPoint, routePath } = selectedRoute;
+
+    if (!isValidCoordinates(startPoint.coordinates) || !isValidCoordinates(endPoint.coordinates)) {
+      return <div>Invalid route data. Please check the coordinates for the route.</div>;
+    }
+
+    const mapCenter = [startPoint.coordinates[1], startPoint.coordinates[0]];
+
+    const polylineCoordinates = routePath.coordinates
+      .filter((coord) => isValidCoordinates(coord)) // Filter valid coordinates
+      .map(([lng, lat]) => [lat, lng]); // Convert coordinates
+
+    return (
+      <MapContainer center={mapCenter} zoom={13} style={{ height: '500px', width: '100%' }}>
+        <TileLayer
+          url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        />
+
+        {/* Start Marker */}
+        <Marker position={[startPoint.coordinates[1], startPoint.coordinates[0]]}>
+          <Popup>Start: {startPoint.name || 'No Name'}</Popup>
+        </Marker>
+
+        {/* End Marker */}
+        <Marker position={[endPoint.coordinates[1], endPoint.coordinates[0]]}>
+          <Popup>End: {endPoint.name || 'No Name'}</Popup>
+        </Marker>
+
+        {/* Polyline */}
+        {polylineCoordinates.length > 0 && <Polyline positions={polylineCoordinates} color="blue" />}
+      </MapContainer>
+    );
+  };
+
+  // Render instructions
+  const renderInstructions = () => {
+    if (!selectedRoute || !selectedRoute.instructions) {
+      return null;
+    }
+
+    return (
+      <div style={{ marginTop: '20px' }}>
+        <h3>Turn-by-Turn Instructions</h3>
+        <ul style={{ listStyleType: 'decimal' }}>
+          {selectedRoute.instructions.map((instruction, index) => (
+            <li key={index}>
+              {instruction.instruction} (Distance: {instruction.distance}m, Time: {instruction.time.toFixed(2)}s)
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
 
   return (
-    <div className="w-full flex flex-col items-center justify-center p-6 mt-12">
-      <h1 className="text-3xl font-bold mb-8 text-center">Assign Routes to Buses</h1>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '20px',
+        margin: '20px auto',
+        maxWidth: '800px'
+      }}
+    >
+      <h2>Assign a Route</h2>
 
-      <div className="w-full flex items-center mb-6">
-        <button
-          className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
-          onClick={() => handleCardClick('overview')}
+      {/* Search Box for Start Location */}
+      <div style={{ width: '100%' }}>
+        <label htmlFor="startLocation">Start Location:</label>
+        <input
+          id="startLocation"
+          value={startLocation}
+          onChange={(e) => {
+            setStartLocation(e.target.value);
+            fetchSuggestions(e.target.value, setStartSuggestions); // Fetch suggestions for start location
+          }}
+          placeholder="Enter start location"
+          style={{ padding: '10px', width: '100%', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+        />
+        <ul style={{ backgroundColor: '#fff', border: '1px solid #ccc', maxHeight: '150px', overflowY: 'auto' }}>
+          {startSuggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              onClick={() => {
+                setStartLocation(suggestion.properties.formatted);
+                setStartSuggestions([]); // Clear suggestions after selection
+              }}
+              style={{ padding: '5px', cursor: 'pointer' }}
+            >
+              {suggestion.properties.formatted}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Search Box for End Location */}
+      <div style={{ width: '100%' }}>
+        <label htmlFor="endLocation">End Location:</label>
+        <input
+          id="endLocation"
+          value={endLocation}
+          onChange={(e) => {
+            setEndLocation(e.target.value);
+            fetchSuggestions(e.target.value, setEndSuggestions); // Fetch suggestions for end location
+          }}
+          placeholder="Enter end location"
+          style={{ padding: '10px', width: '100%', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+        />
+        <ul style={{ backgroundColor: '#fff', border: '1px solid #ccc', maxHeight: '150px', overflowY: 'auto' }}>
+          {endSuggestions.map((suggestion, index) => (
+            <li
+              key={index}
+              onClick={() => {
+                setEndLocation(suggestion.properties.formatted);
+                setEndSuggestions([]); // Clear suggestions after selection
+              }}
+              style={{ padding: '5px', cursor: 'pointer' }}
+            >
+              {suggestion.properties.formatted}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Dropdown for route selection */}
+      <div style={{ width: '100%' }}>
+        <label htmlFor="routeSelect">Select a Route:</label>
+        <select
+          id="routeSelect"
+          value={routeId}
+          onChange={handleRouteChange}
+          style={{
+            padding: '10px',
+            fontSize: '16px',
+            width: '100%',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            marginBottom: '20px',
+          }}
         >
-          <FaArrowLeft />
-          <span>Back</span>
-        </button>
+          <option value="">-- Select a Route --</option>
+          {routes.map((route) => (
+            <option key={route.routeId} value={route.routeId}>
+              Start: {route.startPoint.name || 'Unnamed'}, End: {route.endPoint.name || 'Unnamed'}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="w-full flex flex-col gap-6 mb-6">
-        <div className="w-full">
-          <label className="block mb-2 font-semibold text-lg">Source</label>
-          <input
-            placeholder="Enter source location"
-            value={source}
-            onChange={handleSourceChange}
-            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-          />
-          {sourceSuggestions.length > 0 && (
-            <ul className="bg-white border border-gray-300 rounded-md max-h-40 overflow-auto mt-2">
-              {sourceSuggestions.map((suggestion) => (
-                <li
-                  key={suggestion.properties.place_id}
-                  className="p-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleSuggestionClick(suggestion, setSourceCoords, setSource)}
-                >
-                  {suggestion.properties.formatted}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      {/* Save Route Button */}
+      <button onClick={saveRoute} style={{ padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px' }}>
+        Save Route
+      </button>
 
-        <div className="w-full">
-          <label className="block mb-2 font-semibold text-lg">Destination</label>
-          <input
-            placeholder="Enter destination location"
-            value={destination}
-            onChange={handleDestinationChange}
-            className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200"
-          />
-          {destinationSuggestions.length > 0 && (
-            <ul className="bg-white border border-gray-300 rounded-md max-h-40 overflow-auto mt-2">
-              {destinationSuggestions.map((suggestion) => (
-                <li
-                  key={suggestion.properties.place_id}
-                  className="p-2 hover:bg-gray-200 cursor-pointer"
-                  onClick={() => handleSuggestionClick(suggestion, setDestinationCoords, setDestination)}
-                >
-                  {suggestion.properties.formatted}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      {/* Refresh Routes Button */}
+      <button onClick={refreshRoutes} style={{ padding: '10px 20px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', marginTop: '10px' }}>
+        Refresh Routes
+      </button>
 
-        <div className="w-full flex justify-end gap-4">
-          <button className="px-6 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700 transition-colors">
-            Generate Route
-          </button>
-        </div>
-      </div>
+      {/* Map display */}
+      <div style={{ width: '100%' }}>{renderMap()}</div>
 
-      <div className="w-full h-[700px] mb-4">
-        <MapContainer center={center} zoom={12} style={containerStyle}>
-          <TileLayer
-            url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
-            attribution='&copy; <a href="https://www.geoapify.com/">Geoapify</a> contributors'
-          />
-
-          {route.length > 0 && <Polyline positions={route} color="blue" />}
-
-          {sourceCoords && <Marker position={sourceCoords}></Marker>}
-          {destinationCoords && <Marker position={destinationCoords}></Marker>}
-        </MapContainer>
-      </div>
+      {/* Turn-by-turn instructions */}
+      {renderInstructions()}
     </div>
   );
 };
