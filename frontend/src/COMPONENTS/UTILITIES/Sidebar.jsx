@@ -106,7 +106,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) 
       { name: 'Today Schedule', icon: FaBell, component: 'todaySchedule' },
     ],
     Conductor: [
-      { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
+      { name: 'Dashboard', icon: FaTachometerAlt, component: 'condashboard' },
       { name: 'Schedule Overview', icon: FaFileAlt, component: 'scheduleOverview' },
       { name: 'Notifications', icon: FaBell, component: 'notifications' },
       { name: 'GIS Navigation', icon: FaMapMarkerAlt, component: 'gisNavigation' },

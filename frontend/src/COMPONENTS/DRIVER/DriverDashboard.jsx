@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
+import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize, FaTimes } from 'react-icons/fa';
 import Webcam from 'react-webcam';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
@@ -25,6 +25,7 @@ function DriverDashboard() {
   const [showImageVerifiedPopup, setShowImageVerifiedPopup] = useState(false);
   const [isLocationFetched, setIsLocationFetched] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [activeSection, setActiveSection] = useState('dashboard');
 
 
   const workHistory = [
@@ -33,6 +34,31 @@ function DriverDashboard() {
     { date: '2024-09-18', route: 'Route C', bus: 'DTC-100', duration: '4h 10m' },
     { date: '2024-09-18', route: 'Route D', bus: 'DTC 104', duration: '1h 55m' },
   ];
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleSidebarClick = (component) => {
+    setActiveSection(component);
+    if (window.innerWidth < 1024) {
+      // Close sidebar on mobile after clicking an option
+      setIsMobileSidebarOpen(false);
+    }
+  };
+
+  const toggleMobileSidebar = () => {
+    setIsMobileSidebarOpen(!isMobileSidebarOpen);
+  };
+
+  const hideSidebar = () => {
+    setIsMobileSidebarOpen(false);
+    setIsSidebarOpen(false);
+  };
 
 
   const showPopup = () => {
@@ -71,13 +97,7 @@ function DriverDashboard() {
     }
   };
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
+  
 
   const handleStartDay = () => {
     setIsDayStarted(true);
@@ -99,22 +119,7 @@ function DriverDashboard() {
     setIsImageCaptured(false);
   };
 
-  const handleSidebarClick = (component) => {
-    setActiveComponent(component);
-    if (window.innerWidth < 1024) {
-      // Close sidebar on mobile after clicking an option
-      setIsMobileSidebarOpen(false);
-    }
-  };
-
-  const toggleMobileSidebar = () => {
-    setIsMobileSidebarOpen(!isMobileSidebarOpen);
-  };
-
-  const hideSidebar = () => {
-    setIsMobileSidebarOpen(false);
-    setIsSidebarOpen(false);
-  };
+ 
 
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -161,9 +166,10 @@ function DriverDashboard() {
         return (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12">
+            {activeSection === 'dashboard' && (
               <div
                 className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
-                onClick={() => handleCardClick('MySchedule')}
+                onClick={() =>handleSidebarClick('mySchedule')}
               >
                 <FaBus className="text-blue-500 text-3xl mr-4" />
                 <div>
@@ -171,9 +177,11 @@ function DriverDashboard() {
                   <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View and manage your assigned shifts.</p>
                 </div>
               </div>
+            )}
+              {activeSection === 'dashboard' && ( 
               <div
                 className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
-                onClick={() => handleCardClick('GISNavigation')}
+                onClick={() => handleSidebarClick('gisNavigation')}
               >
                 <FaMapMarkerAlt className="text-green-500 text-3xl mr-4" />
                 <div>
@@ -181,9 +189,11 @@ function DriverDashboard() {
                   <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View your assigned routes on the map.</p>
                 </div>
               </div>
+              )}
+               {activeSection === 'dashboard' && (
               <div
                 className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
-                onClick={() => handleCardClick('Notifications')}
+                onClick={() => handleSidebarClick('notifications')}
               >
                 <FaBell className="text-red-500 text-3xl mr-4" />
                 <div>
@@ -191,7 +201,10 @@ function DriverDashboard() {
                   <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View system notifications.</p>
                 </div>
               </div>
+               )}
             </div>
+            {activeSection === 'dashboard' && (
+              <div>
             {timer > 0 && (
               <div className="mt-8">
                 <p className="text-xl font-bold mb-4">
@@ -199,6 +212,7 @@ function DriverDashboard() {
                 </p>
               </div>
             )}
+            
             <div className="mt-8">
               <h2 className="text-2xl font-bold mb-4">History</h2>
               <ul>
@@ -207,6 +221,8 @@ function DriverDashboard() {
                 ))}
               </ul>
             </div>
+            </div>
+            )}
           </>
         );
     }
@@ -217,12 +233,12 @@ function DriverDashboard() {
       <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
 
       {/* Add a margin between Navbar and main content */}
-      <div className="flex flex-grow mt-16">
-        <div className={`flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300`}>
-          <div className="relative">
+      <div className="flex flex-grow relative">
+      <div className={`hidden lg:flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 mt-16 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="relative h-full">
             <button
               onClick={toggleSidebar}
-              className={`absolute -right-3 top-4 p-1 ${darkMode ? 'bg-red-700' : 'bg-orange-500'} rounded-full text-white z-10`}
+              className={`absolute -right-3 top-4 p-1 ${darkMode ? 'bg-red-600' : 'bg-orange-500'} rounded-full text-white z-10`}
             >
               {isSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
             </button>
@@ -235,19 +251,46 @@ function DriverDashboard() {
             />
           </div>
         </div>
+
+         {/* Mobile Sidebar */}
+         <div className={`lg:hidden absolute inset-0 z-20 bg-opacity-70 bg-black ${isMobileSidebarOpen ? 'block' : 'hidden'}`}>
+          <div className={`w-64 h-full ${darkMode ? 'bg-gray-800' : 'bg-white'} p-4`}>
+            <button
+              onClick={hideSidebar}
+              className="absolute top-4 right-4 text-xl text-white"
+            >
+              <FaTimes />
+            </button>
+            <Sidebar
+              role="Driver"
+              isOpen={true}
+              darkMode={darkMode}
+              onOptionClick={handleSidebarClick}
+            />
+          </div>
+        </div>
+
+         {/* Sidebar Toggle Button for Small Screens (Moved to top left under navbar) */}
+         <button
+          className={`lg:hidden fixed top-[65px] left-1 p-2 rounded-full ${darkMode ? 'bg-red-600' : 'bg-orange-500'} text-white z-30`}
+          onClick={toggleMobileSidebar}
+        >
+          {isMobileSidebarOpen ? <FaWindowMinimize /> : <FaWindowMaximize />}
+        </button>
         <div
           className={`flex-grow transition-all duration-300 p-6 ${darkMode ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-900'} ${isSidebarOpen ? 'ml-0' : 'ml-[-12px]'}`}
         >
           {/* Main Box for Driver Dashboard */}
-          <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-
-          <h1 className="text-3xl font-bold mb-8">Driver Dashboard</h1>
-
+          {activeSection === 'dashboard' && (
+          <div className={`p-8 mt-[50px] rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
+          <h1 className="text-3xl font-bold mb-8 ">Driver Dashboard</h1>
+         
 
             <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
 
 
             {/* Start Day / End Day Button */}
+            
             {isDayStarted ? (
               <button
                 onClick={handleEndDay}
@@ -264,6 +307,7 @@ function DriverDashboard() {
                 >
                   Start Day
                 </button>
+                
                 <div className="flex items-center mt-8">
                   {/* LocationFetcher Component */}
                   <LocationFetcher onComplete={handleLocationFetchComplete} />
@@ -279,6 +323,7 @@ function DriverDashboard() {
                     </div>
                   )}
                 </div>
+               
               </>
             )}
 
@@ -310,6 +355,12 @@ function DriverDashboard() {
             {/* Render Active Component */}
             <div className="mt-8">{renderActiveComponent()}</div>
           </div>
+          )}
+          {/* Render other sections */}
+          {activeSection === 'mySchedule' && <MySchedule darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          {activeSection === 'notifications' && <Notification darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          {activeSection === 'gisNavigation' && <GISNavigation darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+        
         </div>
       </div>
     </div>
