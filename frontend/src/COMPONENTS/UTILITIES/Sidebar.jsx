@@ -103,14 +103,13 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) 
       { name: 'Assign Routes', icon: FaBus, component: 'assignRoutes' },
       { name: 'Employee Management', icon: FaFileAlt, component: 'employeeManagement' },
       { name: 'Reports and Analytics', icon: FaBell, component: 'reportsAnalytics' },
-      { name: 'System Logs', icon: FaCog, component: 'systemLogs' },
+      { name: 'Today Schedule', icon: FaBell, component: 'todaySchedule' },
     ],
     Conductor: [
       { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
-      { name: 'Check Bus Status', icon: FaBus, component: 'checkBusStatus' },
       { name: 'Schedule Overview', icon: FaFileAlt, component: 'scheduleOverview' },
-      { name: 'Resource Allocation', icon: FaBell, component: 'resourceAllocation' },
-      { name: 'Notifications', icon: FaBell, component: 'notifications' }, // Added Notifications option
+      { name: 'Notifications', icon: FaBell, component: 'notifications' },
+      { name: 'GIS Navigation', icon: FaMapMarkerAlt, component: 'gisNavigation' },
     ],
     Driver: [
       { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
