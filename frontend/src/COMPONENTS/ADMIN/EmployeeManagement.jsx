@@ -211,12 +211,12 @@ const EmployeeManagement = ({ darkMode, handleCardClick }) => {
   return (
     <div className={`${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-black'} w-full min-h-screen p-6 transition-all`}>
       {/* Back Button with gap from navbar */}
-      <div className="mb-8 mt-12">
+      <div className="mb-8 ">
         <button
-          className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-300 hover:bg-gray-400'} text-white rounded flex items-center transition`}
+          className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-700 hover:bg-gray-100 hover:text-black'} text-white rounded flex items-center transition`}
           onClick={() => handleCardClick('overview')}
         >
-          <FaArrowLeft className="mr-2" /> Back to Cards
+          <FaArrowLeft className="mr-2" /> Back to Dashboard
         </button>
       </div>
 

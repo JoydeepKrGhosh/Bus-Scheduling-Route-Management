@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
+import { FaArrowLeft } from 'react-icons/fa';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
 
