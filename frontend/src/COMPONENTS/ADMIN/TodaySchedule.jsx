@@ -1,7 +1,7 @@
-// src/components/TodaySchedule.jsx
 import React, { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios';
+import moment from 'moment'; // Import moment.js for formatting date and time
 
 const TodaySchedule = ({ darkMode, handleCardClick }) => {
   const [scheduleData, setScheduleData] = useState([]);
@@ -12,7 +12,7 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await axios.get('/api/schedules');  // Replace with your API endpoint
+        const response = await axios.get('http://localhost:5000/api/showadmintrips/gettrips?selectedDate=2024-09-19');  // Replace with your API endpoint
         setScheduleData(response.data);
         setLoading(false);
       } catch (err) {
@@ -49,10 +49,11 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
             <tr className="bg-gray-200 text-gray-700 text-left text-sm uppercase">
               <th className="py-3 px-6">Driver Name</th>
               <th className="py-3 px-6">Conductor Name</th>
-              <th className="py-3 px-6">Bus ID</th>
-              <th className="py-3 px-6">Route Name</th>
-              <th className="py-3 px-6">Date</th>
-              <th className="py-3 px-6">Time</th>
+              <th className="py-3 px-6">Bus Number</th>
+              <th className="py-3 px-6">Start Point</th>
+              <th className="py-3 px-6">End Point</th>
+              <th className="py-3 px-6">Start Time</th>
+              <th className="py-3 px-6">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -65,10 +66,13 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
               >
                 <td className="py-3 px-6">{schedule.driverName}</td>
                 <td className="py-3 px-6">{schedule.conductorName}</td>
-                <td className="py-3 px-6">{schedule.busId}</td>
-                <td className="py-3 px-6">{schedule.routeName}</td>
-                <td className="py-3 px-6">{schedule.date}</td>
-                <td className="py-3 px-6">{schedule.time}</td>
+                <td className="py-3 px-6">{schedule.busNumber}</td>
+                <td className="py-3 px-6">{schedule.startPointName}</td>
+                <td className="py-3 px-6">{schedule.endPointName}</td>
+                <td className="py-3 px-6">
+                  {moment(schedule.startTime).format('MMMM Do YYYY, h:mm A')} {/* Format date and time */}
+                </td>
+                <td className="py-3 px-6">{schedule.status}</td>
               </tr>
             ))}
           </tbody>
