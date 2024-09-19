@@ -6,6 +6,7 @@ import ActiveBuses from './ActiveBuses';
 import AssignRoutes from './AssignRoutes';
 import ReportsAnalytics from './ReportsAnalytics'; // Import the ReportsAnalytics component
 import EmployeeManagement from './EmployeeManagement'; // Import the EmployeeManagement component
+import TodaySchedule from './TodaySchedule';
 
 function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -137,6 +138,16 @@ function AdminDashboard() {
                     <p className={darkMode ? 'text-gray-300' : 'text-gray-500'}>View performance reports and analytics.</p>
                   </div>
                 </div>
+                <div
+                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
+                  onClick={() => handleSidebarClick('todaySchedule')}
+                >
+                  <FaChartLine className={`text-2xl lg:text-3xl mr-4 ${darkMode ? 'text-purple-300' : 'text-purple-500'}`} />
+                  <div>
+                    <p className={`text-lg lg:text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Today's Schedule</p>
+                    <p className={darkMode ? 'text-gray-300' : 'text-gray-500'}>View today's schedule of different Crew Members.</p>
+                  </div>
+                </div>
               </div>
 
               <div className="mt-6 lg:mt-8">
@@ -153,15 +164,16 @@ function AdminDashboard() {
                   </li>
                 </ul>
               </div>
-            </div>
-          )}
-
-           {/* "Generate Schedule" Button */}
+                {/* "Generate Schedule" Button */}
            <button
-            className={`absolute z-10 right-4 bottom-4 p-3 rounded-full text-white ${darkMode ? 'bg-blue-600' : 'bg-blue-500'} shadow-lg`}
+            className={`absolute z-10 right-6 bottom-14 p-3 rounded-full text-white ${darkMode ? 'bg-blue-600' : 'bg-blue-500'} shadow-lg`}
           >
             Generate Schedule
           </button>
+            </div>
+          )}
+
+         
 
 
           {/* Render other sections */}
@@ -169,6 +181,7 @@ function AdminDashboard() {
           {activeSection === 'manageBuses' && <ActiveBuses darkMode={darkMode} handleCardClick={handleSidebarClick} />}
           {activeSection === 'assignRoutes' && <AssignRoutes darkMode={darkMode} handleCardClick={handleSidebarClick} />}
           {activeSection === 'reportsAnalytics' && <ReportsAnalytics darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          {activeSection === 'todaySchedule' && <TodaySchedule darkMode={darkMode} handleCardClick={handleSidebarClick} />}
         </div>
       </div>
     </div>

@@ -240,13 +240,12 @@ function DriverDashboard() {
         >
           {/* Main Box for Driver Dashboard */}
           <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-<<<<<<< HEAD
+
           <h1 className="text-3xl font-bold mb-8">Driver Dashboard</h1>
-=======
-            <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+
 
             <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
->>>>>>> 520cee96218fd584724b84ecb391c3d801b3181a
+
 
             {/* Start Day / End Day Button */}
             {isDayStarted ? (
@@ -318,26 +317,3 @@ function DriverDashboard() {
 }
 
 export default DriverDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

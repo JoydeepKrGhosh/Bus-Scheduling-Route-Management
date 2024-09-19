@@ -103,7 +103,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) 
       { name: 'Assign Routes', icon: FaBus, component: 'assignRoutes' },
       { name: 'Employee Management', icon: FaFileAlt, component: 'employeeManagement' },
       { name: 'Reports and Analytics', icon: FaBell, component: 'reportsAnalytics' },
-      { name: 'System Logs', icon: FaCog, component: 'systemLogs' },
+      { name: 'Today Schedule', icon: FaBell, component: 'todaySchedule' },
     ],
     Conductor: [
       { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
