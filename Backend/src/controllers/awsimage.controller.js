@@ -59,7 +59,6 @@ const uploadReferenceImage = async (req, res) => {
   });
 };
 
-// Controller to handle daily image upload and verification
 const uploadDailyImageAndVerify = async (req, res) => {
   const { employeeCode, role } = req.body;
 
@@ -72,6 +71,8 @@ const uploadDailyImageAndVerify = async (req, res) => {
   console.log('File uploaded:', file);
 
   const tempFilePath = path.join(__dirname, '../../tmp', file.name);
+  let referenceImageUrl;  // Declare referenceImageUrl outside the try block
+  let s3Url;  // Declare s3Url outside the try block
 
   // Move the file to the tmp directory
   file.mv(tempFilePath, async (err) => {
@@ -91,10 +92,10 @@ const uploadDailyImageAndVerify = async (req, res) => {
       try {
         const fileName = `${role}/daily-uploads/${employeeCode}_${Date.now()}.jpg`;
         const s3Response = await uploadImageToS3(imageBuffer, fileName); // Use imageBuffer here
-        const s3Url = `https://${s3Response.Bucket}.s3.amazonaws.com/${s3Response.Key}`;
+        s3Url = `https://${s3Response.Bucket}.s3.amazonaws.com/${s3Response.Key}`;
 
         const user = role === 'driver' ? await Driver.findOne({ employeeCode }) : await Conductor.findOne({ employeeCode });
-        const referenceImageUrl = user.referenceImageUrl;
+        referenceImageUrl = user.referenceImageUrl;  // Assign value to referenceImageUrl
 
         // Compare faces using Rekognition
         console.log('Reference Image URL:', referenceImageUrl);
@@ -113,10 +114,25 @@ const uploadDailyImageAndVerify = async (req, res) => {
         await user.save();
         res.status(200).json({ message: 'Image verified', status: user.verificationStatus });
       } catch (error) {
-        res.status(500).json({ message: 'Image verification failed', error });
+        // Enhanced error handling block with referenceImageUrl and s3Url now available
+        console.error("Image verification failed:", error);
+        res.status(500).json({
+          message: 'Image verification failed',
+          error: {
+            message: error.message,
+            requestId: error.requestId,
+            statusCode: error.statusCode,
+            code: error.code
+          },
+          s3Details: {
+            referenceImageUrl,
+            dailyImageUrl: s3Url,
+          }
+        });
       }
     });
   });
 };
+
 
 module.exports = { uploadReferenceImage, uploadDailyImageAndVerify };

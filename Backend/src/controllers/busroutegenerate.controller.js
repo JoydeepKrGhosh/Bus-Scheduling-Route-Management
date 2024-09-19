@@ -27,12 +27,12 @@ const geocodeLocation = async (locationName) => {
 
 // Function to fetch route from Geoapify and store it in MongoDB  
 const fetchAndStoreRoute = async (req, res) => {  
-  const { startPointName, endPointName } = req.body; // Assuming you'll pass names instead  
+  const { startLocation, endLocation } = req.body; // Assuming you'll pass names instead  
 
   try {  
     // Geocode start and end locations to get their coordinates  
-    const startPoint = await geocodeLocation(startPointName);  
-    const endPoint = await geocodeLocation(endPointName);  
+    const startPoint = await geocodeLocation(startLocation);  
+    const endPoint = await geocodeLocation(endLocation);  
 
     // Make a request to Geoapify to get the route between two points  
     const geoapifyResponse = await axios.get('https://api.geoapify.com/v1/routing', {  
@@ -68,12 +68,12 @@ const fetchAndStoreRoute = async (req, res) => {
       routeId: `route_${Date.now()}`, // unique identifier  
       startPoint: {  
         type: 'Point', // Add the type field  
-        name: startPointName, // Using the original location name (if you want to keep this)  
+        name: startLocation, // Using the original location name (if you want to keep this)  
         coordinates: [startPoint.lon, startPoint.lat] // Ensure this is [lon, lat]  
       },  
       endPoint: {  
         type: 'Point', // Add the type field  
-        name: endPointName, // Using the original location name (if you want to keep this)  
+        name: endLocation, // Using the original location name (if you want to keep this)  
         coordinates: [endPoint.lon, endPoint.lat] // Ensure this is [lon, lat]  
       },  
       waypoints: waypoints.map(waypoint => ({  

@@ -133,7 +133,7 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) 
       className={`transition-all duration-300 flex flex-col 
       ${isOpen ? 'w-64' : 'w-20'} 
       ${darkMode ? 'bg-[#28293E] text-[#4D91FF]' : 'bg-gray-900 text-white'} 
-      h-screen sm:gap-4 md:gap-0 lg:gap-0 flex-grow sm:flex-grow`} // Adjust margin-top for small screens and ensure full height
+       h-full sm:gap-4 md:gap-0 lg:gap-0 flex-grow sm:flex-grow`} // Adjust margin-top for small screens and ensure full height
     >
       <div
         className={`p-4 flex justify-between items-center border-b 
