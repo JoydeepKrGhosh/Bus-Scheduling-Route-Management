@@ -7,6 +7,7 @@ import GISNavigation from '../CREW MEMBER/GISNavigation';
 import MySchedule from '../CREW MEMBER/MySchedule'; 
 import ConductorSchedule from './ConductorSchedule';
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
+import TopPopup from '../CREW MEMBER/TOpPopup';
 
 function ConductorDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -22,8 +23,17 @@ function ConductorDashboard() {
   const [isImageCaptured, setIsImageCaptured] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
   const [locationError, setLocationError] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
+ 
   const [isLocationFetched, setIsLocationFetched] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+
+  const showPopup = () => {
+    setIsPopupVisible(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false);
+  };
 
   const webcamRef = useRef(null);
 
@@ -104,6 +114,7 @@ function ConductorDashboard() {
     setShowWebcam(false);
     setIsImageCaptured(true); 
     startTimer();
+    showPopup();
   };
 
   const startTimer = () => {
@@ -113,8 +124,9 @@ function ConductorDashboard() {
     setIntervalId(id);
   };
 
-  const addToHistory = (formattedTripData) => {
-    setHistory((prevHistory) => [...prevHistory, ...formattedTripData]); // Add multiple trips to the history
+  const addToHistory = (historyEntry) => {
+    setHistory((prevHistory) => [...prevHistory, ...historyEntry]); // Add multiple trips to the history
+    console.log("Hello");
   };
 
   const handleCardClick = (component) => {
@@ -228,6 +240,7 @@ function ConductorDashboard() {
           {/* Main Box for Driver Dashboard */}
           <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
             <h1 className="text-3xl font-bold mb-6">Conductor Dashboard</h1>
+            <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
             
             {/* Start Day / End Day Button */}
             {isDayStarted ? (
@@ -292,26 +305,3 @@ function ConductorDashboard() {
 }
 
 export default ConductorDashboard;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

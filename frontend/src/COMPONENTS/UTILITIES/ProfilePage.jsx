@@ -54,11 +54,11 @@ import { useNavigate } from 'react-router-dom';
 function ProfilePage({ onClose, handleLogout, darkMode }) {
   // Mock user data, including last login time
   const user = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+    name: 'Arjun Singh',
+    email: 'singharjun@gmail.com',
     role: 'Admin',
-    employeeId: '123456',
-    department: 'IT',
+    employeeId: 'ARJUN20',
+  
     lastLogin: new Date().toLocaleString(), // This displays the current time for simplicity
   };
 
@@ -97,7 +97,6 @@ function ProfilePage({ onClose, handleLogout, darkMode }) {
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Status: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>Active</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Role: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.role}</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Employee ID: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.employeeId}</span></p>
-            <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Department: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.department}</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Last Login: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.lastLogin}</span></p>
           </div>
 
