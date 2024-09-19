@@ -2,43 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TicketModal from '../CONDUCTOR/TicketModal';
 
 function MySchedule({ darkMode, addToHistory }) {
-  // Simulated data for shifts
-  const shifts = [
-    {
-      id: 1,
-      date: '2023-10-01',
-      route: 'Route A',
-      time: '08:00 AM - 04:00 PM',
-      bus: 'Bus 101',
-      duration: 8 * 60 * 60, // 8 hours in seconds
-      details: 'Detailed info about Route A and Bus 101.',
-      startTime: new Date('2023-10-01T08:00:00'),
-      endTime: new Date('2023-10-01T16:00:00'),
-    },
-    {
-      id: 2,
-      date: '2023-10-05',
-      route: 'Route B',
-      time: '09:00 AM - 05:00 PM',
-      bus: 'Bus 102',
-      duration: 8 * 60 * 60, // 8 hours in seconds
-      details: 'Detailed info about Route B and Bus 102.',
-      startTime: new Date('2023-10-05T09:00:00'),
-      endTime: new Date('2023-10-05T17:00:00'),
-    },
-    {
-      id: 3,
-      date: '2023-10-12',
-      route: 'Route C',
-      time: '07:00 AM - 03:00 PM',
-      bus: 'Bus 103',
-      duration: 8 * 60 * 60, // 8 hours in seconds
-      details: 'Detailed info about Route C and Bus 103.',
-      startTime: new Date('2023-10-12T07:00:00'),
-      endTime: new Date('2023-10-12T15:00:00'),
-    },
-  ];
-
+  const [shifts, setShifts] = useState([]);
   const [activeShiftId, setActiveShiftId] = useState(null);
   const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -54,6 +18,49 @@ function MySchedule({ darkMode, addToHistory }) {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchShifts = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/showdriverconductortrips/crewschedule/driver/66e44e662d2666edd9ca21ae?selectedDate=2024-09-19'); // Replace with your actual API endpoint
+
+        // Check for valid JSON response
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Received non-JSON response");
+        }
+
+        const data = await response.json();
+        
+        // Log the API response for debugging purposes
+        console.log('API Response:', data);
+
+        // Process the API data
+        const shiftsFromAPI = data.map((shift, index) => {
+          const startTime = new Date(shift.startTime);
+
+          return {
+            id: index + 1, // Unique ID for each shift
+            date: startTime.toLocaleDateString(),
+            route: `${shift.startPointName} - ${shift.endPointName}`,
+            time: startTime.toLocaleTimeString(),
+            bus: shift.busNumber || 'Unknown Bus',
+            duration: 8 * 60 * 60, // Assuming 8 hours
+            details: `Driver: ${shift.driverName || 'Unknown'}, Conductor: ${shift.conductorName || 'Unknown'}`,
+            startTime: startTime,
+            endTime: new Date(startTime.getTime() + 8 * 60 * 60 * 1000), // Assuming trip lasts 8 hours
+          };
+        });
+
+        setShifts(shiftsFromAPI);
+      } catch (error) {
+        console.error('Error fetching shift data:', error);
+      }
+    };
+
+    fetchShifts();
+  }, []);
 
   useEffect(() => {
     let interval = null;
@@ -77,8 +84,8 @@ function MySchedule({ darkMode, addToHistory }) {
     setIsTimerRunning(false);
     setShowConfirmation(true);
   };
+
   const handleTicketSubmit = (data) => {
-    // Add the new ticket data to the array
     setTicketData([...ticketData, data]);
   };
 
@@ -109,10 +116,8 @@ function MySchedule({ darkMode, addToHistory }) {
         endStatus: earlyOrLate,
         difference: timeDiffFormatted,
       };
-      const handleAddTripClick = () => {
-        // Call the callback function passed as prop to send data to the parent
-        addToHistory(formattedTripData);
-      };
+
+      addToHistory(historyEntry);
     }
 
     setActiveShiftId(null);
@@ -133,11 +138,11 @@ function MySchedule({ darkMode, addToHistory }) {
         {shifts.map((shift) => (
           <div key={shift.id} className="p-4 flex flex-col sm:flex-row justify-between items-start rounded-lg shadow-lg bg-gray-100 dark:bg-gray-100">
             <div className="flex-1">
-              <p><strong>Date:</strong> {shift.date}</p>
-              <p><strong>Route:</strong> {shift.route}</p>
-              <p><strong>Time:</strong> {shift.time}</p>
-              <p><strong>Bus:</strong> {shift.bus}</p>
-              <p><strong>Details:</strong> {shift.details}</p>
+              <p><strong>Date:</strong> {shift.date || 'Invalid Date'}</p>
+              <p><strong>Route:</strong> {shift.route || 'Route not available'}</p>
+              <p><strong>Time:</strong> {shift.time || 'Invalid Time'}</p>
+              <p><strong>Bus:</strong> {shift.bus || 'Unknown Bus'}</p>
+              <p><strong>Details:</strong> {shift.details || 'No details available'}</p>
 
               {activeShiftId === shift.id && (
                 <div className="mt-2">
@@ -163,7 +168,6 @@ function MySchedule({ darkMode, addToHistory }) {
                 End Trip
               </button>
               <TicketModal isOpen={isModalOpen} onClose={closeModal} onSubmit={handleTicketSubmit} />
-
             </div>
           </div>
         ))}
