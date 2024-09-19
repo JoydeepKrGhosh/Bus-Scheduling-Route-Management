@@ -9,11 +9,15 @@ const path = require('path');
 const fs = require('fs');
 const showroutes = require('./src/routes/displayroutes.routes.js')
 const tripAssignmentRoutes = require('./src/routes/assigntrip.routes.js');
-const filtertrips = require('./src/routes/getTrips.routes.js')
+
 const busdata = require('./src/routes/getAllBuses.routes.js')
 const busRoutes = require('./src/routes/addbus.routes.js') 
 const conductorRoutes = require('./src/routes/conductorRoutes.js');
 const driverRoutes = require('./src/routes/driverRouter.js');
+
+const showdriverConductorTrips = require('./src/routes/showdriverconductortrips.routes.js');
+const showadminTrips = require('./src/routes/showadmintrips.routes.js');
+
 
 const awsimage = require('./src/routes/awsimage.routes.js');
 const routegenerate = require('./src/routes/busroutegenerate.routes.js')
@@ -83,9 +87,12 @@ app.use('/api/buses', busRoutes);
 app.use('/api/busdata',busdata);
 
 app.use('/api/trip', tripAssignmentRoutes);
-app.use('/api/filtertrip',filtertrips);
+
 
 app.use('/api/showadminroutes',showroutes);
+
+app.use('/api/showadmintrips',showadminTrips);
+app.use('/api/showdriverconductortrips',showdriverConductorTrips);
 
 
 
