@@ -153,7 +153,7 @@ function DriverDashboard() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12">
               <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
                 onClick={() => handleCardClick('MySchedule')}
               >
                 <FaBus className="text-blue-500 text-3xl mr-4" />
@@ -163,7 +163,7 @@ function DriverDashboard() {
                 </div>
               </div>
               <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
                 onClick={() => handleCardClick('GISNavigation')}
               >
                 <FaMapMarkerAlt className="text-green-500 text-3xl mr-4" />
@@ -173,7 +173,7 @@ function DriverDashboard() {
                 </div>
               </div>
               <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none opacity-50' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
                 onClick={() => handleCardClick('Notifications')}
               >
                 <FaBell className="text-red-500 text-3xl mr-4" />
@@ -231,7 +231,7 @@ function DriverDashboard() {
         >
           {/* Main Box for Driver Dashboard */}
           <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-          <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+          <h1 className="text-3xl font-bold mb-8">Driver Dashboard</h1>
 
           <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
             

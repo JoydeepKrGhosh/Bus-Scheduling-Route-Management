@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {FaArrowLeft } from 'react-icons/fa';
 import axios from 'axios'; // For making API requests
 import Modal from './Modal'; // Import the Modal component
 
@@ -42,12 +43,14 @@ function ActiveBuses({ darkMode, handleCardClick }) {
 
   return (
     <div className={`p-4 md:p-8 rounded-lg shadow-xl ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} mt-4`}>
-      <button
-        onClick={() => handleCardClick('overview')}
-        className="mb-4 text-blue-500 hover:underline"
-      >
-        Back to Dashboard
-      </button>
+     <div className="mb-8 ">
+        <button
+          className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-700 hover:bg-gray-300'} text-white rounded flex items-center transition`}
+          onClick={() => handleCardClick('overview')}
+        >
+          <FaArrowLeft className="mr-2" /> Back to Dashboard
+        </button>
+      </div>
 
       <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Active Buses</h2>
 

@@ -201,8 +201,8 @@ const GISNavigation = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-5 mx-auto my-5 max-w-[800px]">
-      <h1 className="text-2xl font-bold pb-4">Assign a Route</h1>
+    <div className="flex flex-col items-center gap-5 mx-auto  max-w-[800px]">
+      <h1 className="text-2xl font-bold pb-4">Search for Route</h1>
 
       {/* Row for source, destination, and save button */}
       <div className="flex flex-row items-center gap-3 w-full">

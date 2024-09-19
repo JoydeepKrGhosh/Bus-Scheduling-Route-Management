@@ -107,10 +107,9 @@ function Sidebar({ role, isOpen, darkMode, setActiveComponent, onOptionClick }) 
     ],
     Conductor: [
       { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },
-      { name: 'Check Bus Status', icon: FaBus, component: 'checkBusStatus' },
       { name: 'Schedule Overview', icon: FaFileAlt, component: 'scheduleOverview' },
-      { name: 'Resource Allocation', icon: FaBell, component: 'resourceAllocation' },
-      { name: 'Notifications', icon: FaBell, component: 'notifications' }, // Added Notifications option
+      { name: 'Notifications', icon: FaBell, component: 'notifications' },
+      { name: 'GIS Navigation', icon: FaMapMarkerAlt, component: 'gisNavigation' },
     ],
     Driver: [
       { name: 'Dashboard', icon: FaTachometerAlt, component: 'dashboard' },

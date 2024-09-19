@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
+import { FaArrowLeft } from 'react-icons/fa';
 import 'leaflet/dist/leaflet.css';
 
-const AssignRoutes = () => {
+const AssignRoutes = ({ handleCardClick }) => {
   const [routes, setRoutes] = useState([]); // All routes
   const [selectedRoute, setSelectedRoute] = useState(null); // Selected route details
   const [source, setSource] = useState(''); // Source destination input
@@ -117,7 +118,16 @@ const AssignRoutes = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-5 mx-auto my-5 max-w-[800px]">
+    <div className="flex flex-col items-center gap-5 mx-auto max-w-[900px]">
+
+      {/* Back to Dashboard Button */}
+      <button
+        onClick={() => handleCardClick('overview')}
+        className="self-start flex items-center gap-2  p-2 roundedbg-gray-700 bg-gray-700 text-white hover:bg-gray-100 hover:text-black"
+      >
+        <FaArrowLeft /> Back to Dashboard
+      </button>
+
       <h1 className="text-2xl font-bold pb-4">Assign a Route</h1>
 
       {/* Row for source, destination, and save button */}
