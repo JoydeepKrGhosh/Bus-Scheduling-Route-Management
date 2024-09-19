@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { FaBus, FaMapMarkerAlt, FaBell, FaWindowMaximize, FaWindowMinimize } from 'react-icons/fa';
 import Webcam from 'react-webcam';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
 import GISNavigation from '../CREW MEMBER/GISNavigation';
-import MySchedule from '../CREW MEMBER/MySchedule'; 
+import MySchedule from '../CREW MEMBER/MySchedule';
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
 import TopPopup from '../CREW MEMBER/TOpPopup';
 
@@ -25,6 +25,15 @@ function DriverDashboard() {
   const [showImageVerifiedPopup, setShowImageVerifiedPopup] = useState(false);
   const [isLocationFetched, setIsLocationFetched] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+
+
+  const workHistory = [
+    { date: '2024-09-19', route: 'Route A', bus: 'DTC-120', duration: '3h 20m' },
+    { date: '2024-09-19', route: 'Route B', bus: 'DTC-150', duration: '2h 45m' },
+    { date: '2024-09-18', route: 'Route C', bus: 'DTC-100', duration: '4h 10m' },
+    { date: '2024-09-18', route: 'Route D', bus: 'DTC 104', duration: '1h 55m' },
+  ];
+
 
   const showPopup = () => {
     setIsPopupVisible(true);
@@ -50,7 +59,7 @@ function DriverDashboard() {
           setShowPopup(true);
           setTimeout(() => {
             setShowPopup(false);
-           // onComplete(); // Notify parent that location is fetched
+            // onComplete(); // Notify parent that location is fetched
           }, 3000); // Hide popup after 3 seconds
         },
         (error) => {
@@ -87,7 +96,7 @@ function DriverDashboard() {
     setHistory((prevHistory) => [...prevHistory, `Day lasted for: ${formattedTime}`]);
     setTimer(0);
     setIsDayStarted(false);
-    setIsImageCaptured(false); 
+    setIsImageCaptured(false);
   };
 
   const handleSidebarClick = (component) => {
@@ -111,7 +120,7 @@ function DriverDashboard() {
     const imageSrc = webcamRef.current.getScreenshot();
     setCapturedImage(imageSrc);
     setShowWebcam(false);
-    setIsImageCaptured(true); 
+    setIsImageCaptured(true);
     startTimer();
     showPopup();
   };
@@ -125,7 +134,7 @@ function DriverDashboard() {
 
   const handleCardClick = (component) => {
     if (isImageCaptured) {
-      setActiveComponent(component); 
+      setActiveComponent(component);
     }
   };
 
@@ -206,7 +215,7 @@ function DriverDashboard() {
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      
+
       {/* Add a margin between Navbar and main content */}
       <div className="flex flex-grow mt-16">
         <div className={`flex ${isSidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300`}>
@@ -231,10 +240,10 @@ function DriverDashboard() {
         >
           {/* Main Box for Driver Dashboard */}
           <div className={`p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
-          <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+            <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
 
-          <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
-            
+            <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
+
             {/* Start Day / End Day Button */}
             {isDayStarted ? (
               <button
@@ -246,28 +255,28 @@ function DriverDashboard() {
               </button>
             ) : (
               <>
-              <button
-                onClick={handleStartDay}
-                className="bg-blue-500 text-white px-6 py-3 rounded-lg"
-              >
-                Start Day
-              </button>
-               <div className="flex items-center mt-8">
-                 {/* LocationFetcher Component */}
-        <LocationFetcher onComplete={handleLocationFetchComplete} />
+                <button
+                  onClick={handleStartDay}
+                  className="bg-blue-500 text-white px-6 py-3 rounded-lg"
+                >
+                  Start Day
+                </button>
+                <div className="flex items-center mt-8">
+                  {/* LocationFetcher Component */}
+                  <LocationFetcher onComplete={handleLocationFetchComplete} />
 
-        {/* Display a message or additional content after location is fetched */}
-           {isLocationFetched && (
-    <p className="mt-4 text-green-500"></p>
-    ) }
-         
-               {showPopup && (
-                 <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
-                   Location successfully fetched!
-                 </div>
-               )}
-             </div>
-             </>
+                  {/* Display a message or additional content after location is fetched */}
+                  {isLocationFetched && (
+                    <p className="mt-4 text-green-500"></p>
+                  )}
+
+                  {showPopup && (
+                    <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
+                      Location successfully fetched!
+                    </div>
+                  )}
+                </div>
+              </>
             )}
 
             {/* Webcam Section */}
@@ -288,12 +297,12 @@ function DriverDashboard() {
               </div>
             )}
 
-             {/* Popup for "Image Verified" */}
-      {showImageVerifiedPopup && (
-        <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
-          <p>Image verified</p>
-        </div>
-      )}
+            {/* Popup for "Image Verified" */}
+            {showImageVerifiedPopup && (
+              <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
+                <p>Image verified</p>
+              </div>
+            )}
 
             {/* Render Active Component */}
             <div className="mt-8">{renderActiveComponent()}</div>

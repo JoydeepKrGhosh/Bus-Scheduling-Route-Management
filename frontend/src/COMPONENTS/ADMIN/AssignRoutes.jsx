@@ -6,30 +6,27 @@ import axios from 'axios';
 const geoapifyKey = '38f3d26824c541c798b28f20ff36c638';
 
 const AssignRoutes = () => {
-  const [routes, setRoutes] = useState([]); // All routes
-  const [selectedRoute, setSelectedRoute] = useState(null); // Selected route details
-  const [routeId, setRouteId] = useState(''); // Selected route ID
-  const [startLocation, setStartLocation] = useState(''); // Start location input
-  const [endLocation, setEndLocation] = useState(''); // End location input
-  const [startSuggestions, setStartSuggestions] = useState([]); // Suggestions for start location
-  const [endSuggestions, setEndSuggestions] = useState([]); // Suggestions for end location
+  const [routes, setRoutes] = useState([]);
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [routeId, setRouteId] = useState('');
+  const [startLocation, setStartLocation] = useState('');
+  const [endLocation, setEndLocation] = useState('');
+  const [startSuggestions, setStartSuggestions] = useState([]);
+  const [endSuggestions, setEndSuggestions] = useState([]);
 
-  // Fetch all routes for dropdown
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
         const data = await response.json();
-        setRoutes(data); // Set the fetched routes
+        setRoutes(data);
       } catch (error) {
         console.error('Error fetching routes:', error);
       }
     };
-
     fetchRoutes();
   }, []);
 
-  // Fetch specific route details when routeId changes
   useEffect(() => {
     if (routeId) {
       const fetchRouteDetails = async () => {
@@ -41,22 +38,18 @@ const AssignRoutes = () => {
           console.error('Error fetching route details:', error);
         }
       };
-
       fetchRouteDetails();
     }
   }, [routeId]);
 
-  // Handle route selection change
   const handleRouteChange = (event) => {
     setRouteId(event.target.value);
   };
 
-  // Validate coordinates
   const isValidCoordinates = (coordinates) => {
     return Array.isArray(coordinates) && coordinates.length === 2 && !isNaN(coordinates[0]) && !isNaN(coordinates[1]);
   };
 
-  // Fetch suggestions from Geoapify API
   const fetchSuggestions = async (input, setFunction) => {
     if (input.length > 2) {
       try {
@@ -68,44 +61,30 @@ const AssignRoutes = () => {
     }
   };
 
-  // Handle saving the new route to the backend
   const saveRoute = async () => {
     const routeData = {
       startLocation,
       endLocation,
     };
-
     try {
-      await axios.post('http://localhost:5000/api/busroute/api/generateroute', routeData); // API call to save the route
+      await axios.post('http://localhost:5000/api/busroute/api/generateroute', routeData);
       alert('Route saved successfully!');
     } catch (error) {
       console.error('Error saving route:', error);
     }
   };
 
-  // Handle refresh of the route dropdown
   const refreshRoutes = async () => {
     const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
   };
 
-  // Render the map
   const renderMap = () => {
     if (!selectedRoute) {
       return (
-        <div
-          style={{
-            height: '500px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#f0f0f0',
-            border: '1px solid #ddd',
-            color: '#777'
-          }}
-        >
-          Select a route to see it on the map.
+        <div className="h-80 flex items-center justify-center bg-gray-200 border border-gray-300 text-gray-600 rounded-lg">
+          <span>Select a route to see it on the map.</span>
         </div>
       );
     }
@@ -113,50 +92,43 @@ const AssignRoutes = () => {
     const { startPoint, endPoint, routePath } = selectedRoute;
 
     if (!isValidCoordinates(startPoint.coordinates) || !isValidCoordinates(endPoint.coordinates)) {
-      return <div>Invalid route data. Please check the coordinates for the route.</div>;
+      return <div className="text-red-500">Invalid route data. Please check the coordinates for the route.</div>;
     }
 
     const mapCenter = [startPoint.coordinates[1], startPoint.coordinates[0]];
 
     const polylineCoordinates = routePath.coordinates
-      .filter((coord) => isValidCoordinates(coord)) // Filter valid coordinates
-      .map(([lng, lat]) => [lat, lng]); // Convert coordinates
+      .filter((coord) => isValidCoordinates(coord))
+      .map(([lng, lat]) => [lat, lng]);
 
     return (
-      <MapContainer center={mapCenter} zoom={13} style={{ height: '500px', width: '100%' }}>
+      <MapContainer center={mapCenter} zoom={14} style={{ height: '500px', width: '100%' }} className="rounded-lg shadow-lg">
         <TileLayer
           url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-
-        {/* Start Marker */}
         <Marker position={[startPoint.coordinates[1], startPoint.coordinates[0]]}>
           <Popup>Start: {startPoint.name || 'No Name'}</Popup>
         </Marker>
-
-        {/* End Marker */}
         <Marker position={[endPoint.coordinates[1], endPoint.coordinates[0]]}>
           <Popup>End: {endPoint.name || 'No Name'}</Popup>
         </Marker>
-
-        {/* Polyline */}
         {polylineCoordinates.length > 0 && <Polyline positions={polylineCoordinates} color="blue" />}
       </MapContainer>
     );
   };
 
-  // Render instructions
   const renderInstructions = () => {
     if (!selectedRoute || !selectedRoute.instructions) {
       return null;
     }
 
     return (
-      <div style={{ marginTop: '20px' }}>
-        <h3>Turn-by-Turn Instructions</h3>
-        <ul style={{ listStyleType: 'decimal' }}>
+      <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold text-gray-800">Turn-by-Turn Instructions</h3>
+        <ul className="list-disc pl-5 mt-2 text-gray-700">
           {selectedRoute.instructions.map((instruction, index) => (
-            <li key={index}>
+            <li key={index} className="mb-2">
               {instruction.instruction} (Distance: {instruction.distance}m, Time: {instruction.time.toFixed(2)}s)
             </li>
           ))}
@@ -166,40 +138,30 @@ const AssignRoutes = () => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '20px',
-        margin: '20px auto',
-        maxWidth: '800px'
-      }}
-    >
-      <h2>Assign a Route</h2>
+    <div className="flex flex-col items-center gap-6 mx-auto my-10 max-w-5xl p-6 bg-white shadow-xl rounded-lg">
+      <h2 className="text-2xl font-bold text-gray-900">Assign a Route</h2>
 
-      {/* Search Box for Start Location */}
-      <div style={{ width: '100%' }}>
-        <label htmlFor="startLocation">Start Location:</label>
+      <div className="w-full">
+        <label htmlFor="startLocation" className="block text-sm font-medium text-gray-700">Start Location:</label>
         <input
           id="startLocation"
           value={startLocation}
           onChange={(e) => {
             setStartLocation(e.target.value);
-            fetchSuggestions(e.target.value, setStartSuggestions); // Fetch suggestions for start location
+            fetchSuggestions(e.target.value, setStartSuggestions);
           }}
           placeholder="Enter start location"
-          style={{ padding: '10px', width: '100%', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
-        <ul style={{ backgroundColor: '#fff', border: '1px solid #ccc', maxHeight: '150px', overflowY: 'auto' }}>
+        <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
           {startSuggestions.map((suggestion, index) => (
             <li
               key={index}
               onClick={() => {
                 setStartLocation(suggestion.properties.formatted);
-                setStartSuggestions([]); // Clear suggestions after selection
+                setStartSuggestions([]);
               }}
-              style={{ padding: '5px', cursor: 'pointer' }}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             >
               {suggestion.properties.formatted}
             </li>
@@ -207,28 +169,27 @@ const AssignRoutes = () => {
         </ul>
       </div>
 
-      {/* Search Box for End Location */}
-      <div style={{ width: '100%' }}>
-        <label htmlFor="endLocation">End Location:</label>
+      <div className="w-full">
+        <label htmlFor="endLocation" className="block text-sm font-medium text-gray-700">End Location:</label>
         <input
           id="endLocation"
           value={endLocation}
           onChange={(e) => {
             setEndLocation(e.target.value);
-            fetchSuggestions(e.target.value, setEndSuggestions); // Fetch suggestions for end location
+            fetchSuggestions(e.target.value, setEndSuggestions);
           }}
           placeholder="Enter end location"
-          style={{ padding: '10px', width: '100%', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         />
-        <ul style={{ backgroundColor: '#fff', border: '1px solid #ccc', maxHeight: '150px', overflowY: 'auto' }}>
+        <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
           {endSuggestions.map((suggestion, index) => (
             <li
               key={index}
               onClick={() => {
                 setEndLocation(suggestion.properties.formatted);
-                setEndSuggestions([]); // Clear suggestions after selection
+                setEndSuggestions([]);
               }}
-              style={{ padding: '5px', cursor: 'pointer' }}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             >
               {suggestion.properties.formatted}
             </li>
@@ -236,21 +197,13 @@ const AssignRoutes = () => {
         </ul>
       </div>
 
-      {/* Dropdown for route selection */}
-      <div style={{ width: '100%' }}>
-        <label htmlFor="routeSelect">Select a Route:</label>
+      <div className="w-full">
+        <label htmlFor="routeSelect" className="block text-sm font-medium text-gray-700">Select a Route:</label>
         <select
           id="routeSelect"
           value={routeId}
           onChange={handleRouteChange}
-          style={{
-            padding: '10px',
-            fontSize: '16px',
-            width: '100%',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            marginBottom: '20px',
-          }}
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
           <option value="">-- Select a Route --</option>
           {routes.map((route) => (
@@ -261,20 +214,23 @@ const AssignRoutes = () => {
         </select>
       </div>
 
-      {/* Save Route Button */}
-      <button onClick={saveRoute} style={{ padding: '10px 20px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px' }}>
-        Save Route
-      </button>
+      <div className="flex gap-4 w-full mt-4">
+        <button
+          onClick={saveRoute}
+          className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition duration-200"
+        >
+          Save Route
+        </button>
+        <button
+          onClick={refreshRoutes}
+          className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition duration-200"
+        >
+          Refresh Routes
+        </button>
+      </div>
 
-      {/* Refresh Routes Button */}
-      <button onClick={refreshRoutes} style={{ padding: '10px 20px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px', marginTop: '10px' }}>
-        Refresh Routes
-      </button>
+      <div className="w-full">{renderMap()}</div>
 
-      {/* Map display */}
-      <div style={{ width: '100%' }}>{renderMap()}</div>
-
-      {/* Turn-by-turn instructions */}
       {renderInstructions()}
     </div>
   );
