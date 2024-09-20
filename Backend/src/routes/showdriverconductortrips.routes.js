@@ -10,31 +10,31 @@ router.get('/crewschedule/:role/:id', async (req, res) => {
   try {
     // Create start and end of day for the selected date
     const startOfDay = new Date(selectedDate || new Date()); // If no date is selected, use the current day
-    startOfDay.setHours(0, 0, 0, 0);
+    startOfDay.setHours(0, 0, 0, 0); // Set time to the start of the day (00:00:00)
 
-    const endOfDay = new Date(selectedDate || new Date());
-    endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = new Date(startOfDay);
+    endOfDay.setHours(23, 59, 59, 999); // Set time to the end of the day (23:59:59)
 
     let filter = {};
 
-    // Set filter based on role
+    // Set filter based on the role
     if (role === 'driver') {
-      filter = { driver_id: id };
+      filter.driver_id = id; // Filter by driver ID
     } else if (role === 'conductor') {
-      filter = { conductor_id: id };
+      filter.conductor_id = id; // Filter by conductor ID
     } else {
       return res.status(400).json({ message: 'Invalid role' });
     }
 
-    // Add date filter to the query
-    filter.startTime = { $gte: startOfDay, $lte: endOfDay };
+    // Add date filter based on the trip's scheduled start time
+    filter.scheduledStartTime = { $gte: startOfDay, $lte: endOfDay };
 
     // Find and populate the trips for the driver or conductor
     const trips = await TripAssignment.find(filter)
-      .populate('routeId', 'startPoint endPoint') // Populating route details including startPoint and endPoint
-      .populate('driver_id', 'name') // Populating driver details (name)
-      .populate('conductor_id', 'name') // Populating conductor details (name)
-      .populate('busId', 'busNumber') // Populating bus details
+      .populate('routeId', 'startPoint endPoint') // Populate route details (startPoint and endPoint)
+      .populate('driver_id', 'name') // Populate driver details (name)
+      .populate('conductor_id', 'name') // Populate conductor details (name)
+      .populate('busId', 'busNumber') // Populate bus details (busNumber)
       .exec();
 
     // Send response with the required fields, adding null checks
@@ -44,9 +44,11 @@ router.get('/crewschedule/:role/:id', async (req, res) => {
       busNumber: trip.busId ? trip.busId.busNumber : 'N/A', // Bus number or 'N/A' if null
       startPointName: trip.routeId && trip.routeId.startPoint ? trip.routeId.startPoint.name : 'N/A', // Start point name or 'N/A' if null
       endPointName: trip.routeId && trip.routeId.endPoint ? trip.routeId.endPoint.name : 'N/A', // End point name or 'N/A' if null
-      startTime: trip.startTime, // Start time
-      endTime: trip.endTime, // End time (if available)
-      status: trip.status // Trip status
+      scheduledStartTime: trip.scheduledStartTime, // Scheduled start time
+      scheduledEndTime: trip.scheduledEndTime || 'N/A', // Scheduled end time or 'N/A' if not available
+      actualStartTime: trip.actualStartTime || 'N/A', // Actual start time or 'N/A' if not started
+      actualEndTime: trip.actualEndTime || 'N/A', // Actual end time or 'N/A' if not completed
+      status: trip.status // Trip status (scheduled, completed, etc.)
     })));
   } catch (error) {
     console.error('Error fetching schedule:', error);
