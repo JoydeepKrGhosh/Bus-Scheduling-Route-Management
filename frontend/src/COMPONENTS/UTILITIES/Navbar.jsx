@@ -321,11 +321,12 @@ import { FaUserCircle, FaCog } from 'react-icons/fa';
 import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';
 
-function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
+function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen, userData }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
   const handleProfileClick = () => {
+
     setShowProfile(true);
   };
 
@@ -374,7 +375,7 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen }) {
 
       {/* Modal rendering for Profile and Settings */}
       {showProfile && (
-        <ProfilePage onClose={handleCloseProfile} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+        <ProfilePage onClose={handleCloseProfile} toggleDarkMode={toggleDarkMode} darkMode={darkMode} userData={userData} />
       )}
       {showSettings && (
         <SettingsPage onClose={handleCloseSettings} toggleDarkMode={toggleDarkMode} darkMode={darkMode} />

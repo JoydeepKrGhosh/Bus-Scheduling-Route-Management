@@ -55,14 +55,14 @@ const ReportsAnalytics = ({ darkMode, handleCardClick }) => {
   };
 
   return (
-    <div className={`w-full h-full p-6 mt-16 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+    <div className={`w-full h-full p-6 ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       {/* Top Back button */}
-      <div className="flex items-center mb-4">
+      <div className="mb-8 ">
         <button
-          onClick={() => handleCardClick('overview')} // Ensure this navigates to the previous view
-          className={`text-lg font-bold flex items-center ${darkMode ? 'text-white' : 'text-black'}`}
+          className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-700 hover:bg-gray-100 hover:text-black'} text-white rounded flex items-center transition`}
+          onClick={() => handleCardClick('overview')}
         >
-          <FaArrowLeft className="mr-2" /> Back
+          <FaArrowLeft className="mr-2" /> Back to Dashboard
         </button>
       </div>
 

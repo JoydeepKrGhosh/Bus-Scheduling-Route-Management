@@ -45,7 +45,7 @@ function ActiveBuses({ darkMode, handleCardClick }) {
     <div className={`p-4 md:p-8 rounded-lg shadow-xl ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} mt-4`}>
      <div className="mb-8 ">
         <button
-          className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-700 hover:bg-gray-300'} text-white rounded flex items-center transition`}
+          className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-700 hover:bg-gray-100 hover:text-black'} text-white rounded flex items-center transition`}
           onClick={() => handleCardClick('overview')}
         >
           <FaArrowLeft className="mr-2" /> Back to Dashboard

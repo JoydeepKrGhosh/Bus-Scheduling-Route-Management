@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
+import LocationPopup from './LocationPopup';
 
 function LocationFetcher({ onComplete }) {
   const [showPopup, setShowPopup] = useState(false);
+  const [isPopupVisible, setIsPopupVisible] = useState(false);
+
+  const openPopup = () => {
+    setIsPopupVisible(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupVisible(false);
+  };
 
   const handleGetLocation = () => {
+    openPopup();
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -32,6 +43,7 @@ function LocationFetcher({ onComplete }) {
       >
         Get Current Location
       </button>
+      <LocationPopup isVisible={isPopupVisible} onClose={closePopup} />
 
       {showPopup && (
         <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">

@@ -52,7 +52,7 @@ const TopPopup = ({ message, isVisible, onClose }) => {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                   <h1 className="text-2xl font-bold text-gray-900">{message}</h1>
-                  <p className="text-green-600 font-semibold mt-2">The User can now proceed further</p>
+                  <p className="text-green-600 font-semibold mt-2">You can now proceed further</p>
                 </div>
               )}
 
