@@ -21,6 +21,8 @@ function AdminDashboard() {
     email: 'kumarvijay03@gmail.com',
     role: 'Admin',
     employeeId: 'VIJAY923AD',
+    license_number: "DL 23D 5678",
+    phone_number: "8234970012",
     lastLogin: new Date().toLocaleString(),
   };
 
