@@ -12,7 +12,7 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
   useEffect(() => {
     const fetchSchedule = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/showadmintrips/gettrips?selectedDate=2024-09-19');  // Replace with your API endpoint
+        const response = await axios.get('http://localhost:5000/api/showadmintrips/gettrips?selectedDate=2024-09-20'); // Replace with your API endpoint
         setScheduleData(response.data);
         setLoading(false);
       } catch (err) {
@@ -52,7 +52,10 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
               <th className="py-3 px-6">Bus Number</th>
               <th className="py-3 px-6">Start Point</th>
               <th className="py-3 px-6">End Point</th>
-              <th className="py-3 px-6">Start Time</th>
+              <th className="py-3 px-6">Scheduled Start</th>
+              <th className="py-3 px-6">Actual Start</th>
+              <th className="py-3 px-6">Scheduled End</th>
+              <th className="py-3 px-6">Actual End</th>
               <th className="py-3 px-6">Status</th>
             </tr>
           </thead>
@@ -70,7 +73,20 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
                 <td className="py-3 px-6">{schedule.startPointName}</td>
                 <td className="py-3 px-6">{schedule.endPointName}</td>
                 <td className="py-3 px-6">
-                  {moment(schedule.startTime).format('MMMM Do YYYY, h:mm A')} {/* Format date and time */}
+                  {moment(schedule.scheduledStartTime).format('MMMM Do YYYY, h:mm A')} {/* Format scheduled start time */}
+                </td>
+                <td className="py-3 px-6">
+                  {schedule.actualStartTime
+                    ? moment(schedule.actualStartTime).format('MMMM Do YYYY, h:mm A')  // If actual start time exists, format it
+                    : 'N/A'}
+                </td>
+                <td className="py-3 px-6">
+                  {moment(schedule.scheduledEndTime).format('MMMM Do YYYY, h:mm A')} {/* Format scheduled end time */}
+                </td>
+                <td className="py-3 px-6">
+                  {schedule.actualEndTime
+                    ? moment(schedule.actualEndTime).format('MMMM Do YYYY, h:mm A')  // If actual end time exists, format it
+                    : 'N/A'}
                 </td>
                 <td className="py-3 px-6">{schedule.status}</td>
               </tr>
@@ -83,3 +99,4 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
 };
 
 export default TodaySchedule;
+

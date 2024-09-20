@@ -1,26 +1,20 @@
-
 const TripAssignment = require('../models/tripassignment.model.js');
 const Driver = require('../models/driver.model.js');
-const Bus = require('../models/bus.model.js');
+const Bus = require('../models/bus.model.js'); 
 const Conductor = require('../models/conductor.model.js');
 const Route = require('../models/route.model.js');
-
 
 const scheduleDailyTrips = async (req, res) => {
   try {
     const buses = await Bus.find();
     const drivers = await Driver.find();
     const conductors = await Conductor.find();
-    const routes = await Route.find(); // Fetch all routes
+    const routes = await Route.find();
 
-    console.log('Buses:', buses);
-    console.log('Drivers:', drivers);
-    console.log('Conductors:', conductors);
-    console.log('Routes:', routes);
-
-    const startHour = 5; // Start time 5 AM
+    const startHour = 6; // Start time 6 AM
     const endHour = 22; // End time 10 PM
     const maxWorkHours = 8 * 60; // 8 hours in minutes (480 minutes)
+    const maxContinuousDrivingMinutes = 240; // Max 4 hours of continuous driving
 
     const trips = [];
 
@@ -29,76 +23,131 @@ const scheduleDailyTrips = async (req, res) => {
       return res.status(400).json({ message: 'Not enough buses, drivers, conductors, or routes available.' });
     }
 
-    // Loop through buses
-    buses.forEach((bus, index) => {
-      let driver = drivers[index % drivers.length];
-      let conductor = conductors[index % conductors.length];
-      let route = routes[index % routes.length]; // Rotate through routes
+    const driverWorkTime = {};
+    const conductorWorkTime = {};
+    const continuousDrivingTime = {};
 
-      console.log(`Assigning bus ${bus._id} to driver ${driver._id} and conductor ${conductor._id} on route ${route._id}`);
+    drivers.forEach(driver => {
+      driverWorkTime[driver._id] = 0; // Initialize with 0 minutes
+      continuousDrivingTime[driver._id] = 0; // Track continuous driving time
+    });
 
-      let tripSequence = 0;
-      let startTime = new Date();
-      startTime.setHours(startHour, 0, 0, 0); // Set start time to 5 AM
+    conductors.forEach(conductor => {
+      conductorWorkTime[conductor._id] = 0; // Initialize with 0 minutes
+    });
 
-      let lastEndPoint = route.startPoint; // Set initial start location
-      let totalWorkTime = 0; // Track total work time (minutes)
+    const busSchedules = {};
+    buses.forEach(bus => {
+      busSchedules[bus._id] = [];
+    });
 
+    let routeIndex = 0;
+
+    // Get the current date and time
+    const currentDateTime = new Date();
+
+    // If the current time is after 10 PM, no trips should be scheduled
+    if (currentDateTime.getHours() >= endHour) {
+      return res.status(400).json({ message: 'It is too late to schedule trips for today.' });
+    }
+
+    // Set the `startTime` to 6 AM of the current day (or current time if function triggered after 6 AM)
+    let startTime = new Date();
+    startTime.setHours(Math.max(startHour, currentDateTime.getHours()), 0, 0, 0); // Use the current hour if it’s after 6 AM
+
+    let lastEndLocation = null;
+
+    // Schedule trips
+    for (let i = 0; i < Math.min(drivers.length, conductors.length); i++) {
       while (startTime.getHours() < endHour) {
-        const tripDurationSeconds = route.time; // Get trip duration in seconds
-        const tripDurationMinutes = tripDurationSeconds / 60; // Convert to minutes
-        const expectedEndTime = addMinutes(startTime, tripDurationMinutes);
+        let route;
 
-        console.log(`Trip duration: ${tripDurationMinutes} minutes`);
-        console.log(`Expected end time: ${expectedEndTime}`);
-
-        // Check if this trip would exceed 8 hours
-        if (totalWorkTime + tripDurationMinutes > maxWorkHours) {
-          if (tripSequence === 0) {
-            // Allow the first trip even if it exceeds the 8-hour work limit
-            console.log('First trip exceeds max work hours, but scheduling it anyway');
-          } else {
-            console.log('Max work hours reached for this driver and conductor');
-            break; // Stop scheduling more trips for this driver/conductor
-          }
+        // Select a route where the start point matches the last trip's end point
+        if (lastEndLocation) {
+          route = routes.find(r => r.startPoint.coordinates[0] === lastEndLocation.coordinates[0] &&
+                                    r.startPoint.coordinates[1] === lastEndLocation.coordinates[1]) ||
+                  routes[routeIndex % routes.length]; // Default to the next route if no match
+        } else {
+          route = routes[routeIndex % routes.length]; // Select a route (rotate through available routes)
         }
 
-        // Create a new trip assignment
+        routeIndex++;
+
+        const tripDurationMinutes = route.time / 60; // Convert trip time from seconds to minutes
+        const scheduledEndTime = addMinutes(startTime, tripDurationMinutes);
+
+        // Check if the scheduled trip would exceed the 10 PM limit
+        if (scheduledEndTime.getHours() >= endHour) {
+          break; // Stop scheduling trips if they would exceed 10 PM
+        }
+
+        const bus = findAvailableBus(startTime, scheduledEndTime, busSchedules, buses);
+        if (!bus) {
+          break; // No available bus, exit loop
+        }
+
+        const driver = drivers[i];
+        const conductor = conductors[i];
+
+        // Check if the driver or conductor exceeds 8 hours of total work time
+        if (driverWorkTime[driver._id] + tripDurationMinutes > maxWorkHours) {
+          break; // Driver exceeds work limit
+        }
+        if (conductorWorkTime[conductor._id] + tripDurationMinutes > maxWorkHours) {
+          break; // Conductor exceeds work limit
+        }
+
+        // Enforce max continuous driving limit (4 hours)
+        if (continuousDrivingTime[driver._id] + tripDurationMinutes > maxContinuousDrivingMinutes) {
+          const mandatoryBreak = 30; // 30-minute mandatory break
+          startTime = addMinutes(scheduledEndTime, mandatoryBreak);
+          continuousDrivingTime[driver._id] = 0; // Reset continuous driving time after break
+          continue; // Skip to the next trip after the break
+        }
+
+        // Schedule the trip
         trips.push({
           routeId: route._id,
-          driver_id: driver._id, // Use snake_case
-          conductor_id: conductor._id, // Use snake_case
+          driver_id: driver._id,
+          conductor_id: conductor._id,
           busId: bus._id,
-          startTime,
-          expectedEndTime,
-          status: 'ongoing',
-          tripSequence: ++tripSequence,
+          scheduledStartTime: new Date(startTime),
+          scheduledEndTime: new Date(scheduledEndTime),
+          status: 'scheduled',
           startLocation: {
             type: 'Point',
-            coordinates: lastEndPoint.coordinates, // From previous trip end or route start
+            coordinates: route.startPoint.coordinates,
           },
           endLocation: {
             type: 'Point',
-            coordinates: route.endPoint.coordinates, // Route's end point
-          }
+            coordinates: route.endPoint.coordinates,
+          },
+          tripSequence: trips.filter(
+            trip => trip.driver_id.toString() === driver._id.toString()
+          ).length + 1,
         });
 
-        console.log(`Trip sequence ${tripSequence} added:`, trips[trips.length - 1]);
+        // Update bus schedule
+        busSchedules[bus._id].push({
+          startTime: new Date(startTime),
+          endTime: new Date(scheduledEndTime),
+        });
 
-        // Update total work time for driver/conductor
-        totalWorkTime += tripDurationMinutes;
+        // Update last end location for prioritizing the next trip's start
+        lastEndLocation = route.endPoint;
 
-        // Add break time: 15 minutes for each 1 hour of trip
-        const breakTime = Math.floor(tripDurationMinutes / 60) * 15;
+        // Update work time for driver and conductor
+        driverWorkTime[driver._id] += tripDurationMinutes;
+        conductorWorkTime[conductor._id] += tripDurationMinutes;
+        continuousDrivingTime[driver._id] += tripDurationMinutes;
 
-        // Prepare for the next trip
-        lastEndPoint = route.endPoint; // Next trip starts at this trip's end point
-        startTime = addMinutes(expectedEndTime, breakTime); // Add break before next trip
+        // Add rest time based on trip duration (15 minutes per hour of driving, minimum 5 minutes)
+        const restTime = Math.max(5, Math.floor(tripDurationMinutes / 60) * 15);
+        startTime = addMinutes(scheduledEndTime, restTime); // Rest period after the trip
       }
-    });
+    }
 
     if (trips.length > 0) {
-      // Insert all trips into the database
       await TripAssignment.insertMany(trips);
       console.log('Trips inserted successfully');
     } else {
@@ -117,6 +166,30 @@ const addMinutes = (date, minutes) => {
   return new Date(date.getTime() + minutes * 60000); // Add minutes to the current date/time
 };
 
+// Function to find an available bus
+const findAvailableBus = (startTime, endTime, busSchedules, buses) => {
+  for (let bus of buses) {
+    const schedules = busSchedules[bus._id];
+    let isAvailable = true;
+
+    for (let schedule of schedules) {
+      if (
+        (startTime >= schedule.startTime && startTime < schedule.endTime) ||
+        (endTime > schedule.startTime && endTime <= schedule.endTime) ||
+        (startTime <= schedule.startTime && endTime >= schedule.endTime)
+      ) {
+        isAvailable = false;
+        break;
+      }
+    }
+
+    if (isAvailable) {
+      return bus;
+    }
+  }
+
+  return null;
+};
 
 module.exports = {
   scheduleDailyTrips,

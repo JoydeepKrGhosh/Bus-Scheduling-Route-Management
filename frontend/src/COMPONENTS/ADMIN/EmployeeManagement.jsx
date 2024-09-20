@@ -12,6 +12,9 @@ const generatePassword = () => {
   return password;
 };
 
+
+
+
 const EmployeeManagement = ({ darkMode, handleCardClick }) => {
   // State to manage employees, modals, current employee being edited
   const [drivers, setDrivers] = useState([]);
@@ -22,6 +25,136 @@ const EmployeeManagement = ({ darkMode, handleCardClick }) => {
 
   const { register, handleSubmit, reset, watch, setValue } = useForm();
   const watchRole = watch('role');
+
+
+
+  const conductor = [
+    {
+      name: "Manoj Gupta",
+      role: "Conductor",
+      id: "EMP004",
+      phone: "9871234560",
+      license: "CL123456",
+      status: "Active",
+      password: "conductorPass1",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Arjun Singh",
+      role: "Conductor",
+      id: "EMP005",
+      phone: "9812345678",
+      license: "CL234567",
+      status: "Inactive",
+      password: "conductorPass2",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Vikas Mehta",
+      role: "Conductor",
+      id: "EMP006",
+      phone: "9823456712",
+      license: "CL345678",
+      status: "Active",
+      password: "conductorPass3",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Sanjay Reddy",
+      role: "Conductor",
+      id: "EMP010",
+      phone: "9712345670",
+      license: "CL456789",
+      status: "Active",
+      password: "conductorPass4",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Rajiv Agarwal",
+      role: "Conductor",
+      id: "EMP011",
+      phone: "9783456789",
+      license: "CL567890",
+      status: "Inactive",
+      password: "conductorPass5",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Ravi Bhat",
+      role: "Conductor",
+      id: "EMP012",
+      phone: "9826789345",
+      license: "CL678901",
+      status: "Active",
+      password: "conductorPass6",
+      actions: "Edit/Delete"
+    }
+  ];
+
+  const driver = [
+    {
+      name: "Rajesh Sharma",
+      role: "Driver",
+      id: "EMP001",
+      phone: "9876543210",
+      license: "DL123456",
+      status: "Active",
+      password: "driverPass1",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Suresh Verma",
+      role: "Driver",
+      id: "EMP002",
+      phone: "9123456789",
+      license: "DL234567",
+      status: "Inactive",
+      password: "driverPass2",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Anil Kumar",
+      role: "Driver",
+      id: "EMP003",
+      phone: "9988776655",
+      license: "DL345678",
+      status: "Active",
+      password: "driverPass3",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Amit Singh",
+      role: "Driver",
+      id: "EMP007",
+      phone: "9345678901",
+      license: "DL456789",
+      status: "Active",
+      password: "driverPass4",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Deepak Patel",
+      role: "Driver",
+      id: "EMP008",
+      phone: "9712345678",
+      license: "DL567890",
+      status: "Inactive",
+      password: "driverPass5",
+      actions: "Edit/Delete"
+    },
+    {
+      name: "Nikhil Joshi",
+      role: "Driver",
+      id: "EMP009",
+      phone: "9623456789",
+      license: "DL678901",
+      status: "Active",
+      password: "driverPass6",
+      actions: "Edit/Delete"
+    },
+  ];
+
+  
 
   // Open modal for registering or editing
   const openModal = (employee = null) => {
@@ -112,7 +245,7 @@ const EmployeeManagement = ({ darkMode, handleCardClick }) => {
           </tr>
         </thead>
         <tbody>
-          {drivers.map((emp) => (
+          {driver.map((emp) => (
             <tr key={emp.id} className={`${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200'} transition`}>
               <td className="p-4 text-center">{emp.name}</td>
               <td className="p-4 text-center">{emp.role}</td>
@@ -149,7 +282,7 @@ const EmployeeManagement = ({ darkMode, handleCardClick }) => {
           </tr>
         </thead>
         <tbody>
-          {conductors.map((emp) => (
+          {conductor.map((emp) => (
             <tr key={emp.id} className={`${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-200'} transition`}>
               <td className="p-4 text-center">{emp.name}</td>
               <td className="p-4 text-center">{emp.role}</td>
