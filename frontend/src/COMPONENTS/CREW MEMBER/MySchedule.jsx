@@ -20,47 +20,49 @@ function MySchedule({ darkMode, addToHistory }) {
   };
 
   // Fetch data from API
-  useEffect(() => {
-    const fetchShifts = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/showdriverconductortrips/crewschedule/driver/66e44e662d2666edd9ca21ae?selectedDate=2024-09-19'); // Replace with your actual API endpoint
+useEffect(() => {
+  const fetchShifts = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/showdriverconductortrips/crewschedule/driver/66e44e662d2666edd9ca21ae?selectedDate=2024-09-20'); // Replace with your actual API endpoint
 
-        // Check for valid JSON response
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new Error("Received non-JSON response");
-        }
-
-        const data = await response.json();
-        
-        // Log the API response for debugging purposes
-        console.log('API Response:', data);
-
-        // Process the API data
-        const shiftsFromAPI = data.map((shift, index) => {
-          const startTime = new Date(shift.startTime);
-
-          return {
-            id: index + 1, // Unique ID for each shift
-            date: startTime.toLocaleDateString(),
-            route: `${shift.startPointName} - ${shift.endPointName}`,
-            time: startTime.toLocaleTimeString(),
-            bus: shift.busNumber || 'Unknown Bus',
-            duration: 8 * 60 * 60, // Assuming 8 hours
-            details: `Driver: ${shift.driverName || 'Unknown'}, Conductor: ${shift.conductorName || 'Unknown'}`,
-            startTime: startTime,
-            endTime: new Date(startTime.getTime() + 8 * 60 * 60 * 1000), // Assuming trip lasts 8 hours
-          };
-        });
-
-        setShifts(shiftsFromAPI);
-      } catch (error) {
-        console.error('Error fetching shift data:', error);
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Received non-JSON response");
       }
-    };
 
-    fetchShifts();
-  }, []);
+      const data = await response.json();
+
+      const shiftsFromAPI = data.map((shift) => {
+        const scheduledStartTime = new Date(shift.scheduledStartTime);
+        const scheduledEndTime = new Date(shift.scheduledEndTime);
+        const actualStartTime = shift.actualStartTime ? new Date(shift.actualStartTime) : null;
+        const actualEndTime = shift.actualEndTime ? new Date(shift.actualEndTime) : null;
+
+        return {
+          id: shift._id, // Use shift's actual ID
+          date: scheduledStartTime.toLocaleDateString(),
+          route: `${shift.startPointName} - ${shift.endPointName}`,
+          time: scheduledStartTime.toLocaleTimeString(),
+          bus: shift.busNumber || 'Unknown Bus',
+          duration: (scheduledEndTime - scheduledStartTime) / 1000, // Duration in seconds
+          details: `Driver: ${shift.driverName || 'Unknown'}, Conductor: ${shift.conductorName || 'Unknown'}`,
+          scheduledStartTime: scheduledStartTime,
+          scheduledEndTime: scheduledEndTime,
+          actualStartTime: actualStartTime,
+          actualEndTime: actualEndTime,
+          status: shift.status || 'unknown',
+        };
+      });
+
+      setShifts(shiftsFromAPI);
+    } catch (error) {
+      console.error('Error fetching shift data:', error);
+    }
+  };
+
+  fetchShifts();
+}, []);
+
 
   useEffect(() => {
     let interval = null;
