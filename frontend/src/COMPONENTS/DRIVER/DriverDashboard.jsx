@@ -36,6 +36,8 @@ function DriverDashboard() {
     email: 'singharjun@gmail.com',
     role: 'Driver',
     employeeId: 'ARJUN20',
+    license_number: "DL 23D 5678",
+    phone_number: "8234970012",
     lastLogin: new Date().toLocaleString(),
   };
 

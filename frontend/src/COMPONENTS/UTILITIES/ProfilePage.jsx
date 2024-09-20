@@ -42,8 +42,8 @@ function ProfilePage({ onClose, handleLogout, darkMode, userData }) {
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Role: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.role}</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Employee ID: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.employeeId}</span></p>
            
-            <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>License Number: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.license_number}</span></p> 
-              
+            {user.license_number && (<p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>License Number: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.license_number}</span></p> 
+)}
             
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Phone Number: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.phone_number}</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Last Login: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.lastLogin}</span></p>
