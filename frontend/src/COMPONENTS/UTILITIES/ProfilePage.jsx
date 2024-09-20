@@ -2,18 +2,9 @@ import React from 'react';
 import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-function ProfilePage({ onClose, handleLogout, darkMode }) {
+function ProfilePage({ onClose, handleLogout, darkMode, userData }) {
   // Mock user data, including last login time
-  const user = {
-    name: 'Arjun Singh',
-    email: 'singharjun@gmail.com',
-    role: 'Driver',
-    employeeId: 'ARJUN20',
-    license_number: "DL 23D 5678",
-    phone_number: "8234970012",
-
-    lastLogin: new Date().toLocaleString(), // This displays the current time for simplicity
-  };
+  const user = userData;
 
   const navigate = useNavigate(); // Use navigate for redirection
 
@@ -50,7 +41,10 @@ function ProfilePage({ onClose, handleLogout, darkMode }) {
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Status: <span className={`font-semibold ${darkMode ? ' text-green-500' : 'text-green-500'}`}>Active</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Role: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.role}</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Employee ID: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.employeeId}</span></p>
-            <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>License Number: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.license_number}</span></p>
+           
+            <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>License Number: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.license_number}</span></p> 
+              
+            
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Phone Number: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.phone_number}</span></p>
             <p className={`text-md mb-2 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Last Login: <span className={`font-semibold ${darkMode ? 'text-white' : 'text-black'}`}>{user.lastLogin}</span></p>
           </div>
