@@ -21,21 +21,31 @@ const TripAssignmentSchema = new mongoose.Schema({
     ref: 'Bus',
     required: true
   },
-  startTime: {
+  
+  // Scheduled times during trip planning
+  scheduledStartTime: {
     type: Date,
-    default: Date.now
+    required: true // To ensure it is set during scheduling
   },
-  expectedEndTime: {
-    type: Date
+  scheduledEndTime: {
+    type: Date,
+    required: true // To ensure it is set during scheduling
   },
-  endTime: {
-    type: Date
+  
+  // Actual times when the trip starts/ends
+  actualStartTime: {
+    type: Date // Will be set when the trip starts
   },
+  actualEndTime: {
+    type: Date // Will be set when the trip ends
+  },
+
   status: {
     type: String,
-    enum: ['ongoing', 'completed'],
-    default: 'ongoing'
+    enum: ['scheduled', 'ongoing', 'completed'],
+    default: 'scheduled' // Initial status will be scheduled
   },
+
   startLocation: {
     type: {
       type: String,
@@ -43,8 +53,7 @@ const TripAssignmentSchema = new mongoose.Schema({
       default: 'Point'
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      //required: true
+      type: [Number] // [longitude, latitude]
     }
   },
   endLocation: {
@@ -54,10 +63,10 @@ const TripAssignmentSchema = new mongoose.Schema({
       default: 'Point'
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
-      //required: true
+      type: [Number] // [longitude, latitude]
     }
   },
+
   tripSequence: {
     type: Number,
     default: 0
@@ -69,4 +78,3 @@ TripAssignmentSchema.index({ endLocation: '2dsphere' });
 
 const TripAssignment = mongoose.model('TripAssignment', TripAssignmentSchema);
 module.exports = TripAssignment;
-
