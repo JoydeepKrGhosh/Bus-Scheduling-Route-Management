@@ -59,6 +59,13 @@ const uploadReferenceImage = async (req, res) => {
   });
 };
 
+
+
+const extractKeyFromUrl = (url) => {
+  const urlParts = url.split('/');
+  return urlParts.slice(3).join('/'); // This will extract the object key from the full S3 URL
+};
+
 const uploadDailyImageAndVerify = async (req, res) => {
   const { employeeCode, role } = req.body;
 
@@ -97,11 +104,15 @@ const uploadDailyImageAndVerify = async (req, res) => {
         const user = role === 'driver' ? await Driver.findOne({ employeeCode }) : await Conductor.findOne({ employeeCode });
         referenceImageUrl = user.referenceImageUrl;  // Assign value to referenceImageUrl
 
-        // Compare faces using Rekognition
-        console.log('Reference Image URL:', referenceImageUrl);
-        console.log('Daily Image URL:', s3Url);
+        // **Extract object keys from the full URLs**
+        const referenceImageKey = extractKeyFromUrl(referenceImageUrl);
+        const dailyImageKey = extractKeyFromUrl(s3Url);
 
-        const comparisonResult = await compareFaces(referenceImageUrl, s3Url);
+        // Compare faces using Rekognition with the object keys
+        console.log('Reference Image Key:', referenceImageKey);
+        console.log('Daily Image Key:', dailyImageKey);
+
+        const comparisonResult = await compareFaces(referenceImageKey, dailyImageKey);
 
         // Update the user's verification status based on the comparison result
         if (comparisonResult.FaceMatches.length > 0) {
@@ -133,6 +144,7 @@ const uploadDailyImageAndVerify = async (req, res) => {
     });
   });
 };
+
 
 
 module.exports = { uploadReferenceImage, uploadDailyImageAndVerify };
