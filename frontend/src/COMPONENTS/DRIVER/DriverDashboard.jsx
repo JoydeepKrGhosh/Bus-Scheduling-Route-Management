@@ -7,6 +7,8 @@ import GISNavigation from '../CREW MEMBER/GISNavigation';
 import MySchedule from '../CREW MEMBER/MySchedule';
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
 import TopPopup from '../CREW MEMBER/TOpPopup';
+import Notification from '../CREW MEMBER/Notification';
+import ProfilePage from '../UTILITIES/ProfilePage';
 
 function DriverDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -26,6 +28,19 @@ function DriverDashboard() {
   const [isLocationFetched, setIsLocationFetched] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
+  const [isProfileOpen, setIsProfileOpen] = useState(true);
+
+  // Sample data passed as props
+  const userData = {
+    name: 'Arjun Singh',
+    email: 'singharjun@gmail.com',
+    role: 'Driver',
+    employeeId: 'ARJUN20',
+    lastLogin: new Date().toLocaleString(),
+  };
+
+ 
+  
 
 
   const workHistory = [
@@ -154,13 +169,16 @@ function DriverDashboard() {
         ])} />;
       case 'Notifications':
         return (
-          <div className={`p-4 rounded-lg shadow-lg ${darkMode ? 'bg-gray-600' : 'bg-white'}`}>
-            <FaBell className="text-red-500 text-3xl mr-4" />
-            <div>
-              <p className="text-xl font-semibold">Notifications</p>
-              <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View system notifications.</p>
-            </div>
-          </div>
+          <div
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
+                onClick={() => handleSidebarClick('notifications')}
+              >
+                <FaBell className="text-red-500 text-3xl mr-4" />
+                <div>
+                  <p className="text-xl font-semibold">Notifications</p>
+                  <p className={`${darkMode ? 'text-blue-300' : 'text-black'}`}>View system notifications.</p>
+                </div>
+              </div>
         );
       default:
         return (
@@ -230,7 +248,8 @@ function DriverDashboard() {
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} userData={userData} />
+      
 
       {/* Add a margin between Navbar and main content */}
       <div className="flex flex-grow relative">
@@ -287,6 +306,21 @@ function DriverDashboard() {
          
 
             <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
+            <div className="flex items-center mt-8 mb-8">
+                  {/* LocationFetcher Component */}
+                  <LocationFetcher onComplete={handleLocationFetchComplete} />
+
+                  {/* Display a message or additional content after location is fetched */}
+                  {isLocationFetched && (
+                    <p className="mt-4 text-green-500"></p>
+                  )}
+
+                  {showPopup && (
+                    <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
+                      Location successfully fetched!
+                    </div>
+                  )}
+                </div>
 
 
             {/* Start Day / End Day Button */}
@@ -308,21 +342,7 @@ function DriverDashboard() {
                   Start Day
                 </button>
                 
-                <div className="flex items-center mt-8">
-                  {/* LocationFetcher Component */}
-                  <LocationFetcher onComplete={handleLocationFetchComplete} />
-
-                  {/* Display a message or additional content after location is fetched */}
-                  {isLocationFetched && (
-                    <p className="mt-4 text-green-500"></p>
-                  )}
-
-                  {showPopup && (
-                    <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
-                      Location successfully fetched!
-                    </div>
-                  )}
-                </div>
+                
                
               </>
             )}
@@ -360,6 +380,7 @@ function DriverDashboard() {
           {activeSection === 'mySchedule' && <MySchedule darkMode={darkMode} handleCardClick={handleSidebarClick} />}
           {activeSection === 'notifications' && <Notification darkMode={darkMode} handleCardClick={handleSidebarClick} />}
           {activeSection === 'gisNavigation' && <GISNavigation darkMode={darkMode} handleCardClick={handleSidebarClick} />}
+          
         
         </div>
       </div>

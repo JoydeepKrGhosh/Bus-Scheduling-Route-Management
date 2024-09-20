@@ -51,16 +51,9 @@ import React from 'react';
 import { FaUserCircle, FaTimes } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
-function ProfilePage({ onClose, handleLogout, darkMode }) {
+function ProfilePage({ onClose, handleLogout, darkMode, userData }) {
   // Mock user data, including last login time
-  const user = {
-    name: 'Arjun Singh',
-    email: 'singharjun@gmail.com',
-    role: 'Admin',
-    employeeId: 'ARJUN20',
-  
-    lastLogin: new Date().toLocaleString(), // This displays the current time for simplicity
-  };
+  const user = userData;
 
   const navigate = useNavigate(); // Use navigate for redirection
 

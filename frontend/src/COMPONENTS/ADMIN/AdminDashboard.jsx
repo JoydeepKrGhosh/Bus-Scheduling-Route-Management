@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaUsers, FaBus, FaFileAlt, FaBell, FaChartLine, FaWindowMaximize, FaWindowMinimize, FaTimes } from 'react-icons/fa';
+import { FaUsers, FaBus, FaRoute, FaChartLine, FaWindowMaximize, FaWindowMinimize, FaTimes,FaCalendar } from 'react-icons/fa';
 import Sidebar from '../UTILITIES/Sidebar';
 import Navbar from '../UTILITIES/Navbar';
 import ActiveBuses from './ActiveBuses';
@@ -13,7 +13,18 @@ function AdminDashboard() {
   const [darkMode, setDarkMode] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false); // For mobile sidebar toggle
+  const [isProfileOpen, setIsProfileOpen] = useState(true);
 
+  // Sample data passed as props
+  const userData = {
+    name: 'Vijay Kumar',
+    email: 'kumarvijay03@gmail.com',
+    role: 'Admin',
+    employeeId: 'VIJAY923AD',
+    lastLogin: new Date().toLocaleString(),
+  };
+
+  
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -41,7 +52,7 @@ function AdminDashboard() {
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} />
+      <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} userData={userData} />
 
       <div className="flex flex-grow relative">
         {/* Sidebar for large screens */}
@@ -95,6 +106,16 @@ function AdminDashboard() {
             <div className={`p-4 lg:p-8 rounded-lg shadow-lg ${darkMode ? 'bg-gray-700' : 'bg-white'}`}>
               <h1 className="text-2xl lg:text-3xl font-bold mb-4 lg:mb-6">Admin Dashboard</h1>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+              <div
+                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
+                  onClick={() => handleSidebarClick('todaySchedule')}
+                >
+                  <FaCalendar className={`text-2xl lg:text-3xl mr-4 ${darkMode ? 'text-purple-300' : 'text-red-500'}`} />
+                  <div>
+                    <p className={`text-lg lg:text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Today's Schedule</p>
+                    <p className={darkMode ? 'text-gray-300' : 'text-gray-500'}>View today's schedule of different Crew Members.</p>
+                  </div>
+                </div>
                 <div
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
                   onClick={() => handleSidebarClick('employeeManagement')}
@@ -121,7 +142,7 @@ function AdminDashboard() {
                   className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
                   onClick={() => handleSidebarClick('assignRoutes')}
                 >
-                  <FaBus className={`text-2xl lg:text-3xl mr-4 ${darkMode ? 'text-yellow-300' : 'text-yellow-500'}`} />
+                  <FaRoute className={`text-2xl lg:text-3xl mr-4 ${darkMode ? 'text-yellow-300' : 'text-yellow-500'}`} />
                   <div>
                     <p className={`text-lg lg:text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Assign Routes</p>
                     <p className={darkMode ? 'text-gray-300' : 'text-gray-500'}>Assign routes to buses visually.</p>
@@ -138,29 +159,20 @@ function AdminDashboard() {
                     <p className={darkMode ? 'text-gray-300' : 'text-gray-500'}>View performance reports and analytics.</p>
                   </div>
                 </div>
-                <div
-                  className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'}`}
-                  onClick={() => handleSidebarClick('todaySchedule')}
-                >
-                  <FaChartLine className={`text-2xl lg:text-3xl mr-4 ${darkMode ? 'text-purple-300' : 'text-purple-500'}`} />
-                  <div>
-                    <p className={`text-lg lg:text-xl font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Today's Schedule</p>
-                    <p className={darkMode ? 'text-gray-300' : 'text-gray-500'}>View today's schedule of different Crew Members.</p>
-                  </div>
-                </div>
+                
               </div>
 
               <div className="mt-6 lg:mt-8">
                 <h2 className="text-xl lg:text-2xl font-bold mb-2 lg:mb-4">Recent Activity</h2>
                 <ul>
                   <li className="mb-1 lg:mb-2">
-                    <span className="font-semibold">User X</span> added a new route at 10:30 AM.
+                    <span className="font-semibold">Arjun Singh</span> added a new route at 10:30 AM.
                   </li>
                   <li className="mb-1 lg:mb-2">
-                    <span className="font-semibold">User Y</span> updated a schedule at 09:45 AM.
+                    <span className="font-semibold">Vijay Kumar</span> updated a schedule at 09:45 AM.
                   </li>
                   <li>
-                    <span className="font-semibold">User Z</span> generated a report at 08:15 AM.
+                    <span className="font-semibold">Vinod Shaw</span> generated a report at 08:15 AM.
                   </li>
                 </ul>
               </div>

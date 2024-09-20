@@ -1,27 +1,42 @@
+// src/components/Notification.jsx
 import React from 'react';
-import { FaBell } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 
-function Notification({ notifications, darkMode }) {
+const Notification = ({ darkMode, handleCardClick }) => {
   return (
-    <div className={`p-6 rounded-lg shadow-lg ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} mt-16`}>
-      <div className="flex items-center mb-6">
-        <FaBell className={`text-4xl mr-4 ${darkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
-        <h2 className="text-3xl font-bold">Notifications</h2>
+    <div
+      className={`max-w-4xl mx-auto p-6 mt-16 ${
+        darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+      } shadow-lg rounded-lg transition-all duration-300 ease-in-out mb-8`}
+    >
+      <div className="flex justify-between items-center">
+        <h2 className="text-3xl font-bold mb-4">Important Notification</h2>
+        <button
+          onClick={() => handleCardClick('dashboard')}
+          className="text-xl text-gray-500 hover:text-red-500 transition-colors"
+        >
+          <FaTimes />
+        </button>
       </div>
-      {notifications.length > 0 ? (
-        <ul className="space-y-4">
-          {notifications.map((notification, index) => (
-            <li key={index} className={`p-4 rounded-lg shadow-md ${darkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
-              <p className={`text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>{notification.message}</p>
-              <span className={`block text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{notification.time}</span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-center text-gray-500">No new notifications</p>
-      )}
+
+      <p className="text-lg">
+        Please note that the schedule for tomorrow has been updated. Ensure to check your routes and timings by the end of the day. Contact the admin for any clarifications.
+      </p>
+
+      <div className="mt-6 flex justify-end">
+        <button
+          onClick={() => handleCardClick('viewDetails')}
+          className={`px-6 py-3 text-lg font-semibold rounded-lg ${
+            darkMode
+              ? 'bg-blue-600 text-white hover:bg-blue-500'
+              : 'bg-indigo-600 text-white hover:bg-indigo-500'
+          } transition`}
+        >
+          View Details
+        </button>
+      </div>
     </div>
   );
-}
+};
 
 export default Notification;
