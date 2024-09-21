@@ -15,7 +15,6 @@ const AssignRoutes = () => {
   const [startSuggestions, setStartSuggestions] = useState([]);
   const [endSuggestions, setEndSuggestions] = useState([]);
 
-  // States for pop-up and loader
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +72,6 @@ const AssignRoutes = () => {
     };
     try {
       await axios.post('http://localhost:5000/api/busroute/api/generateroute', routeData);
-      // Show success popup for 2 seconds
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 2000);
     } catch (error) {
@@ -82,17 +80,17 @@ const AssignRoutes = () => {
   };
 
   const refreshRoutes = async () => {
-    setTimeout(() => setIsLoading(true),5000); // Show loader while refreshing
+    setIsLoading(true); 
     const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
-    setIsLoading(false); // Hide loader when done
+    setIsLoading(false);
   };
 
   const renderMap = () => {
     if (!selectedRoute) {
       return (
-        <div className="h-80 flex items-center justify-center bg-gray-200 border border-gray-300 text-gray-600 rounded-lg">
+        <div className="h-[600px] flex items-center justify-center bg-gray-200 border border-gray-300 text-gray-600 rounded-lg shadow-md">
           <span>Select a route to see it on the map.</span>
         </div>
       );
@@ -111,7 +109,7 @@ const AssignRoutes = () => {
       .map(([lng, lat]) => [lat, lng]);
 
     return (
-      <MapContainer center={mapCenter} zoom={13} style={{ height: '400px', width: '100%' }} className="rounded-lg shadow-lg">
+      <MapContainer center={mapCenter} zoom={13} style={{ height: '500px', width: '100%' }} className="rounded-lg shadow-lg">
         <TileLayer
           url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -133,9 +131,9 @@ const AssignRoutes = () => {
     }
 
     return (
-      <div className="mt-6 p-4 bg-gray-100 rounded-lg shadow-md">
+      <div className="mt-6 p-6 bg-gray-100 rounded-lg shadow-md w-full">
         <h3 className="text-lg font-semibold text-gray-800">Turn-by-Turn Instructions</h3>
-        <ul className="list-disc pl-5 mt-2 text-gray-700">
+        <ul className="list-disc pl-5 mt-3 text-gray-700">
           {selectedRoute.instructions.map((instruction, index) => (
             <li key={index} className="mb-2">
               {instruction.instruction} (Distance: {instruction.distance}m, Time: {instruction.time.toFixed(2)}s)
@@ -147,114 +145,111 @@ const AssignRoutes = () => {
   };
 
   return (
-    <div className="relative flex flex-col items-center gap-6 mx-auto my-10 max-w-3xl p-6 bg-white shadow-xl rounded-lg">
-      <h2 className="text-2xl font-bold text-gray-900">Assign a Route</h2>
+    <div className="relative flex flex-col items-center gap-8 mx-auto my-[-10px] p-10 max-w-full min-h-screen bg-gray-50 shadow-2xl rounded-lg">
+      <h2 className="text-3xl font-bold text-gray-900 mt-[-25px]">Assign a Route</h2>
 
-      {/* Success Pop-up */}
       {showSuccessPopup && (
-        <div className="absolute justify-center
-         bg-green-400 text-3xl text-white px-4 py-2 rounded-md shadow-md">
+        <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-lg px-6 py-3 rounded-md shadow-lg">
           Route saved successfully!
         </div>
       )}
 
-      <div className="w-full">
-        <label htmlFor="startLocation" className="block text-sm font-medium text-gray-700">Start Location:</label>
-        <input
-          id="startLocation"
-          value={startLocation}
-          onChange={(e) => {
-            setStartLocation(e.target.value);
-            fetchSuggestions(e.target.value, setStartSuggestions);
-          }}
-          placeholder="Enter start location"
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
-          {startSuggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              onClick={() => {
-                setStartLocation(suggestion.properties.formatted);
-                setStartSuggestions([]);
-              }}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              {suggestion.properties.formatted}
-            </li>
-          ))}
-        </ul>
+      <div className="w-full flex flex-col gap-6 md:flex-row">
+        <div className="w-full md:w-1/2">
+          <label htmlFor="startLocation" className="block text-sm font-semibold text-gray-800">Start Location:</label>
+          <input
+            id="startLocation"
+            value={startLocation}
+            onChange={(e) => {
+              setStartLocation(e.target.value);
+              fetchSuggestions(e.target.value, setStartSuggestions);
+            }}
+            placeholder="Enter start location"
+            className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+          />
+          <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
+            {startSuggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  setStartLocation(suggestion.properties.formatted);
+                  setStartSuggestions([]);
+                }}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                {suggestion.properties.formatted}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="w-full md:w-1/2">
+          <label htmlFor="endLocation" className="block text-sm font-semibold text-gray-800">End Location:</label>
+          <input
+            id="endLocation"
+            value={endLocation}
+            onChange={(e) => {
+              setEndLocation(e.target.value);
+              fetchSuggestions(e.target.value, setEndSuggestions);
+            }}
+            placeholder="Enter end location"
+            className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+          />
+          <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
+            {endSuggestions.map((suggestion, index) => (
+              <li
+                key={index}
+                onClick={() => {
+                  setEndLocation(suggestion.properties.formatted);
+                  setEndSuggestions([]);
+                }}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              >
+                {suggestion.properties.formatted}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div className="w-full">
-        <label htmlFor="endLocation" className="block text-sm font-medium text-gray-700">End Location:</label>
-        <input
-          id="endLocation"
-          value={endLocation}
-          onChange={(e) => {
-            setEndLocation(e.target.value);
-            fetchSuggestions(e.target.value, setEndSuggestions);
-          }}
-          placeholder="Enter end location"
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
-        <ul className="mt-1 bg-white border border-gray-300 rounded-md max-h-48 overflow-y-auto shadow-lg">
-          {endSuggestions.map((suggestion, index) => (
-            <li
-              key={index}
-              onClick={() => {
-                setEndLocation(suggestion.properties.formatted);
-                setEndSuggestions([]);
-              }}
-              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            >
-              {suggestion.properties.formatted}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="w-full">
-        <label htmlFor="routeSelect" className="block text-sm font-medium text-gray-700">Select a Route:</label>
+      <div className="w-full mt-4">
+        <label htmlFor="routeSelect" className="block text-sm font-semibold text-gray-800">Select a Route:</label>
         <select
           id="routeSelect"
           value={routeId}
           onChange={handleRouteChange}
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
         >
-          <option value="">-- Select a Route --</option>
+          <option value="">Select a route</option>
           {routes.map((route) => (
-            <option key={route.routeId} value={route.routeId}>
-              Start: {route.startPoint.name || 'Unnamed'}, End: {route.endPoint.name || 'Unnamed'}
+            <option key={route._id} value={route._id}>
+              {route.name}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="flex gap-4 w-full mt-4">
+      <div className="w-full flex items-center justify-end gap-3">
         <button
           onClick={saveRoute}
-          className="px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600 transition duration-200"
+          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         >
           Save Route
         </button>
         <button
           onClick={refreshRoutes}
-          className="px-4 py-2 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition duration-200"
+          className={`px-6 py-2 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 focus:ring-2 focus:ring-green-300 focus:outline-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={isLoading}
         >
-          {isLoading ? (
-            <svg className="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0116 0H4z"></path>
-            </svg>
-          ) : (
-            'Refresh Routes'
-          )}
+          {isLoading ? 'Refreshing...' : 'Refresh Routes'}
         </button>
       </div>
 
-      <div className="w-full">{renderMap()}</div>
+      <div className="w-full">
+        {renderMap()}
+      </div>
+
+      
 
       {renderInstructions()}
     </div>
