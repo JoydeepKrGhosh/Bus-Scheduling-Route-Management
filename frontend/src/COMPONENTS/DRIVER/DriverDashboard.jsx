@@ -370,7 +370,7 @@ function DriverDashboard() {
                 </button>
                 {capturedImage && (
             <ImageUpload
-              apiEndpoint="https://your-api-url.com/verify-image"
+              apiEndpoint="http://localhost:5000/api/awsimage/upload-daily-image"
               image={capturedImage} // Pass the captured image for upload
             />
           )}
