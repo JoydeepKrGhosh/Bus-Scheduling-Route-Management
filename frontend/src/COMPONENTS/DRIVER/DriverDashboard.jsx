@@ -9,6 +9,7 @@ import LocationFetcher from '../CREW MEMBER/LocationFetcher';
 import TopPopup from '../CREW MEMBER/TopPopup';
 import Notification from '../CREW MEMBER/Notification';
 import ImageUpload from './Imageupload';
+import FaceVerification from './FaceVerification';
 
 
 function DriverDashboard() {
@@ -31,6 +32,9 @@ function DriverDashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [imageSrc, setImageSrc] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
+  const [showPopup, setShowPopup] = useState(false); // To show location popup
+  const [isImageVerified, setIsImageVerified] = useState(false); // Tracks if face is verified
+ 
 
 
   // Sample data passed as props
@@ -46,6 +50,7 @@ function DriverDashboard() {
 
  const FirstName = 'Arjun';
   
+ const apiEndpoint = 'http://localhost:5000/api/awsimage/upload-daily-image'; // Backend API URL
 
 
   const workHistory = [
@@ -61,6 +66,15 @@ function DriverDashboard() {
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+
+  // Handle the completion of face verification
+  const handleFaceVerificationComplete = (isVerified) => {
+    if (isVerified) {
+      setIsImageVerified(true); // Set face verified status
+      setShowImageVerifiedPopup(true); // Show image verified popup
+      setTimeout(() => setShowImageVerifiedPopup(false), 3000); // Hide the popup after 3 seconds
+    }
   };
 
   const handleSidebarClick = (component) => {
@@ -81,7 +95,7 @@ function DriverDashboard() {
   };
 
 
-  const showPopup = () => {
+  const showPopupHere = () => {
     setIsPopupVisible(true);
   };
 
@@ -94,6 +108,8 @@ function DriverDashboard() {
   const handleLocationFetchComplete = () => {
     setIsLocationFetched(true);
     console.log('Location fetching completed.');
+    setShowPopup(true); // Show location success popup
+    setTimeout(() => setShowPopup(false), 3000); // Hide popup after 3 seconds
   };
 
   const handleGetLocation = () => {
@@ -123,6 +139,7 @@ function DriverDashboard() {
     setIsDayStarted(true);
     setIsEndDayEnabled(true);
     setShowWebcam(true);
+    startTimer();
   };
 
   const handleEndDay = () => {
@@ -136,18 +153,20 @@ function DriverDashboard() {
     setHistory((prevHistory) => [...prevHistory, `Day lasted for: ${formattedTime}`]);
     setTimer(0);
     setIsDayStarted(false);
-    setIsImageCaptured(false);
+    setIsImageCaptured(false); 
   };
 
  
 
   const captureImage = () => {
+    showPopupHere();
     const imageSrc = webcamRef.current.getScreenshot();
     setCapturedImage(imageSrc);
     // setShowWebcam(false);
     // setIsImageCaptured(true);
     // startTimer();
-    // showPopup();
+    setShowImageVerifiedPopup(true); // Show image verified popup
+    setTimeout(() => setShowImageVerifiedPopup(false), 3000); // Hide popup after 3 seconds
   };
   
 
@@ -176,7 +195,7 @@ function DriverDashboard() {
       case 'Notifications':
         return (
           <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isDayStarted ? 'pointer-events-none ' : ''}`}
                 onClick={() => handleSidebarClick('notifications')}
               >
                 <FaBell className="text-red-500 text-3xl mr-4" />
@@ -192,7 +211,7 @@ function DriverDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-12">
             {activeSection === 'dashboard' && (
               <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isDayStarted ? 'pointer-events-none ' : ''}`}
                 onClick={() =>handleSidebarClick('mySchedule')}
               >
                 <FaBus className="text-blue-500 text-3xl mr-4" />
@@ -204,7 +223,7 @@ function DriverDashboard() {
             )}
               {activeSection === 'dashboard' && ( 
               <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isDayStarted ? 'pointer-events-none ' : ''}`}
                 onClick={() => handleSidebarClick('gisNavigation')}
               >
                 <FaMapMarkerAlt className="text-green-500 text-3xl mr-4" />
@@ -216,7 +235,7 @@ function DriverDashboard() {
               )}
                {activeSection === 'dashboard' && (
               <div
-                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isImageCaptured ? 'pointer-events-none ' : ''}`}
+                className={`p-4 rounded-lg shadow-lg flex items-center cursor-pointer ${darkMode ? 'bg-gray-600' : 'bg-white'} ${!isDayStarted ? 'pointer-events-none ' : ''}`}
                 onClick={() => handleSidebarClick('notifications')}
               >
                 <FaBell className="text-red-500 text-3xl mr-4" />
@@ -311,25 +330,54 @@ function DriverDashboard() {
           <h1 className="text-3xl font-bold mb-8 ">Driver Dashboard</h1>
          
 
-            <TopPopup message="Image is Verified" isVisible={isPopupVisible} onClose={closePopup} />
-            <div className="flex items-center mt-8 mb-8">
-                  {/* LocationFetcher Component */}
-                  <LocationFetcher onComplete={handleLocationFetchComplete} />
+          <div>
+      {/* Show Location Fetcher if location not yet fetched */}
+      {!isLocationFetched && (
+        <div>
+          <LocationFetcher onComplete={handleLocationFetchComplete} />
+          {showPopupHere && (
+            <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
+              Location successfully fetched!
+            </div>
+          )}
+        </div>
+      )}
 
-                  {/* Display a message or additional content after location is fetched */}
-                  {isLocationFetched && (
-                    <p className="mt-4 text-green-500"></p>
-                  )}
+      {/* Show FaceVerification section after location is fetched */}
+      {isLocationFetched && !isImageVerified && (
+        <div className="mt-8">
+          <FaceVerification
+            apiEndpoint={apiEndpoint}
+            onComplete={handleFaceVerificationComplete} // Callback for verification completion
+          />
+        </div>
+      )}
 
-                  {showPopup && (
-                    <div className="fixed top-4 right-4 bg-green-500 text-white py-2 px-4 rounded shadow-lg">
-                      Location successfully fetched!
-                    </div>
-                  )}
-                </div>
+      {/* Render Start Day/End Day functionality after image is verified */}
+      {isImageVerified && (
+        <div className="mt-8">
+          {isDayStarted ? (
+            <button
+              onClick={handleEndDay}
+              className="bg-red-500 text-white px-6 py-3 rounded-lg"
+              disabled={!isEndDayEnabled}
+            >
+              End Day
+            </button>
+          ) : (
+            <button
+              onClick={handleStartDay}
+              className="bg-blue-500 text-white px-6 py-3 rounded-lg"
+            >
+              Start Day
+            </button>
+          )}
+        </div>
+      )}
+    </div>
 
 
-            {/* Start Day / End Day Button */}
+            {/* Start Day / End Day Button}
             
             {isDayStarted ? (
               <button
@@ -346,43 +394,13 @@ function DriverDashboard() {
                   className="bg-blue-500 text-white px-6 py-3 rounded-lg"
                 >
                   Start Day
-                </button>
+                </button> */}
                 
                 
                
-              </>
-            )}
+              {/* </>
+            )} */}
 
-            {/* Webcam Section */}
-            {showWebcam && (
-              <div className="mt-8">
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  className="rounded-lg shadow-lg"
-                />
-                <button
-                  onClick={captureImage}
-                  className="mt-4 bg-blue-500 text-white px-6 py-3 rounded-lg"
-                >
-                  Capture Image
-                </button>
-                {capturedImage && (
-            <ImageUpload
-              apiEndpoint="http://localhost:5000/api/awsimage/upload-daily-image"
-              image={capturedImage} // Pass the captured image for upload
-            />
-          )}
-              </div>
-            )}
-
-            {/* Popup for "Image Verified" */}
-            {showImageVerifiedPopup && (
-              <div className="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg">
-                <p>Image verified</p>
-              </div>
-            )}
 
             {/* Render Active Component */}
             <div className="mt-8">{renderActiveComponent()}</div>

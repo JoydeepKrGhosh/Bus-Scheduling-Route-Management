@@ -83,13 +83,13 @@ function LoginPage({ onLogin }) {
     }
 
     // If lengths are valid, proceed with role matching
-    if (role === 'Admin' && employeeId === 'admin000' && password === 'admin1234') {
+    if (role === 'Admin' && employeeId === 'Ad7834' && password === 'admin1234') {
       onLogin('Admin');
       navigate('/admin');
-    } else if (role === 'Driver' && employeeId === 'driver01' && password === 'driver123') {
+    } else if (role === 'Driver' && employeeId === 'Dr7352' && password === 'driver123') {
       onLogin('Driver');
       navigate('/driver');
-    } else if (role === 'Conductor' && employeeId === 'conduc01' && password === 'condut123') {
+    } else if (role === 'Conductor' && employeeId === 'Cd3986' && password === 'condut123') {
       onLogin('Conductor');
       navigate('/conductor');
     } else {
