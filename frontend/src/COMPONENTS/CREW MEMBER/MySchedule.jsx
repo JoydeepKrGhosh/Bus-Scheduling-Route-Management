@@ -18,7 +18,7 @@ function MySchedule({ darkMode, addToHistory }) {
   useEffect(() => {
     const fetchShifts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/showdriverconductortrips/crewschedule/driver/66e44e662d2666edd9ca21ae?selectedDate=2024-09-20');
+        const response = await fetch('https://bus-scheduling-route-management-1.onrender.com/api/showdriverconductortrips/crewschedule/driver/66e44e662d2666edd9ca21ae?selectedDate=2024-09-20');
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           throw new Error("Received non-JSON response");
