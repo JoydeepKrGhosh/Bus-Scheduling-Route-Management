@@ -1,91 +1,109 @@
-// controllers/driverController.js  
 const Driver = require('../models/driver.model.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Sign up driver  
+// Register driver
 exports.register = async (req, res) => {
-    const { name, driver_id, license_number, phone_number, password } = req.body;
+    const { name, driver_id, license_number, phone_number, password, employeeCode } = req.body;
 
     try {
-        // Checking if the driver already exists  
+        // Checking if the driver already exists
         const existingDriver = await Driver.findOne({ driver_id });
         if (existingDriver) {
             return res.status(400).json({ message: 'Driver already exists' });
         }
 
-        // Hashing the password  
+        // Hashing the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Creating a new driver  
+        // Ensuring employeeCode is exactly 6 characters, or auto-fill with driver_id if not provided
+        const employeeCodeFinal = employeeCode ? employeeCode : driver_id;
+        if (employeeCodeFinal.length !== 6) {
+            return res.status(400).json({ message: 'Employee code must be exactly 6 characters.' });
+        }
+
+        // Creating a new driver
         const newDriver = new Driver({
             name,
             driver_id,
             license_number,
             phone_number,
             password: hashedPassword,
+            employeeCode: employeeCodeFinal, // Set employeeCode here
         });
 
+        // Saving the driver to the database
         const savedDriver = await newDriver.save();
 
+        // Respond with success and driver info
         res.status(201).json({
             message: 'Driver registered successfully',
-            driver: { id: savedDriver._id, name: savedDriver.name },
+            driver: { id: savedDriver._id, name: savedDriver.name, employeeCode: savedDriver.employeeCode },
         });
     } catch (error) {
         console.log(error);
-
         res.status(500).json({ message: 'Server error' });
     }
 };
-exports.login = async (req, res) => {  
-    const { driver_id, password } = req.body;  
 
-    try {  
-        // Find the driver by driver_id  
-        const driver = await Driver.findOne({ driver_id });  
-        if (!driver) {  
-            return res.status(404).json({ message: 'Driver not found' });  
-        }  
+// Driver Login Controller
+exports.login = async (req, res) => {
+    const { driver_id, password } = req.body;
+  
+    try {
+      // Check if the driver exists
+      console.log("Checking if driver_id exists:", driver_id);
+      const driver = await Driver.findOne({ driver_id });
+      if (!driver) {
+        console.log("Driver not found.");
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+  
+      // Check if the password is correct
+      console.log("Checking password...");
+      const isPasswordCorrect = await bcrypt.compare(password, driver.password);
+      if (!isPasswordCorrect) {
+        console.log("Incorrect password.");
+        return res.status(400).json({ message: 'Invalid credentials' });
+      }
+  
+      // Generate a JWT token
+      console.log("Generating JWT token...");
+      const token = jwt.sign(
+        { id: driver._id, driver_id: driver.driver_id, name: driver.name },
+        process.env.JWT_SECRET, // Use your secret key from environment variables
+        { expiresIn: '1h' } // Token expires in 1 hour
+      );
+  
+      // Return the token and driver details
+      res.status(200).json({
+        message: 'Login successful',
+        token,
+        driver: {
+          id: driver._id,
+          name: driver.name,
+          driver_id: driver.driver_id,
+        },
+      });
+  
+      console.log("Login successful for driver:", driver.driver_id);
+    } catch (error) {
+      console.log("Error during login:", error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
 
-        // Compare the password using bcrypt  
-        const isMatch = await bcrypt.compare(password, driver.password);  
-        if (!isMatch) {  
-            return res.status(400).json({ message: 'Invalid credentials' });  
-        }  
 
-        // Generate a token  
-        const token = jwt.sign({ id: driver._id, role: 'driver' }, process.env.JWT_SECRET, {  
-            expiresIn: '24h',  
-        });  
 
-        // Set cookie options  
-        const options = {  
-            expires: new Date(Date.now() + 1000 * 60 * 60 * 24),  
-            httpOnly: true,  
-        };  
+// Driver Logout Controller
+exports.logout = (req, res) => {
+  try {
+    // Client is expected to handle token removal, so just send a success message
+    res.status(200).json({ message: 'Logout successful' });
 
-        // Send response with token and driver info  
-        return res  
-            .status(200)  
-            .cookie('token', token, options)  
-            .json({  
-                success: true,  
-                token,  
-                driver: { id: driver._id, name: driver.name }  
-            });  
-
-    } catch (error) {  
-        // Handle server error  
-        return res.status(500).json({ message: 'Server error' });  
-    }  
-};
-
-  // Logout driver
-exports.logout = (req, res) => {  
-    // Clear the cookie set during login  
-    res.clearCookie('token', { httpOnly: true }); // Ensure the options match those used when setting the cookie  
-
-    // Send a response indicating that the user has been logged out  
-    return res.status(200).json({ message: 'Successfully logged out' });  
+    console.log("Driver logged out successfully.");
+  } catch (error) {
+    console.log("Error during logout:", error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
