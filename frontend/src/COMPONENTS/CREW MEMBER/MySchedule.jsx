@@ -108,13 +108,13 @@ function MySchedule({ darkMode, addToHistory }) {
   };
 
   return (
-    <div className="mt-4 p-4 sm:p-6 lg:p-8">
+    <div className="mt-7 p-4 sm:p-6 lg:p-8">
       <h2 className="text-2xl font-bold mb-4">My Schedule</h2>
 
       {/* Display schedules as rows */}
       <div className="space-y-4">
         {shifts.map((shift) => (
-          <div key={shift.time} className="p-4 flex flex-col sm:flex-row justify-between items-start rounded-lg shadow-lg bg-gray-100 dark:bg-gray-800">
+          <div key={shift.time} className="p-4 flex flex-col sm:flex-row justify-between items-start rounded-lg shadow-lg bg-gray-100 dark:bg-gray-200">
             <div className="flex-1">
               <p><strong>Date:</strong> {shift.date || 'Invalid Date'}</p>
               <p><strong>Route:</strong> {shift.route || 'Route not available'}</p>
@@ -130,7 +130,7 @@ function MySchedule({ darkMode, addToHistory }) {
               )}
             </div>
 
-            <div className="mt-4 sm:mt-0 flex flex-col items-center sm:items-end space-y-2">
+            <div className=" gap-3 mt-4 lg:flex flex-col sm:mt-0 items-center sm:items-end space-y-1">
               <button
                 onClick={() => handleStartTrip(shift)}
                 disabled={activeShiftTime !== null && activeShiftTime !== shift.time} // Disable all other buttons while a trip is active
@@ -142,7 +142,7 @@ function MySchedule({ darkMode, addToHistory }) {
               <button
                 onClick={handleEndTrip}
                 disabled={activeShiftTime !== shift.time} // Only enable the end button for the active shift
-                className={`px-4 py-2 rounded-full ${activeShiftTime === shift.time ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-500 cursor-not-allowed'} text-white`}
+                className={`px-4 ml-3 py-2 rounded-full ${activeShiftTime === shift.time ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-500 cursor-not-allowed'} text-white`}
               >
                 End Trip
               </button>
