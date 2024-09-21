@@ -1,34 +1,25 @@
 import React, { useState } from "react";
 
-const ImageUpload = ({ apiEndpoint }) => {
-  const [file, setFile] = useState(null); // To store the selected image file
+const ImageUpload = ({ apiEndpoint, imageSrc }) => {
   const [uploadStatus, setUploadStatus] = useState(null); // To store the result of the verification
   const [error, setError] = useState(null); // To store error messages
 
-  // Function to handle image selection
-  const handleImageChange = (event) => {
-    const selectedFile = event.target.files[0];
-
-    // Validate file type
-    if (!selectedFile || (selectedFile.type !== "image/jpeg" && selectedFile.type !== "image/png")) {
-      setError("Please upload a valid JPEG or PNG image.");
-      return;
-    }
-
-    // Clear previous error and set the file
-    setError(null);
-    setFile(selectedFile);
-  };
-
   // Function to upload the image
   const handleUpload = () => {
-    if (!file) {
-      setError("No image selected.");
-      return;
+    // Convert base64 to Blob
+    const byteString = atob(imageSrc.split(',')[1]);
+    const mimeString = imageSrc.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
     }
+    
+    const file = new Blob([ab], { type: mimeString });
 
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("image", file, 'capturedImage.jpg');
 
     // Call the API to upload and verify the image
     fetch(apiEndpoint, {
@@ -50,22 +41,11 @@ const ImageUpload = ({ apiEndpoint }) => {
   };
 
   return (
-    <div className="image-upload-container">
+    <div className="image-upload-container mt-4">
       <h3>Upload Image for Verification</h3>
 
-      {/* Input for image file */}
-      <input
-        type="file"
-        accept="image/jpeg, image/png"
-        capture="environment"
-        onChange={handleImageChange}
-      />
-
-      {/* Error message display */}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-
       {/* Button to upload image */}
-      <button onClick={handleUpload} disabled={!file}>
+      <button onClick={handleUpload} className="mt-4 bg-green-500 text-white px-6 py-3 rounded-lg">
         Upload and Verify
       </button>
 

@@ -8,7 +8,6 @@ import MySchedule from '../CREW MEMBER/MySchedule';
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
 import TopPopup from '../CREW MEMBER/TopPopup';
 import Notification from '../CREW MEMBER/Notification';
-import ProfilePage from '../UTILITIES/ProfilePage';
 import ImageUpload from './Imageupload';
 
 
@@ -31,6 +30,9 @@ function DriverDashboard() {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
   const [isProfileOpen, setIsProfileOpen] = useState(true);
+  const [imageSrc, setImageSrc] = useState(null);
+  const [showUpload, setShowUpload] = useState(false);
+
 
   // Sample data passed as props
   const userData = {
@@ -367,6 +369,7 @@ function DriverDashboard() {
                 >
                   Capture Image
                 </button>
+              
               </div>
             )}
 
