@@ -1,40 +1,20 @@
-const bcrypt = require('bcrypt'); // Import bcrypt for password hashing and comparison
-const User = require('../models/user.model.js');
+const jwt = require('jsonwebtoken');
 
-const loginUser = async (req, res) => {
-  const { username, password } = req.body;
+// Middleware to authenticate drivers
+const authenticateDriver = (req, res, next) => {
+  const token = req.headers.authorization?.split(" ")[1]; // Extract the token from the authorization header
+
+  if (!token) {
+    return res.status(403).json({ message: 'No token provided' });
+  }
 
   try {
-    const user = await User.findOne({ username }).populate('driver').populate('conductor');
-    if (!user) {
-      return res.status(404).json({ msg: 'User not found' });
-    }
-
-    // Verify password
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-      return res.status(401).json({ msg: 'Invalid password' });
-    }
-
-    // Handle first login flow (if applicable)
-    if (user.isFirstLogin) {
-      // Update user's first login status and set an initial password
-      user.isFirstLogin = false;
-      user.password = await bcrypt.hash(newPassword, 10); // Replace 'newPassword' with a generated strong password
-      await user.save();
-    }
- 
-    // Return response based on user role
-    if (user.role === 'driver') {
-      res.json({ msg: 'Login successful', user, driver: user.driver });
-    } else if (user.role === 'conductor') {
-      res.json({ msg: 'Login successful', user, conductor: user.conductor });
-    } else if (user.role === 'admin') {
-      res.json({ msg: 'Login successful', user });
-    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.driver = decoded; // Attach driver info to the request
+    next(); // Proceed to the next middleware or route handler
   } catch (error) {
-    res.status(500).json({ msg: 'Server error' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };
 
-export default loginUser;
+module.exports = authenticateDriver;

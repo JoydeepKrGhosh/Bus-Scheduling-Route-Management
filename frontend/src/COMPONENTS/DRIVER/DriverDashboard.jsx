@@ -6,7 +6,7 @@ import Navbar from '../UTILITIES/Navbar';
 import GISNavigation from '../CREW MEMBER/GISNavigation';
 import MySchedule from '../CREW MEMBER/MySchedule';
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
-import TopPopup from '../CREW MEMBER/TOpPopup';
+import TopPopup from '../CREW MEMBER/TopPopup';
 import Notification from '../CREW MEMBER/Notification';
 import ProfilePage from '../UTILITIES/ProfilePage';
 
