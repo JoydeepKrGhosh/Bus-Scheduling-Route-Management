@@ -81,7 +81,7 @@ const AssignRoutes = () => {
 
   const refreshRoutes = async () => {
     setTimeout(() => setIsLoading(true),5000); // Show loader while refreshing
-    const response = await fetch('https://bus-scheduling-route-management-1.onrender.com/api/showadminroutes/routes');
+    const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
     setIsLoading(false); // Hide loader when done
