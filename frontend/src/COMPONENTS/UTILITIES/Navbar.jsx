@@ -321,7 +321,7 @@ import { FaUserCircle, FaCog } from 'react-icons/fa';
 import ProfilePage from './ProfilePage';
 import SettingsPage from './SettingsPage';
 
-function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen, userData }) {
+function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen, userData, FirstName }) {
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -354,11 +354,11 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen, userDa
           alt="DTC Logo"
           className="h-8 mr-3"
         />
-        <h1 className={`text-xl font-bold hidden sm:block ${darkMode ? 'text-gray-100' : 'text-white'}`}>
+        <h1 className={`text-2xl font-bold hidden sm:block ${darkMode ? 'text-gray-100' : 'text-white'}`}>
           DTC Employee Dashboard
         </h1>
-        <h1 className={`text-xl font-bold block sm:hidden ${darkMode ? 'text-gray-100' : 'text-white'}`}>
-         WELCOME !
+        <h1 className={`text-2xl font-bold tracking-wide block sm:hidden ${darkMode ? 'text-gray-100' : 'text-white'}`}>
+         WELCOME  {FirstName.toUpperCase()} !
         </h1>
       </div>
       <div className="flex items-center space-x-4">

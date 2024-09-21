@@ -26,6 +26,8 @@ function AdminDashboard() {
     lastLogin: new Date().toLocaleString(),
   };
 
+  const FirstName = 'Vijay';
+
   
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -54,7 +56,7 @@ function AdminDashboard() {
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} userData={userData} />
+      <Navbar toggleDarkMode={toggleDarkMode} darkMode={darkMode} userData={userData} FirstName={FirstName} />
 
       <div className="flex flex-grow relative">
         {/* Sidebar for large screens */}
