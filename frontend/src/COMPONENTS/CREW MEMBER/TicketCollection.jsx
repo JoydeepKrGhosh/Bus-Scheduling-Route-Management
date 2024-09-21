@@ -61,7 +61,7 @@ function TicketCollection({ isOpen, onClose, onSubmit, busId }) {
               value={ticketsCollected}
               onChange={(e) => setTicketsCollected(e.target.value)}
               placeholder="Enter number of tickets"
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-300"
+              className="w-full px-4 py-3 text-black border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-300"
             />
           </div>
           <div className="flex justify-end space-x-4 mt-8">
