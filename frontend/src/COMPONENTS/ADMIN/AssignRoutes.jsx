@@ -35,7 +35,7 @@ const AssignRoutes = () => {
     if (routeId) {
       const fetchRouteDetails = async () => {
         try {
-          const response = await fetch(http://localhost:5000/api/showadminroutes/route/${routeId});
+          const response = await fetch('http://localhost:5000/api/showadminroutes/route/${routeId}');
           const data = await response.json();
           setSelectedRoute(data);
         } catch (error) {
@@ -57,7 +57,7 @@ const AssignRoutes = () => {
   const fetchSuggestions = async (input, setFunction) => {
     if (input.length > 2) {
       try {
-        const response = await axios.get(https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&apiKey=${geoapifyKey});
+        const response = await axios.get('https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&apiKey=${geoapifyKey}');
         setFunction(response.data.features);
       } catch (error) {
         console.error('Error fetching suggestions:', error);
