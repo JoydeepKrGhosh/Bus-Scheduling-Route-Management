@@ -44,7 +44,7 @@ function DriverDashboard() {
     lastLogin: new Date().toLocaleString(),
   };
 
- 
+ const FirstName = 'Arjun';
   
 
 
@@ -254,7 +254,7 @@ function DriverDashboard() {
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} userData={userData} />
+      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} userData={userData} FirstName={FirstName}/>
       
 
       {/* Add a margin between Navbar and main content */}
