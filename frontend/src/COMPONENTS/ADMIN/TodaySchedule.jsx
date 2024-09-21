@@ -12,7 +12,7 @@
 //   useEffect(() => {
 //     const fetchSchedule = async () => {
 //       try {
-//         const response = await axios.get('http://localhost:5000/api/showadmintrips/gettrips?selectedDate=2024-09-20'); // Replace with your API endpoint
+//         const response = await axios.get('https://bus-scheduling-route-management-1.onrender.com/api/showadmintrips/gettrips?selectedDate=2024-09-20'); // Replace with your API endpoint
 //         setScheduleData(response.data);
 //         setLoading(false);
 //       } catch (err) {
