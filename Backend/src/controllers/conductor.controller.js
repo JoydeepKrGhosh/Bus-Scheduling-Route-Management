@@ -3,44 +3,81 @@ const Conductor = require('../models/conductor.model');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Sign up conductor  
-exports.register = async (req, res) => {
-    const { name, conductor_id, phone_number, password } = req.body;
+const saltRounds = 10;
 
-    try {
-        // Checking if the conductor already exists  
-        const existingConductor = await Conductor.findOne({ conductor_id });
-        if (existingConductor) {
-            return res.status(400).json({ message: 'Conductor already exists' });
-        }
+// Controller to register a conductor
+const registerConductor = async (req, res) => {
+  const { name, conductor_id, phone_number, password, employeeCode } = req.body;
 
-        // Hashing the password  
-        const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    // Check if conductor_id, phone_number, or employeeCode already exists
+    const existingConductor = await Conductor.findOne({
+      $or: [
+        { conductor_id },
+        { phone_number },
+        { employeeCode }
+      ]
+    });
 
-        // Creating a new conductor  
-        const newConductor = new Conductor({
-            name,
-            conductor_id,
-            phone_number,
-            password: hashedPassword,
-        });
-
-        const savedConductor = await newConductor.save();
-
-        res.status(201).json({
-            message: 'Conductor registered successfully',
-            conductor: { id: savedConductor._id, name: savedConductor.name },
-        });
-        console.log('Conductor registered successfully');
-
-    } catch (error) {
-        console.log(error);
-
-        res.status(500).json({ message: 'Server error' });
+    if (existingConductor) {
+      return res.status(400).json({
+        message: 'Conductor with this conductor ID, phone number, or employee code already exists.'
+      });
     }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Create a new conductor instance without requiring referenceImageUrl
+    const newConductor = new Conductor({
+      name,
+      conductor_id,
+      phone_number,
+      password: hashedPassword,
+      employeeCode
+    });
+
+    // Save the conductor to the database
+    await newConductor.save();
+
+    res.status(201).json({
+      message: 'Conductor registered successfully',
+      conductor: {
+        name: newConductor.name,
+        conductor_id: newConductor.conductor_id,
+        phone_number: newConductor.phone_number,
+        employment_date: newConductor.employment_date,
+        employeeCode: newConductor.employeeCode,
+        availability: newConductor.availability,
+        verificationStatus: newConductor.verificationStatus
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error registering conductor', error: error.message });
+  }
 };
 
-// Login conductor  
+
+const getAllConductors = async (req, res) => {
+    try {
+      // Fetch all conductors from the database
+      const conductors = await Conductor.find();
+  
+      // Return the conductors as a response
+      res.status(200).json(conductors);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching conductors', error: error.message });
+    }
+  };
+
+module.exports = {
+  registerConductor,
+  getAllConductors
+};
+
+
+// Login conductor 
+/* 
 exports.login = async (req, res) => {
     const { conductor_id, password } = req.body;
 
@@ -80,3 +117,5 @@ exports.logout = (req, res) => {
     res.clearCookie('token', { httpOnly: true }); // Ensure to use the same options set during login  
     return res.status(200).json({ message: 'Successfully logged out' });
 };
+
+*/
