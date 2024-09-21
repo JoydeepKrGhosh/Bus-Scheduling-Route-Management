@@ -29,7 +29,6 @@ function DriverDashboard() {
   const [isLocationFetched, setIsLocationFetched] = useState(false);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
-  const [isProfileOpen, setIsProfileOpen] = useState(true);
   const [imageSrc, setImageSrc] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
 
@@ -145,10 +144,10 @@ function DriverDashboard() {
   const captureImage = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setCapturedImage(imageSrc);
-    setShowWebcam(false);
-    setIsImageCaptured(true);
-    startTimer();
-    showPopup();
+    // setShowWebcam(false);
+    // setIsImageCaptured(true);
+    // startTimer();
+    // showPopup();
   };
   
 
@@ -369,7 +368,12 @@ function DriverDashboard() {
                 >
                   Capture Image
                 </button>
-              
+                {capturedImage && (
+            <ImageUpload
+              apiEndpoint="https://your-api-url.com/verify-image"
+              image={capturedImage} // Pass the captured image for upload
+            />
+          )}
               </div>
             )}
 
