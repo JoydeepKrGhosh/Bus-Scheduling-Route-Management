@@ -1,58 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect } from 'react';
 
-const ImageUpload = ({ apiEndpoint, imageSrc }) => {
-  const [uploadStatus, setUploadStatus] = useState(null); // To store the result of the verification
-  const [error, setError] = useState(null); // To store error messages
+const ImageUpload = ({ apiEndpoint, image }) => {
+  useEffect(() => {
+    const uploadImage = async () => {
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ image: image }), // Send the image in base64 format
+        });
 
-  // Function to upload the image
-  const handleUpload = () => {
-    // Convert base64 to Blob
-    const byteString = atob(imageSrc.split(',')[1]);
-    const mimeString = imageSrc.split(',')[0].split(':')[1].split(';')[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    
-    const file = new Blob([ab], { type: mimeString });
-
-    const formData = new FormData();
-    formData.append("image", file, 'capturedImage.jpg');
-
-    // Call the API to upload and verify the image
-    fetch(apiEndpoint, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.verified) {
-          setUploadStatus("Image verified successfully.");
+        const result = await response.json();
+        // Handle the verification result here
+        if (result.match) {
+          alert('Image verification successful!');
+          console.log('Image verification successful!');
         } else {
-          setUploadStatus("Image verification failed.");
+          alert('Image verification failed!');
+          console.log('Image verification not successful!');
         }
-      })
-      .catch((error) => {
-        console.error("Error uploading image:", error);
-        setUploadStatus("An error occurred while uploading the image.");
-      });
-  };
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    };
 
-  return (
-    <div className="image-upload-container mt-4">
-      <h3>Upload Image for Verification</h3>
+    if (image) {
+      uploadImage(); // Automatically upload the image after it's captured
+    }
+  }, [image, apiEndpoint]);
 
-      {/* Button to upload image */}
-      <button onClick={handleUpload} className="mt-4 bg-green-500 text-white px-6 py-3 rounded-lg">
-        Upload and Verify
-      </button>
-
-      {/* Display upload status */}
-      {uploadStatus && <p>{uploadStatus}</p>}
-    </div>
-  );
+  return null; // No UI for this component
 };
 
 export default ImageUpload;
