@@ -22,7 +22,7 @@ const AssignRoutes = () => {
   useEffect(() => {
     const fetchRoutes = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
+        const response = await fetch('https://bus-scheduling-route-management-1.onrender.com/api/showadminroutes/routes');
         const data = await response.json();
         setRoutes(data);
       } catch (error) {
@@ -36,7 +36,7 @@ const AssignRoutes = () => {
     if (routeId) {
       const fetchRouteDetails = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/showadminroutes/route/${routeId}`);
+          const response = await fetch(`https://bus-scheduling-route-management-1.onrender.com/api/showadminroutes/route/${routeId}`);
           const data = await response.json();
           setSelectedRoute(data);
         } catch (error) {
@@ -72,7 +72,7 @@ const AssignRoutes = () => {
       endLocation,
     };
     try {
-      await axios.post('http://localhost:5000/api/busroute/api/generateroute', routeData);
+      await axios.post('https://bus-scheduling-route-management-1.onrender.com/api/busroute/api/generateroute', routeData);
       // Show success popup for 2 seconds
       setShowSuccessPopup(true);
       setTimeout(() => setShowSuccessPopup(false), 2000);
@@ -83,7 +83,7 @@ const AssignRoutes = () => {
 
   const refreshRoutes = async () => {
     setTimeout(() => setIsLoading(true),5000); // Show loader while refreshing
-    const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
+    const response = await fetch('https://bus-scheduling-route-management-1.onrender.com/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
     setIsLoading(false); // Hide loader when done
