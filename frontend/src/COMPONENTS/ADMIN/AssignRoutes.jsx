@@ -80,13 +80,13 @@ const AssignRoutes = () => {
   };
 
   const refreshRoutes = async () => {
-    setIsLoading(true); 
-    const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
+    setTimeout(() => setIsLoading(true),5000); // Show loader while refreshing
+    const response = await fetch('https://bus-scheduling-route-management-1.onrender.com/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
-    setIsLoading(false);
+    setIsLoading(false); // Hide loader when done
   };
-
+  
   const renderMap = () => {
     if (!selectedRoute) {
       return (
@@ -146,7 +146,7 @@ const AssignRoutes = () => {
 
   return (
     <div className="relative flex flex-col items-center gap-8 mx-auto my-[-10px] p-10 max-w-full min-h-screen bg-gray-50 shadow-2xl rounded-lg">
-      <h2 className="text-3xl font-bold text-gray-900 mt-[-25px]">Assign a Route</h2>
+      <h2 className="text-3xl font-bold text-gray-900 mt-[-25px] text-blue-500 underline">Assign a Route</h2>
 
       {showSuccessPopup && (
         <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-lg px-6 py-3 rounded-md shadow-lg">
@@ -218,12 +218,12 @@ const AssignRoutes = () => {
           id="routeSelect"
           value={routeId}
           onChange={handleRouteChange}
-          className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          <option value="">Select a route</option>
+          <option value="">-- Select a Route --</option>
           {routes.map((route) => (
-            <option key={route._id} value={route._id}>
-              {route.name}
+            <option key={route.routeId} value={route.routeId}>
+              Start: {route.startPoint.name || 'Unnamed'}, End: {route.endPoint.name || 'Unnamed'}
             </option>
           ))}
         </select>
