@@ -36,8 +36,8 @@ router.get('/gettrips', async (req, res) => {
       endPointName: trip.routeId && trip.routeId.endPoint ? trip.routeId.endPoint.name : 'N/A', // End point name or 'N/A' if null
       scheduledStartTime: trip.scheduledStartTime, // Scheduled start time
       scheduledEndTime: trip.scheduledEndTime || 'N/A', // Scheduled end time or 'N/A' if not ended
-      actualStartTime: trip.actualStartTime || 'N/A', // Actual start time or 'N/A' if not started
-      actualEndTime: trip.actualEndTime || 'N/A', // Actual end time or 'N/A' if not completed
+      actualStartTime: trip.actualStartTime || null, // Actual start time or 'N/A' if not started
+      actualEndTime: trip.actualEndTime || null, // Actual end time or 'N/A' if not completed
       status: trip.status // Trip status
     })));
   } catch (error) {

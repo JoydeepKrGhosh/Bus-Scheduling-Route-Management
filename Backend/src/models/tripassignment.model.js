@@ -34,10 +34,12 @@ const TripAssignmentSchema = new mongoose.Schema({
   
   // Actual times when the trip starts/ends
   actualStartTime: {
-    type: Date // Will be set when the trip starts
+    type: Date,// Will be set when the trip starts
+    default: null 
   },
   actualEndTime: {
-    type: Date // Will be set when the trip ends
+    type: Date,// Will be set when the trip ends
+    default: null 
   },
 
   status: {

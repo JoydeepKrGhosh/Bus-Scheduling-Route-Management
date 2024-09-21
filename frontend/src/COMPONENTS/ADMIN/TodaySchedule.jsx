@@ -122,7 +122,7 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
     const fetchSchedule = async () => {
       try {
         const response = await axios.get(
-          'http://localhost:5000/api/showadmintrips/gettrips?selectedDate=2024-09-20'
+          'http://localhost:5000/api/showadmintrips/gettrips?selectedDate=2024-09-21'
         );
         setScheduleData(response.data);
         setFilteredData(response.data); // Display all data initially
@@ -232,7 +232,7 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
                       ? moment(schedule.actualStartTime).format(
                           'MMMM Do YYYY, h:mm A'
                         )
-                      : 'N/A'}
+                      : 'Not started'}
                   </td>
                   <td className="py-3 px-6">
                     {moment(schedule.scheduledEndTime).format(
@@ -244,7 +244,7 @@ const TodaySchedule = ({ darkMode, handleCardClick }) => {
                       ? moment(schedule.actualEndTime).format(
                           'MMMM Do YYYY, h:mm A'
                         )
-                      : 'N/A'}
+                      : 'Not started'}
                   </td>
                   <td className="py-3 px-6">{schedule.status}</td>
                 </tr>
