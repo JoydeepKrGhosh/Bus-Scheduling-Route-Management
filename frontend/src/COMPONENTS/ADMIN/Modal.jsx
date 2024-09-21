@@ -40,7 +40,7 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
     try {
       if (isEditing) {
         // Edit existing bus (PUT Request)
-        const response = await axios.put(`https://bus-scheduling-route-management-1.onrender.com/bus/${bus.id}`, formData);
+        const response = await axios.put(`http://localhost:5000/bus/${bus.id}`, formData);
         console.log('Bus updated successfully:', response.data);
         Swal.fire({
           icon: 'success',
@@ -51,7 +51,7 @@ function Modal({ isEditing, bus, onClose, onSubmit }) {
         });
       } else {
         // Add new bus (POST Request)
-        const response = await axios.post('https://bus-scheduling-route-management-1.onrender.com/api/buses/add', formData);
+        const response = await axios.post('http://localhost:5000/api/buses/add', formData);
         console.log('New bus added successfully:', response.data);
         Swal.fire({
           icon: 'success',
