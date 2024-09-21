@@ -123,7 +123,7 @@ const uploadDailyImageAndVerify = async (req, res) => {
         }
 
         await user.save();
-        res.status(200).json({ message: 'Image verified', status: user.verificationStatus });
+        res.status(200).json({ message: 'Rekognition Runned', status: user.verificationStatus });
       } catch (error) {
         // Enhanced error handling block with referenceImageUrl and s3Url now available
         console.error("Image verification failed:", error);
