@@ -80,13 +80,13 @@ const AssignRoutes = () => {
   };
 
   const refreshRoutes = async () => {
-    setTimeout(() => setIsLoading(true),5000); // Show loader while refreshing
+    setTimeout(() => setIsLoading(true), 5000); // Show loader while refreshing
     const response = await fetch('http://localhost:5000/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
     setIsLoading(false); // Hide loader when done
   };
-  
+
   const renderMap = () => {
     if (!selectedRoute) {
       return (
@@ -172,7 +172,10 @@ const AssignRoutes = () => {
               <li
                 key={index}
                 onClick={() => {
-                  setStartLocation(suggestion.properties.formatted);
+                  const address = suggestion.properties.formatted;
+                  // Remove everything after the second comma, including the second comma
+                  const cleanedAddress = address.split(',').slice(0, 2).join(',').trim();
+                  setStartLocation(cleanedAddress);
                   setStartSuggestions([]);
                 }}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -200,7 +203,9 @@ const AssignRoutes = () => {
               <li
                 key={index}
                 onClick={() => {
-                  setEndLocation(suggestion.properties.formatted);
+                  const address = suggestion.properties.formatted;
+                  const cleanedAddress = address.split(',').slice(0, 2).join(',').trim();
+                  setEndLocation(cleanedAddress);
                   setEndSuggestions([]);
                 }}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -212,46 +217,32 @@ const AssignRoutes = () => {
         </div>
       </div>
 
-      <div className="w-full mt-4">
-        <label htmlFor="routeSelect" className="block text-sm font-semibold text-gray-800">Select a Route:</label>
-        <select
-          id="routeSelect"
+      <div className="w-full md:w-1/2">
+        <label htmlFor="routeId" className="block text-sm font-semibold text-gray-800">Route ID:</label>
+        <input
+          id="routeId"
           value={routeId}
           onChange={handleRouteChange}
-          className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          <option value="">-- Select a Route --</option>
-          {routes.map((route) => (
-            <option key={route.routeId} value={route.routeId}>
-              Start: {route.startPoint.name || 'Unnamed'}, End: {route.endPoint.name || 'Unnamed'}
-            </option>
-          ))}
-        </select>
+          placeholder="Enter route ID"
+          className="mt-2 w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+        />
       </div>
 
-      <div className="w-full flex items-center justify-end gap-3">
-        <button
-          onClick={saveRoute}
-          className="px-6 py-2 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-        >
-          Save Route
-        </button>
-        <button
-          onClick={refreshRoutes}
-          className={`px-6 py-2 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 focus:ring-2 focus:ring-green-300 focus:outline-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Refreshing...' : 'Refresh Routes'}
-        </button>
-      </div>
+      <button
+        onClick={saveRoute}
+        className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 transition duration-200"
+      >
+        Save Route
+      </button>
 
-      <div className="w-full">
-        {renderMap()}
-      </div>
-
-      
-
+      {renderMap()}
       {renderInstructions()}
+
+      {isLoading && (
+        <div className="absolute top-0 left-0 w-full h-full bg-white opacity-75 flex items-center justify-center">
+          <span className="text-2xl font-semibold text-gray-700">Loading...</span>
+        </div>
+      )}
     </div>
   );
 };
