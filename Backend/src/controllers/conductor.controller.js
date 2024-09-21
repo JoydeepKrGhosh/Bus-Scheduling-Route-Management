@@ -13,9 +13,8 @@ const registerConductor = async (req, res) => {
     // Check if conductor_id, phone_number, or employeeCode already exists
     const existingConductor = await Conductor.findOne({
       $or: [
-        { conductor_id },
-        { phone_number },
-        { employeeCode }
+        { employeeCode },
+        { phone_number }
       ]
     });
 
@@ -24,6 +23,10 @@ const registerConductor = async (req, res) => {
         message: 'Conductor with this conductor ID, phone number, or employee code already exists.'
       });
     }
+    const employeeCodeFinal = conductor_id ? conductor_id : employeeCode;
+    if (employeeCodeFinal.length !== 6) {
+      return res.status(400).json({ message: 'Employee code must be exactly 6 characters.' });
+    }
 
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -31,7 +34,7 @@ const registerConductor = async (req, res) => {
     // Create a new conductor instance without requiring referenceImageUrl
     const newConductor = new Conductor({
       name,
-      conductor_id,
+      conductor_id: employeeCodeFinal,
       phone_number,
       password: hashedPassword,
       employeeCode
@@ -59,16 +62,16 @@ const registerConductor = async (req, res) => {
 
 
 const getAllConductors = async (req, res) => {
-    try {
-      // Fetch all conductors from the database
-      const conductors = await Conductor.find();
-  
-      // Return the conductors as a response
-      res.status(200).json(conductors);
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching conductors', error: error.message });
-    }
-  };
+  try {
+    // Fetch all conductors from the database
+    const conductors = await Conductor.find();
+
+    // Return the conductors as a response
+    res.status(200).json(conductors);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching conductors', error: error.message });
+  }
+};
 
 module.exports = {
   registerConductor,

@@ -7,7 +7,7 @@ import GISNavigation from '../CREW MEMBER/GISNavigation';
 import MySchedule from '../CREW MEMBER/MySchedule'; 
 import ConductorSchedule from './ConductorSchedule';
 import LocationFetcher from '../CREW MEMBER/LocationFetcher';
-import TopPopup from '../CREW MEMBER/TOpPopup';
+import TopPopup from '../CREW MEMBER/TopPopup';
 import Notification from '../CREW MEMBER/Notification';
 
 function ConductorDashboard() {
@@ -39,6 +39,8 @@ function ConductorDashboard() {
     phone_number: "8234970012",
     lastLogin: new Date().toLocaleString(),
   };
+
+  const FirstName = 'Vinod';
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -250,7 +252,7 @@ function ConductorDashboard() {
 
   return (
     <div className={`flex flex-col min-h-screen ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} userData={userData}/>
+      <Navbar toggleSidebar={toggleSidebar} darkMode={darkMode} toggleDarkMode={toggleDarkMode} userData={userData} FirstName={FirstName}/>
       
       {/* Add a margin between Navbar and main content */}
       <div className="flex flex-grow relative">
