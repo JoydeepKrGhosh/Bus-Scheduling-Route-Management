@@ -14,7 +14,7 @@ function ActiveBuses({ darkMode, handleCardClick }) {
 
   const fetchBuses = async () => {
     try {
-      const response = await axios.get('https://localhost:5000/api/busdata/getbuses'); // Replace with your backend URL
+      const response = await axios.get('http://localhost:5000/api/busdata/getbuses'); // Replace with your backend URL
       if (Array.isArray(response.data)) {
         setBuses(response.data);
       } else {
