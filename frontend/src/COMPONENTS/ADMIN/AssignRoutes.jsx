@@ -172,7 +172,8 @@ const AssignRoutes = () => {
               <li
                 key={index}
                 onClick={() => {
-                  setStartLocation(suggestion.properties.formatted);
+                  const cleanedAddress = suggestion.properties.formatted.split(',').slice(0, 2).join(',').trim();
+                  setStartLocation(cleanedAddress);
                   setStartSuggestions([]);
                 }}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -200,7 +201,8 @@ const AssignRoutes = () => {
               <li
                 key={index}
                 onClick={() => {
-                  setEndLocation(suggestion.properties.formatted);
+                  const cleanedAddress = suggestion.properties.formatted.split(',').slice(0, 2).join(',').trim();
+                  setEndLocation(cleanedAddress);
                   setEndSuggestions([]);
                 }}
                 className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
