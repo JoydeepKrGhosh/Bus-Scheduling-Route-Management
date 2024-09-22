@@ -146,7 +146,7 @@ const AssignRoutes = () => {
 
   return (
     <div className="relative flex flex-col items-center gap-8 mx-auto my-[-10px] p-10 max-w-full min-h-screen bg-gray-50 shadow-2xl rounded-lg">
-      <h2 className="text-3xl font-bold text-gray-900 mt-[-25px] text-blue-500 underline">Assign a Route</h2>
+      <h2 className="text-3xl font-bold text-gray-900 mt-[-25px]">Assign a Route</h2>
 
       {showSuccessPopup && (
         <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-lg px-6 py-3 rounded-md shadow-lg">
