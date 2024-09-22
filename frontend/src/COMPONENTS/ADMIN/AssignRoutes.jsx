@@ -35,7 +35,7 @@ const AssignRoutes = () => {
     if (routeId) {
       const fetchRouteDetails = async () => {
         try {
-          const response = await fetch('http://localhost:5000/api/showadminroutes/route/${routeId}');
+          const response = await fetch(`http://localhost:5000/api/showadminroutes/route/${routeId}`);
           const data = await response.json();
           setSelectedRoute(data);
         } catch (error) {
@@ -57,7 +57,7 @@ const AssignRoutes = () => {
   const fetchSuggestions = async (input, setFunction) => {
     if (input.length > 2) {
       try {
-        const response = await axios.get('https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&apiKey=${geoapifyKey}');
+        const response = await axios.get(`https://api.geoapify.com/v1/geocode/autocomplete?text=${input}&apiKey=${geoapifyKey}`);
         setFunction(response.data.features);
       } catch (error) {
         console.error('Error fetching suggestions:', error);
@@ -111,7 +111,7 @@ const AssignRoutes = () => {
     return (
       <MapContainer center={mapCenter} zoom={13} style={{ height: '500px', width: '100%' }} className="rounded-lg shadow-lg">
         <TileLayer
-          url={https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=${geoapifyKey}}
+          url={`https://maps.geoapify.com/v1/tile/osm-liberty/{z}/{x}/{y}.png?apiKey=${geoapifyKey}`}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         <Marker position={[startPoint.coordinates[1], startPoint.coordinates[0]]}>
@@ -238,7 +238,7 @@ const AssignRoutes = () => {
         </button>
         <button
           onClick={refreshRoutes}
-          className={px-6 py-2 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 focus:ring-2 focus:ring-green-300 focus:outline-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}}
+          className={`px-6 py-2 bg-green-500 text-white font-semibold rounded-md shadow-md hover:bg-green-600 focus:ring-2 focus:ring-green-300 focus:outline-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={isLoading}
         >
           {isLoading ? 'Refreshing...' : 'Refresh Routes'}
