@@ -357,7 +357,7 @@ function Navbar({ darkMode, toggleDarkMode, toggleSidebar, isSidebarOpen, userDa
         <h1 className={`text-2xl font-bold hidden sm:block ${darkMode ? 'text-gray-100' : 'text-white'}`}>
           DTC Employee Dashboard
         </h1>
-        <h1 className={`text-2xl font-bold tracking-wide block sm:hidden ${darkMode ? 'text-gray-100' : 'text-white'}`}>
+        <h1 className={`text-xl font-bold tracking-wide block sm:hidden ${darkMode ? 'text-gray-100' : 'text-white'}`}>
          WELCOME  {FirstName.toUpperCase()} !
         </h1>
       </div>

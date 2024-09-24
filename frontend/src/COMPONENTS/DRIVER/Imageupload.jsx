@@ -12,8 +12,8 @@ const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
 };
 
 const ImageUpload = ({ apiEndpoint, image }) => {
-  const employeeCode = 'Dr1100'; // Hardcoded employeeCode
-  const role = 'driver'; // Hardcoded role
+  const employeeCode = 'Cd8120'; // Hardcoded employeeCode
+  const role = 'conductor'; // Hardcoded role
 
   const uploadImage = async () => {
     try {
@@ -26,7 +26,7 @@ const ImageUpload = ({ apiEndpoint, image }) => {
 
       // Create a FormData object
       const formData = new FormData();
-      
+
       // Append the Blob as a 'file'
       formData.append('image', imageBlob, 'captured-image.jpg'); // 'file' should match the expected field name on the server
       formData.append('employeeCode', employeeCode);

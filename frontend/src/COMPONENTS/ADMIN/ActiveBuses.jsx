@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import {FaArrowLeft } from 'react-icons/fa';
-import axios from 'axios'; // For making API requests
-import Modal from './Modal'; // Import the Modal component
+import { useState, useEffect } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
+import axios from 'axios';
+import Modal from './Modal'; // Ensure the correct file path
 
 function ActiveBuses({ darkMode, handleCardClick }) {
   const [buses, setBuses] = useState([]); // Default to an empty array
@@ -9,22 +9,21 @@ function ActiveBuses({ darkMode, handleCardClick }) {
 
   // Fetch buses from the backend when the component mounts
   useEffect(() => {
-    fetchBuses();
-  }, []);
-
-  const fetchBuses = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/busdata/getbuses'); // Replace with your backend URL
-      if (Array.isArray(response.data)) {
-        setBuses(response.data);
-      } else {
-        setBuses([]); // Set buses to an empty array if the response is not an array
+    const fetchBuses = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/busdata/getbuses');
+        if (Array.isArray(response.data)) {
+          setBuses(response.data);
+        } else {
+          setBuses([]); // Set buses to an empty array if the response is not an array
+        }
+      } catch (error) {
+        console.error('Error fetching buses:', error);
+        setBuses([]); // In case of error, fall back to an empty array
       }
-    } catch (error) {
-      console.error('Error fetching buses:', error);
-      setBuses([]); // In case of error, fall back to an empty array
-    }
-  };
+    };
+    fetchBuses();
+  }, [buses]);
 
   const handleAddBus = () => {
     setShowModal(true);
@@ -32,8 +31,8 @@ function ActiveBuses({ darkMode, handleCardClick }) {
 
   const handleFormSubmit = async (newBus) => {
     try {
-      // Add new bus
-      await axios.post('/api/buses', newBus); // Replace with your backend POST request
+      // Ensure correct API endpoint
+      await axios.post('http://localhost:5000/api/busdata/postbus', newBus); // Replace with your backend POST request
       setBuses([...buses, newBus]); // Add the new bus to the UI
       setShowModal(false); // Close the modal
     } catch (error) {
@@ -43,7 +42,7 @@ function ActiveBuses({ darkMode, handleCardClick }) {
 
   return (
     <div className={`p-4 md:p-8 rounded-lg shadow-xl ${darkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} mt-4`}>
-     <div className="mb-8 ">
+      <div className="mb-8">
         <button
           className={`px-4 py-2 ${darkMode ? 'bg-gray-700 hover:bg-gray-800' : 'bg-gray-700 hover:bg-gray-100 hover:text-black'} text-white rounded flex items-center transition`}
           onClick={() => handleCardClick('overview')}
@@ -76,7 +75,7 @@ function ActiveBuses({ darkMode, handleCardClick }) {
             <tbody>
               {buses.map((bus, index) => (
                 <tr
-                  key={bus.id}
+                  key={bus.id || index} // Ensure unique key (either bus.id or fallback to index)
                   className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-gray-50'} hover:bg-gray-200 transition-colors`}
                 >
                   <td className="py-3 md:py-6 px-2 md:px-4 text-center text-xs md:text-base">{bus.busNumber}</td>

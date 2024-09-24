@@ -18,7 +18,7 @@ function MySchedule({ darkMode, addToHistory }) {
   useEffect(() => {
     const fetchShifts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/showdriverconductortrips/crewschedule/driver/66ed905e159642c9b833a4a8?selectedDate=2024-09-21');
+        const response = await fetch('http://localhost:5000/api/showdriverconductortrips/crewschedule/driver/66ed905e159642c9b833a4a8?selectedDate=2024-09-22');
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           throw new Error("Received non-JSON response");

@@ -29,7 +29,7 @@ const AssignRoutes = () => {
       }
     };
     fetchRoutes();
-  }, []);
+  }, [routes]);
 
   useEffect(() => {
     if (routeId) {
@@ -80,13 +80,13 @@ const AssignRoutes = () => {
   };
 
   const refreshRoutes = async () => {
-    setTimeout(() => setIsLoading(true),5000); // Show loader while refreshing
+    setTimeout(() => setIsLoading(true), 1000); // Show loader while refreshing
     const response = await fetch('https://bus-scheduling-route-management-1.onrender.com/api/showadminroutes/routes');
     const data = await response.json();
     setRoutes(data);
     setIsLoading(false); // Hide loader when done
   };
-  
+
   const renderMap = () => {
     if (!selectedRoute) {
       return (
@@ -251,7 +251,7 @@ const AssignRoutes = () => {
         {renderMap()}
       </div>
 
-      
+
 
       {renderInstructions()}
     </div>
